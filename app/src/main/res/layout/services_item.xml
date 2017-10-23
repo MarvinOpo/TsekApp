@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="3"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/services_family_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="06022017-1203-1760826"
+            android:textColor="@color/colorPrimary"/>
+
+        <TextView
+            android:id="@+id/services_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Adan Louie Samuel Pilapil "/>
+
+        <TextView
+            android:id="@+id/services_barangay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cubacub"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/success"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/failed"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/success"/>
+    </RelativeLayout>
+</LinearLayout>

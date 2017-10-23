@@ -1,0 +1,77 @@
+<resources>
+    <string name="app_name">TsekApp</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string-array name="educational_attainment">
+        <item>No Education</item>
+        <item>Elementary Level</item>
+        <item>Elementary Graduate</item>
+        <item>HighSchool Level</item>
+        <item>HighSchool Graduate</item>
+        <item>College Level</item>
+        <item>College Graduate</item>
+        <item>Vocational Course</item>
+        <item>Masteral Degree</item>
+    </string-array>
+
+    <string-array name="is_family_head">
+        <item>Yes</item>
+        <item>No</item>
+    </string-array>
+
+    <string-array name="realation_to_head">
+        <item>Son</item>
+        <item>Daughter</item>
+        <item>Husband</item>
+        <item>Wife</item>
+        <item>Father</item>
+        <item>Mother</item>
+        <item>Brother</item>
+        <item>Sister</item>
+    </string-array>
+
+    <string-array name="suffix">
+        <item>Jr.</item>
+        <item>Sr.</item>
+        <item>I</item>
+        <item>II</item>
+        <item>III</item>
+    </string-array>
+
+    <string-array name="sex">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string-array name="monthly_income">
+        <item>Less Than 7,890</item>
+        <item>Between 7,890 to 15,780</item>
+        <item>Between 15,780 to 31,560</item>
+        <item>Between 31,560 to 78,900</item>
+        <item>Between 78,900 to 118,350</item>
+        <item>Between 118,350 to 157,800</item>
+        <item>At least 157,800</item>
+    </string-array>
+
+    <string-array name="unmet_needs">
+        <item>Option 1\nWomen of Reproductive Age who wants to limit/space but no access to Family Planning Method.</item>
+        <item>Option 2\nCouples and individuals who are fecund and sexually active and report not wanting any more children or wanting to delay the next pregnancy but are not using any Family Planning Method.</item>
+        <item>Option 3\nCurrently using Family Planning Method but in inappropriate way thus leading to pregnancy.</item>
+    </string-array>
+
+    <string-array name="water_supply">
+        <item>Level 1\nFarthest user is not more than 250m from point source</item>
+        <item>Level 2\nFarthest user is not more than 25m from communal faucet</item>
+        <item>Level 3\nIt has service connection from system.</item>
+    </string-array>
+
+    <string-array name="sanitary_toilet">
+        <item>None</item>
+        <item>Communal</item>
+        <item>Individual Household</item>
+    </string-array>
+</resources>

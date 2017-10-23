@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+
+    <TextView
+        android:id="@+id/population_family_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Family ID"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/population_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Full Name Here"
+        android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+</LinearLayout>

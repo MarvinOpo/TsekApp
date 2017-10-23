@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Home" />
+
+        <item
+            android:i2d="@+id/nav_services"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Avail Services" />
+
+
+        <item android:title="Population">
+            <menu>
+                <item
+                    android:id="@+id/nav_manage_population"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="Manage Population" />
+                <item
+                    android:id="@+id/nav_services_status"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="3 Must Services Status" />
+            </menu>
+        </item>
+
+        <item android:title="Report">
+            <menu>
+                <item
+                    android:id="@+id/nav_services_report"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="Services Availed" />
+                <item
+                    android:id="@+id/nav_case_referred"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="Case Referred" />
+            </menu>
+        </item>
+
+
+        <item android:title="Settings">
+            <menu>
+                <item
+                    android:id="@+id/nav_change_pass"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="Change Password" />
+                <item
+                    android:id="@+id/nav_logout"
+                    android:icon="@drawable/ic_menu_send"
+                    android:title="Logout" />
+            </menu>
+        </item>
+
+    </group>
+
+
+
+</menu>
