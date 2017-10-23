@@ -8,7 +8,7 @@
             android:title="Home" />
 
         <item
-            android:i2d="@+id/nav_services"
+            android:id="@+id/nav_services"
             android:icon="@drawable/ic_menu_gallery"
             android:title="Avail Services" />
 
@@ -26,18 +26,18 @@
             </menu>
         </item>
 
-        <item android:title="Report">
-            <menu>
-                <item
-                    android:id="@+id/nav_services_report"
-                    android:icon="@drawable/ic_menu_share"
-                    android:title="Services Availed" />
-                <item
-                    android:id="@+id/nav_case_referred"
-                    android:icon="@drawable/ic_menu_send"
-                    android:title="Case Referred" />
-            </menu>
-        </item>
+        <!--<item android:title="Report">-->
+            <!--<menu>-->
+                <!--<item-->
+                    <!--android:id="@+id/nav_services_report"-->
+                    <!--android:icon="@drawable/ic_menu_share"-->
+                    <!--android:title="Services Availed" />-->
+                <!--<item-->
+                    <!--android:id="@+id/nav_case_referred"-->
+                    <!--android:icon="@drawable/ic_menu_send"-->
+                    <!--android:title="Case Referred" />-->
+            <!--</menu>-->
+        <!--</item>-->
 
 
         <item android:title="Settings">

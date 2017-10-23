@@ -13,6 +13,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.mvopo.tsekapp.Fragments.AvailServicesFragment;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
 import com.example.mvopo.tsekapp.Fragments.ServicesStatusFragment;
 import com.example.mvopo.tsekapp.Fragments.ViewPopulationFragment;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity
     HomeFragment hf = new HomeFragment();
     ViewPopulationFragment vpf = new ViewPopulationFragment();
     ServicesStatusFragment ssf = new ServicesStatusFragment();
+    AvailServicesFragment asf = new AvailServicesFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,14 +103,14 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
             ft.replace(R.id.fragment_container, hf).commit();
         } else if (id == R.id.nav_services) {
-
+            ft.replace(R.id.fragment_container, asf).commit();
         } else if (id == R.id.nav_manage_population) {
             ft.replace(R.id.fragment_container, vpf).commit();
         } else if (id == R.id.nav_services_status) {
             ft.replace(R.id.fragment_container, ssf).commit();
-        } else if (id == R.id.nav_services_report) {
-
-        } else if (id == R.id.nav_case_referred) {
+//        } else if (id == R.id.nav_services_report) {
+//
+//        } else if (id == R.id.nav_case_referred) {
 
         } else if (id == R.id.nav_logout) {
             Intent intent = new Intent(this, LoginActivity.class);
