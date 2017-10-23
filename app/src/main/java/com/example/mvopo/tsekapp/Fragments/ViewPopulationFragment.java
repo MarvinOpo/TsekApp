@@ -67,7 +67,7 @@ public class ViewPopulationFragment extends Fragment {
                 tvId.setText("Profile ID: " + familyProfiles.get(position).profileId);
                 tvName.setText("Name: " + fullName);
                 tvAge.setText("Age: 13");
-                tvSex.setText("Sex:" + familyProfiles.get(position).sex);
+                tvSex.setText("Sex: " + familyProfiles.get(position).sex);
                 tvBarangay.setText("Barangay: " + familyProfiles.get(position).barangay);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
