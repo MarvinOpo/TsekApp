@@ -101,12 +101,14 @@
             android:layout_marginTop="20dp">
 
             <ImageView
+                android:id="@+id/imageView2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:src="@mipmap/ic_launcher"
                 android:layout_weight="2"
-                android:background="#FB8C00"/>
+                android:adjustViewBounds="true"
+                android:background="#FB8C00"
+                android:padding="20dp"
+                android:src="@drawable/population" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -157,12 +159,14 @@
             android:layout_marginTop="10dp">
 
             <ImageView
+                android:id="@+id/imageView3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:src="@mipmap/ic_launcher"
                 android:layout_weight="2"
-                android:background="#43A047"/>
+                android:adjustViewBounds="true"
+                android:background="#43A047"
+                android:padding="20dp"
+                android:src="@drawable/services_availed" />
 
             <LinearLayout
                 android:layout_width="0dp"

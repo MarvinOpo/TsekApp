@@ -4,12 +4,12 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/home"
             android:title="Home" />
 
         <item
             android:id="@+id/nav_services"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/service"
             android:title="Avail Services" />
 
 
@@ -17,11 +17,11 @@
             <menu>
                 <item
                     android:id="@+id/nav_manage_population"
-                    android:icon="@drawable/ic_menu_share"
+                    android:icon="@drawable/manage"
                     android:title="Manage Population" />
                 <item
                     android:id="@+id/nav_services_status"
-                    android:icon="@drawable/ic_menu_send"
+                    android:icon="@drawable/view"
                     android:title="3 Must Services Status" />
             </menu>
         </item>
@@ -44,11 +44,11 @@
             <menu>
                 <item
                     android:id="@+id/nav_change_pass"
-                    android:icon="@drawable/ic_menu_share"
+                    android:icon="@drawable/change_pass"
                     android:title="Change Password" />
                 <item
                     android:id="@+id/nav_logout"
-                    android:icon="@drawable/ic_menu_send"
+                    android:icon="@drawable/logout"
                     android:title="Logout" />
             </menu>
         </item>
