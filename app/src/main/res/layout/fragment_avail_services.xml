@@ -10,9 +10,24 @@
         android:orientation="vertical"
         android:padding="10dp">
 
+        <TextView
+            android:id="@+id/avail_services_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Name: Jay Boy Abapo"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
+        <TextView
+            android:id="@+id/avail_services_age"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Age: 13"
+            android:textAppearance="?android:attr/textAppearanceMedium"/>
+
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             app:cardElevation="5dp">
 
             <LinearLayout
@@ -37,9 +52,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
+                    android:checkedButton="@+id/blood_normal"
                     android:visibility="gone">
 
                     <RadioButton
+                        android:id="@+id/blood_normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Normal"/>
@@ -67,9 +84,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
+                    android:checkedButton="@+id/weight_normal"
                     android:visibility="gone">
 
                     <RadioButton
+                        android:id="@+id/weight_normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Normal"/>
@@ -97,9 +116,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
+                    android:checkedButton="@+id/height_normal"
                     android:visibility="gone">
 
                     <RadioButton
+                        android:id="@+id/height_normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Normal"/>
@@ -130,7 +151,7 @@
                     android:background="@color/colorAccent"
                     android:padding="10dp"
                     android:text="LABORATORY SERVICES"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <RadioGroup
                     android:layout_width="match_parent"
@@ -211,7 +232,7 @@
                     android:background="@color/colorAccent"
                     android:padding="10dp"
                     android:text="CASES REFERRED"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -296,7 +317,7 @@
                     android:background="@color/colorAccent"
                     android:padding="10dp"
                     android:text="DRUG REHABILITATION SERVICES"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -344,7 +365,7 @@
                     android:background="@color/colorAccent"
                     android:padding="10dp"
                     android:text="FAMILY PLANNING"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -387,7 +408,7 @@
                     android:background="@color/colorAccent"
                     android:padding="10dp"
                     android:text="OTHER SERVICES"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

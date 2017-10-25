@@ -68,6 +68,7 @@
                         android:background="@android:color/transparent"
                         android:drawableRight="@drawable/password"
                         android:hint="Password"
+                        android:inputType="textPassword"
                         android:padding="10dp" />
 
                 </android.support.design.widget.TextInputLayout>

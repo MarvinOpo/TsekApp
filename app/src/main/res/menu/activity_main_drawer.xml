@@ -12,49 +12,51 @@
             android:icon="@drawable/service"
             android:title="Avail Services" />
 
-
         <item android:title="Population">
             <menu>
-                <item
-                    android:id="@+id/nav_manage_population"
-                    android:icon="@drawable/manage"
-                    android:title="Manage Population" />
-                <item
-                    android:id="@+id/nav_services_status"
-                    android:icon="@drawable/view"
-                    android:title="3 Must Services Status" />
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_manage_population"
+                        android:icon="@drawable/manage"
+                        android:title="Manage Population" />
+                    <item
+                        android:id="@+id/nav_services_status"
+                        android:icon="@drawable/view"
+                        android:title="3 Must Services Status" />
+                </group>
             </menu>
         </item>
 
         <!--<item android:title="Report">-->
-            <!--<menu>-->
-                <!--<item-->
-                    <!--android:id="@+id/nav_services_report"-->
-                    <!--android:icon="@drawable/ic_menu_share"-->
-                    <!--android:title="Services Availed" />-->
-                <!--<item-->
-                    <!--android:id="@+id/nav_case_referred"-->
-                    <!--android:icon="@drawable/ic_menu_send"-->
-                    <!--android:title="Case Referred" />-->
-            <!--</menu>-->
+        <!--<menu>-->
+        <!--<item-->
+        <!--android:id="@+id/nav_services_report"-->
+        <!--android:icon="@drawable/ic_menu_share"-->
+        <!--android:title="Services Availed" />-->
+        <!--<item-->
+        <!--android:id="@+id/nav_case_referred"-->
+        <!--android:icon="@drawable/ic_menu_send"-->
+        <!--android:title="Case Referred" />-->
+        <!--</menu>-->
         <!--</item>-->
 
 
         <item android:title="Settings">
             <menu>
-                <item
-                    android:id="@+id/nav_change_pass"
-                    android:icon="@drawable/change_pass"
-                    android:title="Change Password" />
-                <item
-                    android:id="@+id/nav_logout"
-                    android:icon="@drawable/logout"
-                    android:title="Logout" />
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_change_pass"
+                        android:icon="@drawable/change_pass"
+                        android:title="Change Password" />
+                    <item
+                        android:id="@+id/nav_logout"
+                        android:icon="@drawable/logout"
+                        android:title="Logout" />
+                </group>
             </menu>
         </item>
 
     </group>
-
 
 
 </menu>

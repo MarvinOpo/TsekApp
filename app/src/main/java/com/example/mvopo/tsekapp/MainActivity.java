@@ -1,5 +1,6 @@
 package com.example.mvopo.tsekapp;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -8,12 +9,15 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.mvopo.tsekapp.Fragments.AvailServicesFragment;
+import com.example.mvopo.tsekapp.Fragments.AvailServicesPopulationFragment;
+import com.example.mvopo.tsekapp.Fragments.ChangePassFragment;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
 import com.example.mvopo.tsekapp.Fragments.ServicesStatusFragment;
 import com.example.mvopo.tsekapp.Fragments.ViewPopulationFragment;
@@ -27,7 +31,8 @@ public class MainActivity extends AppCompatActivity
     HomeFragment hf = new HomeFragment();
     ViewPopulationFragment vpf = new ViewPopulationFragment();
     ServicesStatusFragment ssf = new ServicesStatusFragment();
-    AvailServicesFragment asf = new AvailServicesFragment();
+    AvailServicesPopulationFragment aspf = new AvailServicesPopulationFragment();
+    ChangePassFragment cpf = new ChangePassFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,14 +70,27 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            if(fm.getBackStackEntryCount() == 0) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Are you sure you want to exit app?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        MainActivity.super.onBackPressed();
+                    }
+                });
+                builder.setNegativeButton("Cancel", null);
+                builder.show();
+            }else{
+                fm.popBackStackImmediate();
+            }
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
@@ -84,9 +102,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -98,12 +116,13 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         ft = fm.beginTransaction();
+        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         if (id == R.id.nav_home) {
             // Handle the camera action
             ft.replace(R.id.fragment_container, hf).commit();
         } else if (id == R.id.nav_services) {
-            ft.replace(R.id.fragment_container, asf).commit();
+            ft.replace(R.id.fragment_container, aspf).commit();
         } else if (id == R.id.nav_manage_population) {
             ft.replace(R.id.fragment_container, vpf).commit();
         } else if (id == R.id.nav_services_status) {
@@ -112,14 +131,27 @@ public class MainActivity extends AppCompatActivity
 //
 //        } else if (id == R.id.nav_case_referred) {
 
+        } else if (id == R.id.nav_change_pass) {
+            ft.replace(R.id.fragment_container, cpf).commit();
         } else if (id == R.id.nav_logout) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            this.finish();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure you want to log out?");
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    MainActivity.this.finish();
+                }
+            });
+            builder.setNegativeButton("Cancel", null);
+            builder.show();
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
 }

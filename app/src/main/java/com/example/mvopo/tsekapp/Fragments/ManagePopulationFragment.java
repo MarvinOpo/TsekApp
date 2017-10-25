@@ -77,6 +77,11 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 else showOptionDialog(R.array.realation_to_head);
                 break;
             case R.id.manage_sex:
+                showOptionDialog(R.array.sex);
+                break;
+            case R.id.manage_suffix:
+                showOptionDialog(R.array.suffix);
+                break;
             case R.id.manage_income:
                 showOptionDialog(R.array.monthly_income);
                 break;

@@ -124,7 +124,6 @@
                     android:layout_below="@id/target_count"
                     android:layout_marginTop="5dp"
                     android:text="POPULATION PROFILED"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="#fff" />
 
                 <TextView
@@ -181,7 +180,6 @@
                     android:layout_below="@id/target_count"
                     android:layout_marginTop="5dp"
                     android:text="AVAILED 3 MUST SERVICES"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textColor="#fff" />
 
                 <TextView
