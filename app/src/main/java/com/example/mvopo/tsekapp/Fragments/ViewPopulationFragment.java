@@ -4,22 +4,31 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mvopo.tsekapp.Helper.ListAdapter;
 import com.example.mvopo.tsekapp.MainActivity;
+import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.R;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by mvopo on 10/19/2017.
@@ -33,6 +42,17 @@ public class ViewPopulationFragment extends Fragment {
 
     TextView tvId, tvName, tvAge, tvSex, tvBarangay;
     Button btnUpdate, btnAdd;
+    EditText txtSearch;
+    ImageView btnSearch;
+
+    Bundle bundle = new Bundle();
+    ManagePopulationFragment mpf = new ManagePopulationFragment();
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -40,10 +60,14 @@ public class ViewPopulationFragment extends Fragment {
         View view = inflater.inflate(R.layout.list_layout, container, false);
 
         lv = view.findViewById(R.id.lv);
+        txtSearch = view.findViewById(R.id.list_searchTxt);
+        btnSearch = view.findViewById(R.id.list_searchBtn);
+
         familyProfiles.clear();
-        familyProfiles.add(new FamilyProfile("06062017-1203-2099362", "", "", "Johnny Boy", "Abapo", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
-        familyProfiles.add(new FamilyProfile("06082017-1203-2391263", "", "", "Nacario", "Abelgas", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
-        familyProfiles.add(new FamilyProfile("06022017-1203-1759539", "", "", "Alexander James", "Abenaza", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
+        familyProfiles = MainActivity.db.getFamilyProfiles("");
+//        familyProfiles.add(new FamilyProfile("06062017-1203-2099362", "", "", "Johnny Boy", "Abapo", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));true
+//        familyProfiles.add(new FamilyProfile("06082017-1203-2391263", "", "", "Nacario", "Abelgas", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
+//        familyProfiles.add(new FamilyProfile("06022017-1203-1759539", "", "", "Alexander James", "Abenaza", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
 
         adapter = new ListAdapter(getContext(), R.layout.population_item, familyProfiles);
         lv.setAdapter(adapter);
@@ -51,7 +75,7 @@ public class ViewPopulationFragment extends Fragment {
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.population_dialog, null);
                 tvId = dialogView.findViewById(R.id.population_id);
                 tvName = dialogView.findViewById(R.id.population_name);
@@ -61,14 +85,14 @@ public class ViewPopulationFragment extends Fragment {
                 btnUpdate = dialogView.findViewById(R.id.population_updateBtn);
                 btnAdd = dialogView.findViewById(R.id.population_addBtn);
 
-                String fullName = familyProfiles.get(position).lName + ", " + familyProfiles.get(position).fName + " " +
-                        familyProfiles.get(position).mName + " " + familyProfiles.get(position).suffix;
+                String fullName = familyProfiles.get(position).lname + ", " + familyProfiles.get(position).fname + " " +
+                        familyProfiles.get(position).mname + " " + familyProfiles.get(position).suffix;
 
-                tvId.setText("Profile ID: " + familyProfiles.get(position).profileId);
+                tvId.setText("Profile ID: " + familyProfiles.get(position).familyId);
                 tvName.setText("Name: " + fullName);
-                tvAge.setText("Age: 13");
+                tvAge.setText("Age: " + Constants.getAge(familyProfiles.get(position).dob));
                 tvSex.setText("Sex: " + familyProfiles.get(position).sex);
-                tvBarangay.setText("Barangay: " + familyProfiles.get(position).barangay);
+                tvBarangay.setText("Barangay: " + Constants.getBrgyName(familyProfiles.get(position).barangayId));
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setView(dialogView);
@@ -76,13 +100,14 @@ public class ViewPopulationFragment extends Fragment {
                 final AlertDialog dialog = builder.create();
                 dialog.show();
 
-                final ManagePopulationFragment mpf = new ManagePopulationFragment();
-                final Bundle bundle = new Bundle();
+                bundle.putParcelable("familyProfile", familyProfiles.get(position));
 
+                mpf = new ManagePopulationFragment();
                 btnUpdate.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         bundle.putBoolean("toUpdate", true);
+                        bundle.putBoolean("addHead", false);
                         mpf.setArguments(bundle);
                         MainActivity.ft = MainActivity.fm.beginTransaction();
                         MainActivity.ft.replace(R.id.fragment_container, mpf).addToBackStack("").commit();
@@ -94,6 +119,7 @@ public class ViewPopulationFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         bundle.putBoolean("toUpdate", false);
+                        bundle.putBoolean("addHead", false);
                         mpf.setArguments(bundle);
                         MainActivity.ft = MainActivity.fm.beginTransaction();
                         MainActivity.ft.replace(R.id.fragment_container, mpf).addToBackStack("").commit();
@@ -105,6 +131,75 @@ public class ViewPopulationFragment extends Fragment {
             }
         });
 
+        txtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String search = txtSearch.getText().toString().trim();
+                familyProfiles.clear();
+
+                if (!search.isEmpty()) {
+                    familyProfiles.addAll(MainActivity.db.getFamilyProfiles(search));
+                }else{
+                    familyProfiles.addAll(MainActivity.db.getFamilyProfiles(""));
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+//        btnSearch.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                String search = txtSearch.getText().toString().trim();
+//                if (!search.isEmpty()) {
+//                    familyProfiles.clear();
+//                    familyProfiles.addAll(MainActivity.db.getFamilyProfiles(search));
+//                    adapter.notifyDataSetChanged();
+//                }
+//            }
+//        });
+
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.add_head, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id) {
+            case R.id.action_add_member:
+                Calendar c = Calendar.getInstance();
+                String famId = String.format("%02d", (c.get(Calendar.MONTH) + 1)) +  String.format("%02d", (c.get(Calendar.DAY_OF_MONTH))) +
+                        String.format("%02d", (c.get(Calendar.YEAR))) + "-" + MainActivity.user.id + "-" + String.format("%02d", (c.get(Calendar.HOUR))) +
+                        String.format("%02d", (c.get(Calendar.MINUTE))) + String.format("%02d", (c.get(Calendar.SECOND)));
+
+                FamilyProfile familyProfile = new FamilyProfile("", "", famId, "", "", "", "", "", "", "", "", "",
+                        "", "", "", "", "", "", "","", "", "1");
+
+                mpf = new ManagePopulationFragment();
+                bundle.putParcelable("familyProfile", familyProfile);
+                bundle.putBoolean("toUpdate", false);
+                bundle.putBoolean("addHead", true);
+                mpf.setArguments(bundle);
+                MainActivity.ft = MainActivity.fm.beginTransaction();
+                MainActivity.ft.replace(R.id.fragment_container, mpf).addToBackStack("").commit();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

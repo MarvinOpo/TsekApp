@@ -39,9 +39,9 @@ public class AvailServicesPopulationFragment extends Fragment {
 
         lv = view.findViewById(R.id.lv);
         familyProfiles.clear();
-        familyProfiles.add(new FamilyProfile("06062017-1203-2099362", "", "", "Johnny Boy", "Abapo", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
-        familyProfiles.add(new FamilyProfile("06082017-1203-2391263", "", "", "Nacario", "Abelgas", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
-        familyProfiles.add(new FamilyProfile("06022017-1203-1759539", "", "", "Alexander James", "Abenaza", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
+//        familyProfiles.add(new FamilyProfile("06062017-1203-2099362", "", "", "Johnny Boy", "Abapo", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
+//        familyProfiles.add(new FamilyProfile("06082017-1203-2391263", "", "", "Nacario", "Abelgas", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
+//        familyProfiles.add(new FamilyProfile("06022017-1203-1759539", "", "", "Alexander James", "Abenaza", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
 
         adapter = new ListAdapter(getContext(), R.layout.population_item, familyProfiles);
         lv.setAdapter(adapter);
@@ -50,7 +50,7 @@ public class AvailServicesPopulationFragment extends Fragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String name = familyProfiles.get(position).fName + " "  + familyProfiles.get(position).lName;
+                String name = familyProfiles.get(position).fname + " "  + familyProfiles.get(position).lname;
 
                 Bundle bundle = new Bundle();
                 bundle.putString("name", name);

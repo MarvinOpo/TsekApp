@@ -19,8 +19,8 @@
     </string-array>
 
     <string-array name="is_family_head">
-        <item>Yes</item>
-        <item>No</item>
+        <item>YES</item>
+        <item>NO</item>
     </string-array>
 
     <string-array name="realation_to_head">

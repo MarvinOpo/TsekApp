@@ -46,12 +46,15 @@
                     android:padding="5dp">
 
                     <EditText
+                        android:id="@+id/login_id"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:drawableRight="@drawable/user"
                         android:hint="Login ID"
-                        android:padding="10dp" />
+                        android:padding="10dp"
+                        android:singleLine="true"
+                        android:text="NDP_Cubacub" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -63,13 +66,16 @@
                     android:padding="5dp">
 
                     <EditText
+                        android:id="@+id/login_pass"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:drawableRight="@drawable/password"
                         android:hint="Password"
                         android:inputType="textPassword"
-                        android:padding="10dp" />
+                        android:padding="10dp"
+                        android:singleLine="true"
+                        android:text="NDP_Cubacub" />
 
                 </android.support.design.widget.TextInputLayout>
 
@@ -86,17 +92,17 @@
                         android:layout_weight="1"
                         android:background="@color/colorAccent"
                         android:text="Upload"
+                        android:visibility="gone"
                         android:textColor="@color/colorPrimaryDark" />
 
                     <Button
                         android:id="@+id/signInBtn"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="10dp"
                         android:layout_weight="1"
                         android:background="@color/colorAccent"
                         android:text="Sign In"
-                        android:textColor="@color/colorPrimaryDark" />
+                        android:textColor="#fff" />
                 </LinearLayout>
             </LinearLayout>
         </android.support.v7.widget.CardView>

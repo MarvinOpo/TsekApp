@@ -58,7 +58,7 @@
             android:layout_weight="1"
             android:background="@color/colorAccent"
             android:text="Update"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="#fff" />
 
         <Button
             android:id="@+id/population_addBtn"
@@ -68,6 +68,6 @@
             android:layout_weight="1"
             android:background="@color/colorAccent"
             android:text="Add Member"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="#fff" />
     </LinearLayout>
 </LinearLayout>

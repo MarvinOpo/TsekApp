@@ -52,26 +52,23 @@ public class ListAdapter extends ArrayAdapter {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         convertView = inflater.inflate(layoutId, parent, false);
 
+        String fullName = familyProfiles.get(position).fname + " " +
+                familyProfiles.get(position).mname + " " + familyProfiles.get(position).lname + " " + familyProfiles.get(position).suffix;
+
         if(layoutId == R.layout.population_item){
             TextView name = convertView.findViewById(R.id.population_name);
             TextView id = convertView.findViewById(R.id.population_family_id);
 
-            String fullName = familyProfiles.get(position).lName + ", " + familyProfiles.get(position).fName + " " +
-                    familyProfiles.get(position).mName + " " + familyProfiles.get(position).suffix;
-
             name.setText(fullName);
-            id.setText(familyProfiles.get(position).profileId);
+            id.setText(familyProfiles.get(position).familyId);
         }else if(layoutId == R.layout.services_item){
             TextView name = convertView.findViewById(R.id.services_name);
             TextView id = convertView.findViewById(R.id.services_family_id);
             TextView barangay = convertView.findViewById(R.id.services_barangay);
 
-            String fullName = familyProfiles.get(position).lName + ", " + familyProfiles.get(position).fName + " " +
-                    familyProfiles.get(position).mName + " " + familyProfiles.get(position).suffix;
-
             name.setText(fullName);
-            id.setText(familyProfiles.get(position).profileId);
-            barangay.setText(familyProfiles.get(position).barangay);
+            id.setText(familyProfiles.get(position).familyId);
+            barangay.setText(familyProfiles.get(position).barangayId);
         }
         return convertView;
     }

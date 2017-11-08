@@ -19,7 +19,7 @@
                 android:id="@+id/barangay_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="1"
+                android:text="0"
                 android:textColor="#fff"
                 android:textSize="25dp"
                 android:textStyle="bold" />
@@ -50,20 +50,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:background="#FF9800"
+            android:background="#4CAF50"
             android:padding="10dp">
 
             <TextView
                 android:id="@+id/target_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="856"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:text="0"
                 android:textColor="#fff"
                 android:textSize="25dp"
-                android:textStyle="bold"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -81,7 +81,7 @@
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FB8C00"
+            android:background="#43A047"
             android:gravity="center"
             android:padding="5dp"
             android:text="More Info"
@@ -90,15 +90,15 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/colorPrimary"
-            android:layout_marginTop="20dp"/>
+            android:layout_marginTop="20dp"
+            android:background="@color/colorPrimary" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:orientation="horizontal"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:background="#FF9800"
-            android:layout_marginTop="20dp">
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/imageView2"
@@ -114,8 +114,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
-                android:padding="10dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/textView3"
@@ -130,7 +130,7 @@
                     android:id="@+id/profiled_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="856"
+                    android:text="0"
                     android:textColor="#fff"
                     android:textSize="25dp"
                     android:textStyle="bold" />
@@ -138,24 +138,25 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#fff"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_marginTop="10dp"
+                    android:background="#fff" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="102.1% Goal Completion"
-                    android:textColor="#fff"
-                    android:layout_marginTop="5dp"/>
+                    android:layout_marginTop="5dp"
+                    android:text="0% Goal Completion"
+                    android:textColor="#fff" />
             </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:orientation="horizontal"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="#4CAF50"
-            android:layout_marginTop="10dp">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView3"
@@ -186,7 +187,7 @@
                     android:id="@+id/availed_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1"
+                    android:text="0"
                     android:textColor="#fff"
                     android:textSize="25dp"
                     android:textStyle="bold" />
@@ -198,10 +199,11 @@
                     android:background="#fff" />
 
                 <TextView
+                    android:id="@+id/goal_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:text="0.1% Goal Completion"
+                    android:text="0% Goal Completion"
                     android:textColor="#fff" />
             </LinearLayout>
         </LinearLayout>
