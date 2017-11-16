@@ -1,5 +1,7 @@
 package com.example.mvopo.tsekapp.Model;
 
+import android.util.Log;
+
 import com.example.mvopo.tsekapp.Helper.DBHelper;
 import com.example.mvopo.tsekapp.MainActivity;
 
@@ -11,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by mvopo on 10/30/2017.
@@ -18,7 +21,7 @@ import java.util.Date;
 
 public class Constants {
 
-    public static String url = "http://210.4.59.4/tsekap/dummy/api?";
+    public static String url = "http://210.4.59.4/tsekap/vii/api?";
 
     public static JSONObject getProfileJson() {
 
@@ -28,7 +31,7 @@ public class Constants {
         JSONObject data = new JSONObject();
 
         try {
-            data.accumulate("uniqueId", profile.uniqueId);
+            data.accumulate("unique_id", profile.uniqueId);
             data.accumulate("familyID", profile.familyId);
             data.accumulate("phicID", profile.philId);
             data.accumulate("nhtsID", profile.nhtsId);
@@ -58,47 +61,72 @@ public class Constants {
         return request;
     }
 
-    public static int getAge(String date) {
+    public static String getAge(String date) {
+        int year, month, day;
+        String ageString = "";
 
-        int age = 0;
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date1 = dateFormat.parse(date);
-            Calendar now = Calendar.getInstance();
+            SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Calendar c = Calendar.getInstance();
             Calendar dob = Calendar.getInstance();
-            dob.setTime(date1);
-            if (dob.after(now)) {
-                throw new IllegalArgumentException("Can't be born in the future");
-            }
-            int year1 = now.get(Calendar.YEAR);
-            int year2 = dob.get(Calendar.YEAR);
-            age = year1 - year2;
-            int month1 = now.get(Calendar.MONTH);
-            int month2 = dob.get(Calendar.MONTH);
-            if (month2 > month1) {
-                age--;
-            } else if (month1 == month2) {
-                int day1 = now.get(Calendar.DAY_OF_MONTH);
-                int day2 = dob.get(Calendar.DAY_OF_MONTH);
-                if (day2 > day1) {
-                    age--;
+            dob.setTime(myFormat.parse(date));
+
+            year = c.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+            month = c.get(Calendar.MONTH) - dob.get(Calendar.MONTH);
+            day = c.get(Calendar.DAY_OF_MONTH) - dob.get(Calendar.DAY_OF_MONTH);
+
+            if (month >= 0) {
+                ageString = month + " m/o";
+
+                if(day > 0)ageString = day + " d/o";
+                else if(day < 0){
+                    if(year > 0){
+                        year--;
+                        month += 11;
+                    }
+                    else month--;
+                }
+
+            } else if(month < 0) year--;
+
+
+            if(year > 0) ageString = year + "";
+            else if(month > 0) ageString = month + " m/o";
+            else{
+                if(day > 0){
+                    ageString = day + " d/o";
+                }else{
+                    if(day < 0) month--;
+
+                    if(month <= 0) {
+                        String now = c.get(Calendar.YEAR) + "-" + String.format("%02d", (c.get(Calendar.MONTH) + 1)) +
+                                "-" + String.format("%02d", (c.get(Calendar.DAY_OF_MONTH)));
+
+                        Date date1 = myFormat.parse(date);
+                        Date date2 = myFormat.parse(now);
+                        long diff = date2.getTime() - date1.getTime();
+
+                        ageString = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS) + " d/o";
+                    }
                 }
             }
-        }catch (ParseException e) {
+
+
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        return age ;
+        return ageString;
     }
 
-    public static String getBrgyName(String id){
+    public static String getBrgyName(String id) {
         String name = "";
-        try{
+        try {
             JSONArray arrayBrgy = new JSONArray(MainActivity.user.barangay);
-            for(int i = 0; i < arrayBrgy.length(); i++) {
+            for (int i = 0; i < arrayBrgy.length(); i++) {
                 JSONObject assignedBrgy = arrayBrgy.getJSONObject(i);
                 String barangayId = assignedBrgy.getString("barangay_id");
-                if(id.equalsIgnoreCase(barangayId)) {
+                if (id.equalsIgnoreCase(barangayId)) {
                     name = assignedBrgy.getString("description");
                     break;
                 }

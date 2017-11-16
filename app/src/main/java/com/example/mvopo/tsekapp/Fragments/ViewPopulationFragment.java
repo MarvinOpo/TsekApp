@@ -185,8 +185,9 @@ public class ViewPopulationFragment extends Fragment {
             case R.id.action_add_member:
                 Calendar c = Calendar.getInstance();
                 String famId = String.format("%02d", (c.get(Calendar.MONTH) + 1)) +  String.format("%02d", (c.get(Calendar.DAY_OF_MONTH))) +
-                        String.format("%02d", (c.get(Calendar.YEAR))) + "-" + MainActivity.user.id + "-" + String.format("%02d", (c.get(Calendar.HOUR))) +
-                        String.format("%02d", (c.get(Calendar.MINUTE))) + String.format("%02d", (c.get(Calendar.SECOND)));
+                        String.format("%02d", (c.get(Calendar.YEAR))) + "-" + String.format("%04d", Integer.parseInt(MainActivity.user.id)) + "-" +
+                        String.format("%02d", (c.get(Calendar.HOUR))) + String.format("%02d", (c.get(Calendar.MINUTE))) +
+                String.format("%02d", (c.get(Calendar.SECOND)));
 
                 FamilyProfile familyProfile = new FamilyProfile("", "", famId, "", "", "", "", "", "", "", "", "",
                         "", "", "", "", "", "", "","", "", "1");

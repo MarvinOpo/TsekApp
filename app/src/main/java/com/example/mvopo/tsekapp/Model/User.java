@@ -12,9 +12,9 @@ import java.util.List;
  */
 
 public class User implements Parcelable{
-    public String id, fname, mname, lname, muncity, contact, barangay, token;
+    public String id, fname, mname, lname, muncity, contact, barangay, target;
 
-    public User(String id, String fname, String mname, String lname, String muncity, String contact, String barangay, String token) {
+    public User(String id, String fname, String mname, String lname, String muncity, String contact, String barangay, String target) {
         this.id = id;
         this.fname = fname;
         this.mname = mname;
@@ -22,7 +22,7 @@ public class User implements Parcelable{
         this.muncity = muncity;
         this.contact = contact;
         this.barangay = barangay;
-        this.token = token;
+        this.target = target;
     }
 
     protected User(Parcel in) {
@@ -33,7 +33,7 @@ public class User implements Parcelable{
         muncity = in.readString();
         contact = in.readString();
         barangay = in.readString();
-        token = in.readString();
+        target = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -62,6 +62,6 @@ public class User implements Parcelable{
         parcel.writeString(muncity);
         parcel.writeString(contact);
         parcel.writeString(barangay);
-        parcel.writeString(token);
+        parcel.writeString(target);
     }
 }

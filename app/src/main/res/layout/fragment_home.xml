@@ -43,7 +43,6 @@
             android:background="#039BE5"
             android:gravity="center"
             android:padding="5dp"
-            android:text="More Info"
             android:textColor="#fff" />
 
         <RelativeLayout
@@ -78,7 +77,7 @@
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/target_more"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#43A047"
@@ -142,6 +141,7 @@
                     android:background="#fff" />
 
                 <TextView
+                    android:id="@+id/goal_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
@@ -199,7 +199,6 @@
                     android:background="#fff" />
 
                 <TextView
-                    android:id="@+id/goal_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"

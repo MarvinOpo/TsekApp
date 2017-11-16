@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/colorPrimary"
             android:src="@android:drawable/stat_sys_download"
-            fab:fab_label="Download"
+            fab:fab_label="Sync"
             fab:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/colorPrimary"
             android:src="@android:drawable/stat_sys_upload"
-            fab:fab_label="Sync"
+            fab:fab_label="Upload"
             fab:fab_size="mini" />
     </com.github.clans.fab.FloatingActionMenu>
 

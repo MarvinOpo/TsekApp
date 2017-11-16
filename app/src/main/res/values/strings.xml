@@ -6,6 +6,18 @@
 
     <string name="action_settings">Settings</string>
 
+    <string-array name="educational_attainment_value">
+        <item>non</item>
+        <item>elem</item>
+        <item>elem_grad</item>
+        <item>high</item>
+        <item>high_grad</item>
+        <item>college</item>
+        <item>college_grad</item>
+        <item>vocational</item>
+        <item>master</item>
+    </string-array>
+
     <string-array name="educational_attainment">
         <item>No Education</item>
         <item>Elementary Level</item>
@@ -48,7 +60,7 @@
     </string-array>
 
     <string-array name="monthly_income">
-        <item>Less Than 7,890</item>
+        <item value="1">Less Than 7,890</item>
         <item>Between 7,890 to 15,780</item>
         <item>Between 15,780 to 31,560</item>
         <item>Between 31,560 to 78,900</item>

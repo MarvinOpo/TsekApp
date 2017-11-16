@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import com.example.mvopo.tsekapp.Helper.ListAdapter;
+import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.R;
 
@@ -31,9 +32,7 @@ public class ServicesStatusFragment extends Fragment {
 
         lv = view.findViewById(R.id.lv);
         familyProfiles.clear();
-//        familyProfiles.add(new FamilyProfile("06062017-1203-2099362", "", "", "Johnny Boy", "Abapo", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
-//        familyProfiles.add(new FamilyProfile("06082017-1203-2391263", "", "", "Nacario", "Abelgas", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
-//        familyProfiles.add(new FamilyProfile("06022017-1203-1759539", "", "", "Alexander James", "Abenaza", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
+        familyProfiles = MainActivity.db.getFamilyProfiles("");
 
         adapter = new ListAdapter(getContext(), R.layout.services_item, familyProfiles);
         lv.setAdapter(adapter);

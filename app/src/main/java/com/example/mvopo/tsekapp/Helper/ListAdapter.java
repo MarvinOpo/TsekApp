@@ -1,6 +1,7 @@
 package com.example.mvopo.tsekapp.Helper;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.R;
 
@@ -61,6 +63,8 @@ public class ListAdapter extends ArrayAdapter {
 
             name.setText(fullName);
             id.setText(familyProfiles.get(position).familyId);
+
+            if(familyProfiles.get(position).isHead.equalsIgnoreCase("Yes")) name.setTextColor(getContext().getResources().getColor(R.color.colorAccent));
         }else if(layoutId == R.layout.services_item){
             TextView name = convertView.findViewById(R.id.services_name);
             TextView id = convertView.findViewById(R.id.services_family_id);
@@ -68,7 +72,7 @@ public class ListAdapter extends ArrayAdapter {
 
             name.setText(fullName);
             id.setText(familyProfiles.get(position).familyId);
-            barangay.setText(familyProfiles.get(position).barangayId);
+            barangay.setText(Constants.getBrgyName(familyProfiles.get(position).barangayId));
         }
         return convertView;
     }

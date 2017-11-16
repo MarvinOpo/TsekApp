@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.Arrays;
 import java.util.Calendar;
 
 /**
@@ -34,7 +36,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
     LinearLayout updateFields, optionHolder;
     EditText txtFamilyId, txtPhilHealthId, txtNhtsId, txtFname, txtMname, txtLname, txtBday, txtBrgy,
-            txtHead, txtEducation, txtSuffix, txtSex, txtIncome, txtUnmet, txtSupply, txtToilet;
+            txtHead, txtEducation, txtSuffix, txtSex, txtIncome, txtUnmet, txtSupply, txtToilet, txtRelation;
     Button manageBtn, optionBtn;
 
     FamilyProfile familyProfile;
@@ -43,20 +45,21 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
     String famId, philId, nhtsId, fname, mname, lname, bday, brgy, head, relation, education,
             suffix, sex, income, unmet, supply, toilet;
 
-    String[] brgys;
+    String[] brgys, value;
     String[] brgyIds;
     boolean brgyFieldClicked = false;
-    int position;
+    View view;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_manage_member, container, false);
+        view = inflater.inflate(R.layout.fragment_manage_member, container, false);
         toUpdate = getArguments().getBoolean("toUpdate");
         addHead = getArguments().getBoolean("addHead");
         familyProfile = getArguments().getParcelable("familyProfile");
 
         //Toast.makeText(getContext(), addHead+"", Toast.LENGTH_SHORT).show();
+        value = getResources().getStringArray(R.array.educational_attainment_value);
         try {
             JSONArray array = new JSONArray(MainActivity.user.barangay);
 
@@ -86,20 +89,21 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtUnmet = view.findViewById(R.id.manage_unmet);
         txtSupply = view.findViewById(R.id.manage_supply);
         txtToilet = view.findViewById(R.id.manage_toilet);
+        txtHead = view.findViewById(R.id.manage_head);
         updateFields = view.findViewById(R.id.updateFields_holder);
         manageBtn = view.findViewById(R.id.manageBtn);
+        txtRelation = view.findViewById(R.id.manage_relation);
 
         txtFamilyId.setText(familyProfile.familyId);
         if (!toUpdate) {
             view.findViewById(R.id.layout_head).setVisibility(View.GONE);
-            if (!addHead) {
+            if (!addHead || txtHead.getText().toString().equalsIgnoreCase("NO")) {
                 updateFields.setVisibility(View.GONE);
                 view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
             }
-            txtHead = view.findViewById(R.id.manage_relation);
+
             manageBtn.setText("Add");
         } else {
-            txtHead = view.findViewById(R.id.manage_head);
             setFieldTexts();
         }
 
@@ -109,6 +113,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
         if(!addHead) txtHead.setOnClickListener(this);
 
+        txtRelation.setOnClickListener(this);
         txtSex.setOnClickListener(this);
         txtSuffix.setOnClickListener(this);
         txtIncome.setOnClickListener(this);
@@ -131,7 +136,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 showOptionDialog(R.array.is_family_head, txtHead);
                 break;
             case R.id.manage_relation:
-                showOptionDialog(R.array.realation_to_head, txtHead);
+                showOptionDialog(R.array.realation_to_head, txtRelation);
                 break;
             case R.id.manage_sex:
                 showOptionDialog(R.array.sex, txtSex);
@@ -176,20 +181,19 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 bday = txtBday.getText().toString().trim();
                 brgy = txtBrgy.getText().toString().trim();
                 head = txtHead.getText().toString().trim();
+                relation = txtRelation.getText().toString().trim();
                 suffix = txtSuffix.getText().toString().trim();
                 sex = txtSex.getText().toString().trim();
-                income = txtIncome.getText().toString().trim();
-                unmet = txtUnmet.getText().toString().trim();
-                supply = txtSupply.getText().toString().trim();
-                toilet = txtToilet.getText().toString().trim();
-                education = txtEducation.getText().toString().trim();
+
+                try{ income = txtIncome.getTag().toString(); } catch (Exception e){ income = familyProfile.income; }
+                try{ unmet = txtUnmet.getTag().toString(); } catch (Exception e){ unmet = familyProfile.unmetNeed; }
+                try{ supply = txtSupply.getTag().toString(); } catch (Exception e){ supply = familyProfile.waterSupply; }
+                try{ toilet = txtToilet.getTag().toString(); } catch (Exception e){ toilet = familyProfile.sanitaryToilet; }
+                try{ education = txtEducation.getTag().toString(); } catch (Exception e){ education = familyProfile.educationalAttainment; }
 
                 if (fname.isEmpty()) {
                     txtFname.setError("Required");
                     txtFname.requestFocus();
-                } else if (mname.isEmpty()) {
-                    txtMname.setError("Required");
-                    txtMname.requestFocus();
                 } else if (lname.isEmpty()) {
                     txtLname.setError("Required");
                     txtLname.requestFocus();
@@ -205,17 +209,22 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
                     //Toast.makeText(getContext(), brgy, Toast.LENGTH_SHORT).show();
                     if (manageBtn.getText().toString().equalsIgnoreCase("ADD")) {
-                        String isHead = "NO";
-                        if (addHead) isHead = "YES";
+                        if (addHead){
+                            head = "YES";
+                            relation = "Head";
+                        }
+                        else head = "NO";
 
-                        FamilyProfile newFamilyProfile = new FamilyProfile("", fname+lname+suffix+famId, famId, philId, nhtsId, isHead,
-                                head, fname, lname, mname, suffix, bday, sex, brgy, "", "", income, unmet, supply, toilet, education, "1");
+                        FamilyProfile newFamilyProfile = new FamilyProfile("", fname+lname+suffix+brgy+MainActivity.user.muncity, famId, philId, nhtsId, head,
+                                relation, fname, lname, mname, suffix, bday, sex, brgy, "", "", income, unmet, supply, toilet, education, "1");
                         MainActivity.db.addProfile(newFamilyProfile);
                         Toast.makeText(getContext(), "Successfully added", Toast.LENGTH_SHORT).show();
                     } else {
+                        if(relation.isEmpty()) relation = familyProfile.relation;
+                        if(head.equalsIgnoreCase("Yes")) relation = "Head";
 
                         FamilyProfile updatedFamilyProfile = new FamilyProfile(familyProfile.id, familyProfile.uniqueId, famId, philId, nhtsId, head,
-                                "Head", fname, lname, mname, suffix, bday, sex, brgy, familyProfile.muncityId, familyProfile.provinceId, income, unmet,
+                                relation, fname, lname, mname, suffix, bday, sex, brgy, familyProfile.muncityId, familyProfile.provinceId, income, unmet,
                                 supply, toilet, education, "1");
                         MainActivity.db.updateProfile(updatedFamilyProfile);
                         Toast.makeText(getContext(), "Successfully updated", Toast.LENGTH_SHORT).show();
@@ -236,18 +245,39 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtMname.setText(familyProfile.mname);
         txtLname.setText(familyProfile.lname);
         txtBday.setText(familyProfile.dob);
+        txtRelation.setText(familyProfile.relation);
         txtBrgy.setText(Constants.getBrgyName(familyProfile.barangayId));
 
-        if (toUpdate) txtHead.setText(familyProfile.isHead);
+        if (toUpdate) {
+            txtHead.setText(familyProfile.isHead);
+
+            if (txtHead.getText().toString().equalsIgnoreCase("NO")) {
+                updateFields.setVisibility(View.GONE);
+                view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
+            }
+        }
         else txtHead.setText(familyProfile.relation);
 
-        txtEducation.setText(familyProfile.educationalAttainment);
         txtSuffix.setText(familyProfile.suffix);
         txtSex.setText(familyProfile.sex);
-        txtIncome.setText(familyProfile.income);
-        txtUnmet.setText(familyProfile.unmetNeed);
-        txtSupply.setText(familyProfile.waterSupply);
-        txtToilet.setText(familyProfile.sanitaryToilet);
+
+        Log.e("MPF", familyProfile.income + " " + familyProfile.unmetNeed + " " + familyProfile.waterSupply + " " + familyProfile.sanitaryToilet);
+        if(!familyProfile.income.isEmpty() && !familyProfile.income.equals("0")) txtIncome.setText(getResources()
+                .getStringArray(R.array.monthly_income)[Integer.parseInt(familyProfile.income) - 1]);
+        if(!familyProfile.unmetNeed.isEmpty() && !familyProfile.unmetNeed.equals("0")) txtUnmet.setText(getResources()
+                .getStringArray(R.array.unmet_needs)[Integer.parseInt(familyProfile.unmetNeed) - 1]);
+        if(!familyProfile.waterSupply.isEmpty() && !familyProfile.waterSupply.equals("0")) txtSupply.setText(getResources()
+                .getStringArray(R.array.water_supply)[Integer.parseInt(familyProfile.waterSupply) - 1]);
+        if(!familyProfile.sanitaryToilet.isEmpty() && !familyProfile.sanitaryToilet.equals("0")) txtToilet.setText(getResources()
+                .getStringArray(R.array.sanitary_toilet)[Integer.parseInt(familyProfile.sanitaryToilet) - 1]);
+
+        for(int i = 0; i < value.length; i++){
+            if(familyProfile.educationalAttainment.equals(value[i])){
+                txtEducation.setText(getResources()
+                        .getStringArray(R.array.educational_attainment)[i]);
+                break;
+            }
+        }
     }
 
     public void showOptionDialog(final int id, final EditText txtView) {
@@ -271,6 +301,13 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             radioButton.setText(labels[i]);
 
             if (txtView.getId() == R.id.manage_barangay) radioButton.setId(Integer.parseInt(brgyIds[i]));
+            else if(txtView.getId() == R.id.manage_education){
+                radioButton.setTag(value[i]);
+            }
+            else if(txtView.getId() == R.id.manage_income || txtView.getId() == R.id.manage_unmet ||
+                    txtView.getId() == R.id.manage_supply || txtView.getId() == R.id.manage_toilet){
+                radioButton.setId(i+1);
+            }
 
             View lineView = new View(getContext());
             lineView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
@@ -298,12 +335,19 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 if (txtView.getId() == R.id.manage_barangay) {
                     txtView.setTag(radioButton.getId());
                     txtBrgy = txtView;
-                } else if (id == R.id.manage_head) {
-                    if (txtView.getText().toString().equalsIgnoreCase("Yes") ||
-                            txtView.getText().toString().equalsIgnoreCase("No")) {
-                        txtView.setHint("Relation to Head");
+                } else if(txtView.getId() == R.id.manage_education){
+                    txtView.setTag(radioButton.getTag().toString());
+                } else if(txtView.getId() == R.id.manage_income || txtView.getId() == R.id.manage_unmet ||
+                        txtView.getId() == R.id.manage_supply || txtView.getId() == R.id.manage_toilet){
+                    txtView.setTag(radioButton.getId());
+                } else if(txtView.getId() == R.id.manage_head) {
+                    if (txtView.getText().toString().equalsIgnoreCase("NO")) {
+                        updateFields.setVisibility(View.GONE);
+                        ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
+                        txtRelation.setText("Son");
                     } else {
-                        txtView.setHint("Family Head?");
+                        updateFields.setVisibility(View.VISIBLE);
+                        ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.GONE);
                     }
                 }
 

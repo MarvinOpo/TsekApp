@@ -114,9 +114,9 @@ public class JSONApi {
                                 String muncity = data.getString("muncity");
                                 String contact = data.getString("contact");
                                 String userBrgy = response.getJSONArray("userBrgy").toString();
-                                String token = response.getString("_token");
+                                String target = response.getString("target");
 
-                                User user = new User(id, fname, mname, lname, muncity, contact, userBrgy, token);
+                                User user = new User(id, fname, mname, lname, muncity, contact, userBrgy, target);
 
                                 db.addUser(user);
                                 Intent intent = new Intent(context, MainActivity.class);
@@ -210,7 +210,7 @@ public class JSONApi {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            String uniqueId = request.getJSONObject("data").getString("uniqueId");
+                            String uniqueId = request.getJSONObject("data").getString("unique_id");
                             Log.e(TAG, uniqueId);
                             db.updateProfileById(uniqueId);
                             int count = db.getUploadableCount();
@@ -304,6 +304,10 @@ public class JSONApi {
                                         }else{
                                             MainActivity.pd.dismiss();
                                             Toast.makeText(context, "Download finished.", Toast.LENGTH_SHORT).show();
+
+                                            MainActivity.hf = new HomeFragment();
+                                            MainActivity.ft = MainActivity.fm.beginTransaction();
+                                            MainActivity.ft.replace(R.id.fragment_container, MainActivity.hf).commit();
                                         }
                                     }
                                 }

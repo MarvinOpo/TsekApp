@@ -46,16 +46,16 @@ public class MainActivity extends AppCompatActivity
     public static User user;
     public static DBHelper db;
     public static ProgressDialog pd;
-    public static String token = "", rowID = "";
+    public static String rowID = "";
+    public static FloatingActionMenu fabMenu;
 
     NavigationView navigationView;
-    FloatingActionMenu fabMenu;
     FloatingActionButton fabDownload, fabUpload;
     TextView tvUserName, tvUserContact;
     String TAG = "MainActivity";
 
     public static HomeFragment hf = new HomeFragment();
-    ViewPopulationFragment vpf = new ViewPopulationFragment();
+    public static ViewPopulationFragment vpf = new ViewPopulationFragment();
     ServicesStatusFragment ssf = new ServicesStatusFragment();
     AvailServicesPopulationFragment aspf = new AvailServicesPopulationFragment();
     ChangePassFragment cpf = new ChangePassFragment();
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity
 
         fabMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
         fabDownload = (FloatingActionButton) findViewById(R.id.download);
-        fabUpload = (FloatingActionButton) findViewById(R.id.upload);;
+        fabUpload = (FloatingActionButton) findViewById(R.id.upload);
 
         fabDownload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,6 +245,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_home) {
             // Handle the camera action
             fabMenu.setVisibility(View.VISIBLE);
+            hf = new HomeFragment();
             ft.replace(R.id.fragment_container, hf).commit();
         } else if (id == R.id.nav_services) {
             ft.replace(R.id.fragment_container, aspf).commit();

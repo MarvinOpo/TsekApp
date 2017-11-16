@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="Family ID"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="@color/colorPrimary" />
+        android:textColor="#F39C2B" />
 
     <TextView
         android:id="@+id/population_name"

@@ -10,19 +10,104 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <TextView
-            android:id="@+id/avail_services_name"
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Name: Jay Boy Abapo"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/avail_services_age"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Date "
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/avail_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:text="2017-10-10"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Name "
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/avail_services_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Jay Boy Abapo"
+                android:layout_weight="5"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Age "
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:id="@+id/avail_services_age"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:text="13"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/cv_female_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Age: 13"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            app:cardElevation="5dp">
+
+            <RadioGroup
+                android:id="@+id/rg_female_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checkedButton="@+id/avail_pregnant"
+                android:padding="10dp">
+
+                <RadioButton
+                    android:id="@+id/avail_pregnant"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pregnant" />
+
+                <RadioButton
+                    android:id="@+id/avail_post_partum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Post Partum" />
+
+                <RadioButton
+                    android:id="@+id/avail_non_pregnant"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Non-Pregnant" />
+
+            </RadioGroup>
+        </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
@@ -37,6 +122,7 @@
                 android:padding="10dp">
 
                 <CheckBox
+                    android:id="@+id/avail_physical_exam"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Physical Exam" />
@@ -45,31 +131,32 @@
                     android:id="@+id/avail_blood_pressure"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Blood Pressure" />
+                    android:text="Blood Pressure"
+                    android:visibility="gone" />
 
                 <RadioGroup
                     android:id="@+id/rg_blood_pressure"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
                     android:checkedButton="@+id/blood_normal"
+                    android:padding="10dp"
                     android:visibility="gone">
 
                     <RadioButton
                         android:id="@+id/blood_normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Normal"/>
+                        android:text="Normal" />
 
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hypertensive"/>
+                        android:text="Hypertensive" />
 
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hypotensive"/>
+                        android:text="Hypotensive" />
 
                 </RadioGroup>
 
@@ -83,25 +170,25 @@
                     android:id="@+id/rg_weight"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
                     android:checkedButton="@+id/weight_normal"
+                    android:padding="10dp"
                     android:visibility="gone">
 
                     <RadioButton
                         android:id="@+id/weight_normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Normal"/>
+                        android:text="Normal" />
 
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Obese"/>
+                        android:text="Obese" />
 
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Undernutriotion"/>
+                        android:text="Undernutriotion" />
 
                 </RadioGroup>
 
@@ -115,20 +202,20 @@
                     android:id="@+id/rg_height"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
                     android:checkedButton="@+id/height_normal"
+                    android:padding="10dp"
                     android:visibility="gone">
 
                     <RadioButton
                         android:id="@+id/height_normal"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Normal"/>
+                        android:text="Normal" />
 
                     <RadioButton
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Stunted"/>
+                        android:text="Stunted" />
 
                 </RadioGroup>
             </LinearLayout>
@@ -151,7 +238,8 @@
                     android:background="@color/colorAccent"
                     android:padding="10dp"
                     android:text="LABORATORY SERVICES"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#fff" />
 
                 <RadioGroup
                     android:layout_width="match_parent"
@@ -159,47 +247,68 @@
                     android:padding="10dp">
 
                     <CheckBox
+                        android:id="@+id/avail_blood_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Complete Blood Count"/>
+
+                    <CheckBox
+                        android:id="@+id/avail_blood_typing"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Blood Typing" />
 
                     <CheckBox
+                        android:id="@+id/avail_urinalysis"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Complete Blood Count" />
+                        android:text="Urinalysis"
+                        android:visibility="gone" />
 
                     <CheckBox
+                        android:id="@+id/avail_sugar_test"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Urinalysis" />
+                        android:text="Blood Sugar Test"
+                        android:visibility="gone" />
 
                     <CheckBox
+                        android:id="@+id/avail_fasting_sugar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Fasting Blood Sugar" />
+                        android:text="Fasting Blood Sugar"
+                        android:visibility="gone" />
 
                     <CheckBox
+                        android:id="@+id/avail_stool_exam"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Stool Examination" />
+                        android:text="Stool Examination"
+                        android:visibility="gone" />
 
                     <CheckBox
+                        android:id="@+id/avail_random_sugar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Random Blood Sugar" />
+                        android:text="Random Blood Sugar"
+                        android:visibility="gone" />
 
                     <CheckBox
+                        android:id="@+id/avail_spuntum_exam"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Spuntum Examination" />
+                        android:text="Spuntum Examination"
+                        android:visibility="gone" />
                 </RadioGroup>
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
+            android:id="@+id/cv_health_educ"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:visibility="gone"
             app:cardElevation="5dp">
 
             <LinearLayout
@@ -208,102 +317,20 @@
                 android:padding="10dp">
 
                 <CheckBox
+                    android:id="@+id/avail_health_educ"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Health Education and Promotion Services"/>
+                    android:text="Health Education and Promotion Services" />
             </LinearLayout>
 
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
+            android:id="@+id/cv_drug_rehab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            app:cardElevation="5dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorAccent"
-                    android:padding="10dp"
-                    android:text="CASES REFERRED"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="10dp">
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Other Acute Upper Respiratory Infection" />
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Esential(Primanry) Hypertension" />
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Fever of Unknown Origin" />
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Other Injuries of Specified, Unspecified and Multiple Body Regions"/>
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Diarrhea and Gastroenteritis of Presumed Infectious Origin"
-                        android:layout_marginTop="10dp"/>
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Dermatoses" />
-
-                    <CheckBox
-                        android:id="@+id/checkBox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Bronchitis, Emphysema and Other Chronic Obstructive Pulmonary Diseases" />
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Pneumonia" />
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Infections of the Genitourinary System" />
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Animal Bite" />
-
-                    <CheckBox
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Others" />
-                </LinearLayout>
-            </LinearLayout>
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:visibility="gone"
             app:cardElevation="5dp">
 
             <LinearLayout
@@ -317,7 +344,8 @@
                     android:background="@color/colorAccent"
                     android:padding="10dp"
                     android:text="DRUG REHABILITATION SERVICES"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#fff" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -326,21 +354,25 @@
                     android:padding="10dp">
 
                     <CheckBox
+                        android:id="@+id/avail_screening"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Screening" />
 
                     <CheckBox
+                        android:id="@+id/avail_dug_counseling"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Drug Counseling" />
 
                     <CheckBox
+                        android:id="@+id/avail_drug_testing"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Drug Testing" />
 
                     <CheckBox
+                        android:id="@+id/avail_referral"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Referral" />
@@ -349,9 +381,11 @@
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
+            android:id="@+id/cv_family_planning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:visibility="gone"
             app:cardElevation="5dp">
 
             <LinearLayout
@@ -365,7 +399,8 @@
                     android:background="@color/colorAccent"
                     android:padding="10dp"
                     android:text="FAMILY PLANNING"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#fff" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -374,16 +409,19 @@
                     android:padding="10dp">
 
                     <CheckBox
+                        android:id="@+id/avail_with_unmet"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="With Unmet Need" />
 
                     <CheckBox
+                        android:id="@+id/avail_counseling"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Counseling" />
 
                     <CheckBox
+                        android:id="@+id/avail_commodities"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Commodities" />
@@ -408,7 +446,8 @@
                     android:background="@color/colorAccent"
                     android:padding="10dp"
                     android:text="OTHER SERVICES"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#fff" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -417,29 +456,131 @@
                     android:padding="10dp">
 
                     <CheckBox
+                        android:id="@+id/avail_eye_exam"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Eye Exam" />
 
                     <CheckBox
+                        android:id="@+id/avail_ear_exam"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ear Exam" />
 
                     <CheckBox
+                        android:id="@+id/avail_oral_services"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:visibility="gone"
                         android:text="Oral Services" />
                 </LinearLayout>
             </LinearLayout>
         </android.support.v7.widget.CardView>
 
-        <Button
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:cardElevation="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorAccent"
+                    android:padding="10dp"
+                    android:text="DIAGNOSES"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#fff" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <CheckBox
+                        android:id="@+id/avail_respiratory_infection"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Other Acute Upper Respiratory Infection" />
+
+                    <CheckBox
+                        android:id="@+id/avail_hypertension"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Esential(Primanry) Hypertension" />
+
+                    <CheckBox
+                        android:id="@+id/avail_fever_unknown"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fever of Unknown Origin" />
+
+                    <CheckBox
+                        android:id="@+id/avail_other_injury"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Other Injuries of Specified, Unspecified and Multiple Body Regions" />
+
+                    <CheckBox
+                        android:id="@+id/avail_diarrhea_gastroenteritis"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="Diarrhea and Gastroenteritis of Presumed Infectious Origin" />
+
+                    <CheckBox
+                        android:id="@+id/avail_dermatoses"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dermatoses" />
+
+                    <CheckBox
+                        android:id="@+id/avail_bronchitis_emphysema"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bronchitis, Emphysema and Other Chronic Obstructive Pulmonary Diseases" />
+
+                    <CheckBox
+                        android:id="@+id/avail_pneumonia"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pneumonia" />
+
+                    <CheckBox
+                        android:id="@+id/avail_genitourinary_infection"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Infections of the Genitourinary System" />
+
+                    <CheckBox
+                        android:id="@+id/avail_animal_bite"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Animal Bite" />
+
+                    <CheckBox
+                        android:id="@+id/avail_others"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Others" />
+                </LinearLayout>
+            </LinearLayout>
+        </android.support.v7.widget.CardView>
+
+        <Button
+            android:id="@+id/availBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="@color/colorAccent"
             android:text="Avail"
-            android:layout_marginTop="10dp"
-            android:textColor="@color/colorPrimaryDark" />
+            android:textColor="#fff" />
     </LinearLayout>
 </ScrollView>

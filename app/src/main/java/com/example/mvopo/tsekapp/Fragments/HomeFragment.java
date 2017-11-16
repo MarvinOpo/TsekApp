@@ -30,7 +30,7 @@ public class HomeFragment extends Fragment{
 
     public static String brgyName = "";
 
-    TextView brgyCount, targetCount, profiledCount, availedCount, completionCount;
+    TextView brgyCount, targetCount, profiledCount, availedCount, completionCount, moreInfo;
 
     @Nullable
     @Override
@@ -41,6 +41,30 @@ public class HomeFragment extends Fragment{
         profiledCount = view.findViewById(R.id.profiled_count);
         availedCount = view.findViewById(R.id.availed_count);
         completionCount = view.findViewById(R.id.goal_count);
+        moreInfo = view.findViewById(R.id.target_more);
+
+        try {
+            JSONArray arrayBrgy = new JSONArray(MainActivity.user.barangay);
+            brgyCount.setText(arrayBrgy.length()+"");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        int profCount = MainActivity.db.getProfilesCount();
+        targetCount.setText(MainActivity.user.target);
+        profiledCount.setText(profCount + "");
+
+        float completion = profCount / Integer.parseInt(MainActivity.user.target) * 100;
+        completionCount.setText(completion + "% Goal Completion");
+
+        moreInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity.fabMenu.setVisibility(View.GONE);
+                MainActivity.ft = MainActivity.fm.beginTransaction();
+                MainActivity.ft.replace(R.id.fragment_container, MainActivity.vpf).commit();
+            }
+        });
 
         return view;
     }

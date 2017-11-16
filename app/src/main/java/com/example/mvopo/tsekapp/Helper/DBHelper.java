@@ -28,7 +28,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String sql = "Create table " + USERS + " (id integer, fname varchar(50), mname varchar(50), lname varchar(50)," +
-                " muncity varchar(50), contact varchar(50), barangay varchar(255), token varchar(100))";
+                " muncity varchar(50), contact varchar(50), barangay varchar(255), target varchar(100))";
 
         String sql1 = "Create table " + PROFILES + " (id integer, uniqueId varchar(100), familyId varchar(50), philId varchar(50), " +
                 "nhtsId varchar(50), isHead varchar(50), relation varchar(50), fname varchar(50), mname varchar(50), lname varchar(50), " +
@@ -61,7 +61,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put("muncity", user.muncity);
         cv.put("contact", user.contact);
         cv.put("barangay", user.barangay);
-        cv.put("token", user.token);
+        cv.put("target", user.target);
         db.insert(USERS, null, cv);
         db.close();
     }
@@ -79,9 +79,9 @@ public class DBHelper extends SQLiteOpenHelper {
             String muncity = c.getString(c.getColumnIndex("muncity"));
             String contact = c.getString(c.getColumnIndex("contact"));
             String barangay = c.getString(c.getColumnIndex("barangay"));
-            String token = c.getString(c.getColumnIndex("token"));
+            String target = c.getString(c.getColumnIndex("target"));
 
-            user = new User(id, fname, mname, lname, muncity, contact, barangay, token);
+            user = new User(id, fname, mname, lname, muncity, contact, barangay, target);
         }
         c.close();
         return user;
@@ -149,7 +149,7 @@ public class DBHelper extends SQLiteOpenHelper {
         name += "%";
         ArrayList<FamilyProfile> profiles = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.query(PROFILES, null, "fname LIKE ? or mname LIKE ? or lname LIKE ?", new String[]{name, name, name}, null, null, null, "10");
+        Cursor c = db.query(PROFILES, null, "fname LIKE ? or mname LIKE ? or lname LIKE ? or familyId LIKE ?", new String[]{name, name, name, name}, null, null, null, "10");
 
         if (c.moveToFirst()) {
             while (!c.isAfterLast()) {
