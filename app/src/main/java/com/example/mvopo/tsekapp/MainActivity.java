@@ -30,6 +30,7 @@ import com.example.mvopo.tsekapp.Helper.DBHelper;
 import com.example.mvopo.tsekapp.Helper.JSONApi;
 import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
+import com.example.mvopo.tsekapp.Model.ServiceAvailed;
 import com.example.mvopo.tsekapp.Model.User;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
@@ -108,12 +109,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 int uploadableCount = db.getUploadableCount();
-                int profileCount = db.getProfilesCount();
+                int serviceCount = db.getServicesCount();
+                int profileCount = db.getProfilesCount("");
                 if (profileCount == 0) {
                     downloadProfiles();
                 } else if (uploadableCount > 0) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage("Please sync profiles before downloading from server.\n\nUnsync Profile(s): " + uploadableCount);
+                    builder.setMessage("Please upload data before syncing from server.\n\nProfile(s): " + uploadableCount +
+                            "\nServices Availed: " + serviceCount);
                     builder.setPositiveButton("Ok", null);
                     builder.show();
                 } else {
@@ -135,20 +138,31 @@ public class MainActivity extends AppCompatActivity
         fabUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final int count = db.getUploadableCount();
+                final int uploadableCount = db.getUploadableCount();
+                final int serviceCount = db.getServicesCount();
 
-                if (count > 0) {
+                if (uploadableCount + serviceCount > 0) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage(count + " Profiles needs to be uploaded");
+                    builder.setMessage("Uploadable Profile: " + uploadableCount + "\nUploadable Services: " + serviceCount);
                     builder.setPositiveButton("Upload", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
 
-                            int count = db.getUploadableCount();
-                            MainActivity.pd = ProgressDialog.show(MainActivity.this, "Uploading 1/" + count, "Please wait...", false, false);
+                            MainActivity.pd = ProgressDialog.show(MainActivity.this, "Uploading 1/" + (uploadableCount + serviceCount),
+                                    "Please wait...", false, false);
 
-                            String url = Constants.url.replace("?", "/syncprofile");
-                            JSONApi.getInstance(MainActivity.this).uploadProfile(url, Constants.getProfileJson(), count, 1);
+                            if(uploadableCount > 0) {
+                                String url = Constants.url.replace("?", "/syncprofile");
+                                JSONApi.getInstance(MainActivity.this).uploadProfile(url, Constants.getProfileJson(), uploadableCount, 1);
+                            }else if(serviceCount > 0){
+                                ServiceAvailed serviceAvailed = db.getServiceForUpload();
+                                JSONApi.getInstance(MainActivity.this).uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed,
+                                        1, uploadableCount+serviceCount);
+                            }else{
+                                //upload services here
+                                Toast.makeText(MainActivity.this, "Uploading services is under development", Toast.LENGTH_SHORT).show();
+                                MainActivity.pd.dismiss();
+                            }
                         }
                     });
                     builder.setNegativeButton("Cancel", null);
@@ -238,7 +252,8 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        fabMenu.setVisibility(View.GONE);
+        if(id != R.id.nav_logout) fabMenu.setVisibility(View.GONE);
+
         ft = fm.beginTransaction();
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
@@ -249,30 +264,41 @@ public class MainActivity extends AppCompatActivity
             ft.replace(R.id.fragment_container, hf).commit();
         } else if (id == R.id.nav_services) {
             ft.replace(R.id.fragment_container, aspf).commit();
+            Toast.makeText(MainActivity.this, "This feature is under development", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_manage_population) {
             ft.replace(R.id.fragment_container, vpf).commit();
         } else if (id == R.id.nav_services_status) {
             ft.replace(R.id.fragment_container, ssf).commit();
+            Toast.makeText(MainActivity.this, "This feature is under development", Toast.LENGTH_SHORT).show();
 //        } else if (id == R.id.nav_services_report) {
 //
 //        } else if (id == R.id.nav_case_referred) {
 //
 //        } else if (id == R.id.nav_change_pass) {
 //            ft.replace(R.id.fragment_container, cpf).commit();
-//        } else if (id == R.id.nav_logout) {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//            builder.setMessage("Are you sure you want to log out?");
-//            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialogInterface, int i) {
-//                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-//                    startActivity(intent);
-//                    MainActivity.this.finish();
-//                }
-//            });
-//            builder.setNegativeButton("Cancel", null);
-//            builder.show();
-//
+        } else if (id == R.id.nav_logout) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            int uploadableCount = db.getUploadableCount();
+            if(uploadableCount <= 0) {
+                builder.setMessage("Logging out will delete all profile data. Are you sure you want to proceed?");
+                builder.setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        db.deleteProfiles();
+                        db.deleteUser();
+
+                        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        MainActivity.this.finish();
+                    }
+                });
+                builder.setNegativeButton("Cancel", null);
+            }else{
+                builder.setMessage("Please upload data before logging out.\n\nProfile(s): " + uploadableCount);
+                builder.setPositiveButton("Ok", null);
+            }
+            builder.show();
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -1,10 +1,14 @@
 package com.example.mvopo.tsekapp.Fragments;
 
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,8 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mvopo.tsekapp.Helper.JSONApi;
+import com.example.mvopo.tsekapp.Helper.PhotoHandler;
 import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.R;
@@ -50,12 +56,12 @@ public class HomeFragment extends Fragment{
             e.printStackTrace();
         }
 
-        int profCount = MainActivity.db.getProfilesCount();
+        int profCount = MainActivity.db.getProfilesCount("");
         targetCount.setText(MainActivity.user.target);
         profiledCount.setText(profCount + "");
 
-        float completion = profCount / Integer.parseInt(MainActivity.user.target) * 100;
-        completionCount.setText(completion + "% Goal Completion");
+        float completion = profCount * 100.0f / Integer.parseInt(MainActivity.user.target);
+        completionCount.setText( String.format("%.1f", completion) + "% Goal Completion");
 
         moreInfo.setOnClickListener(new View.OnClickListener() {
             @Override

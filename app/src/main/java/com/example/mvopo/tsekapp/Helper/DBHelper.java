@@ -6,10 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
+import com.example.mvopo.tsekapp.Model.ServiceAvailed;
 import com.example.mvopo.tsekapp.Model.User;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -18,6 +23,7 @@ public class DBHelper extends SQLiteOpenHelper {
     Context context;
     final static String DBNAME = "db_tsekap";
     final static String USERS = "tbl_user";
+    final static String SERVICES = "tbl_services";
     final static String PROFILES = "tbl_profile";
 
     public DBHelper(Context context) {
@@ -36,17 +42,22 @@ public class DBHelper extends SQLiteOpenHelper {
                 "income varchar(50), unmetNeed varchar(50), waterSupply varchar(50), sanitaryToilet varchar(50), educationalAttainment varchar(50)," +
                 "status varchar(3))";
 
+        String sql2 = "Create table " + SERVICES + " (id integer primary key autoincrement, request TEXT)";
+
         db.execSQL(sql);
         db.execSQL(sql1);
+        db.execSQL(sql2);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "DROP TABLE " + USERS + "IF EXISTS";
-        String sql1 = "DROP TABLE " + PROFILES + "IF EXISTS";
+        String sql = "DROP TABLE IF EXISTS " + USERS;
+        String sql1 = "DROP TABLE IF EXISTS " + PROFILES;
+        String sql2 = "DROP TABLE IF EXISTS " + SERVICES;
 
         db.execSQL(sql);
         db.execSQL(sql1);
+        db.execSQL(sql2);
 
         onCreate(db);
     }
@@ -64,6 +75,11 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put("target", user.target);
         db.insert(USERS, null, cv);
         db.close();
+    }
+
+    public void deleteUser() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(USERS, null, null);
     }
 
     public User getUser() {
@@ -227,7 +243,7 @@ public class DBHelper extends SQLiteOpenHelper {
         return familyProfile;
     }
 
-    public void updateProfileById(String uniqueId){
+    public void updateProfileById(String uniqueId) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put("status", 0);
@@ -235,14 +251,16 @@ public class DBHelper extends SQLiteOpenHelper {
         db.update(PROFILES, cv, "uniqueId = ?", new String[]{uniqueId});
     }
 
-    public void deleteProfiles(){
+    public void deleteProfiles() {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(PROFILES, null, null);
     }
 
-    public int getProfilesCount() {
+    public int getProfilesCount(String brgyId) {
         SQLiteDatabase db = this.getReadableDatabase();
         String countQuery = "SELECT  * FROM " + PROFILES;
+
+        if(!brgyId.equals("")) countQuery += " where barangayId = '"+ brgyId +"'";
 
         Cursor cursor = db.rawQuery(countQuery, null);
         int count = cursor.getCount();
@@ -263,7 +281,8 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
         return count;
     }
-//    public void addAccoount(Accounts acc) {
+
+    //    public void addAccoount(Accounts acc) {
 //        SQLiteDatabase db = this.getWritableDatabase();
 //        ContentValues cv = new ContentValues();
 //        cv.put("category", acc.category);
@@ -274,4 +293,52 @@ public class DBHelper extends SQLiteOpenHelper {
 //        db.close();
 //    }
 //
+    public void addServicesAvail(String request) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("request", request);
+        db.insert(SERVICES, null, cv);
+        db.close();
+
+        Toast.makeText(context, "Succesfully availed", Toast.LENGTH_SHORT).show();
+    }
+
+    public int getServicesCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT  * FROM " + SERVICES;
+
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+
+        cursor.close();
+        db.close();
+        return count;
+    }
+
+    public ServiceAvailed getServiceForUpload() {
+        ServiceAvailed serviceAvailed = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(SERVICES, null, null, null, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            JSONObject request=null;
+            String id = c.getString(c.getColumnIndex("id"));
+            try {
+                request = new JSONObject(c.getString(c.getColumnIndex("request")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            serviceAvailed = new ServiceAvailed(id, request);
+            Log.e("DBHelper", request.toString());
+        }
+        c.close();
+        db.close();
+        return serviceAvailed;
+    }
+
+    public void deleteService(String id) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(SERVICES, "id=?", new String[]{id});
+    }
 }

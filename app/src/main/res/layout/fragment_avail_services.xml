@@ -247,16 +247,16 @@
                     android:padding="10dp">
 
                     <CheckBox
-                        android:id="@+id/avail_blood_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Complete Blood Count"/>
-
-                    <CheckBox
                         android:id="@+id/avail_blood_typing"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Blood Typing" />
+
+                    <CheckBox
+                        android:id="@+id/avail_blood_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Complete Blood Count"/>
 
                     <CheckBox
                         android:id="@+id/avail_urinalysis"
@@ -578,8 +578,8 @@
             android:id="@+id/availBtn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorAccent"
+            android:layout_marginTop="20dp"
+            android:background="@color/colorPrimary"
             android:text="Avail"
             android:textColor="#fff" />
     </LinearLayout>

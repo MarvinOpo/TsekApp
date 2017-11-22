@@ -14,7 +14,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.R;
@@ -29,7 +31,7 @@ import org.json.JSONObject;
 
 public class AvailServicesFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
 
-    CardView cvFemaleStatus, cvHealthEduc, cvDrugRehab;
+    CardView cvFemaleStatus, cvHealthEduc, cvDrugRehab, cvFamilyPlanning;
     CheckBox cbBloodPressure, cbWeight, cbHeight, cbBloodTyping, cbBloodCount, cbEyeExam, cbEarExam,
             cbUrinalysis, cbStoolExam, cbOralServices, cbFastingSugar, cbRandomSugar, cbWithUnmet,
             cbCounseling, cbCommodities, cbScreening, cbDrugCounseling, cbDrugTest, cbReferral,
@@ -42,7 +44,7 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
 
     FamilyProfile familyProfile;
     String[] profileAgeInfo;
-    String date, bracketId = "1";
+    String date, bracketId = "1", TAG = "AvailServices";
 
     @Nullable
     @Override
@@ -56,6 +58,7 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
         cvFemaleStatus = view.findViewById(R.id.cv_female_status);
         cvHealthEduc = view.findViewById(R.id.cv_health_educ);
         cvDrugRehab = view.findViewById(R.id.cv_drug_rehab);
+        cvFamilyPlanning = view.findViewById(R.id.cv_family_planning);
 
         tvName = view.findViewById(R.id.avail_services_name);
         tvAge = view.findViewById(R.id.avail_services_age);
@@ -117,12 +120,13 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
         }
 
         profileAgeInfo = age.split(" ");
+        Log.e(TAG, age + " " + (age.contains("d/o") && Integer.parseInt(profileAgeInfo[0]) > 28));
         if ((age.contains("d/o") && Integer.parseInt(profileAgeInfo[0]) > 28) ||
                 (age.contains("m/o") && Integer.parseInt(profileAgeInfo[0]) <= 11)) {
             cbUrinalysis.setVisibility(View.VISIBLE);
             cbStoolExam.setVisibility(View.VISIBLE);
             bracketId = "2";
-        } else {
+        } else if(!age.contains("d/o") && !age.contains("m/o")){
 
             if (Integer.parseInt(profileAgeInfo[0]) >= 1) {
                 cbUrinalysis.setVisibility(View.VISIBLE);
@@ -151,6 +155,7 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
                     cbDrugTest.setVisibility(View.VISIBLE);
                     cbReferral.setVisibility(View.VISIBLE);
                     cbSputumExam.setVisibility(View.VISIBLE);
+                    cvFamilyPlanning.setVisibility(View.VISIBLE);
                     bracketId = "5";
                 }
 
@@ -163,6 +168,8 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
                     cbWithUnmet.setVisibility(View.GONE);
                     cbCounseling.setVisibility(View.GONE);
                     cbCommodities.setVisibility(View.GONE);
+                    cvFamilyPlanning.setVisibility(View.GONE);
+
                     cbSugarTest.setVisibility(View.VISIBLE);
                     bracketId = "7";
                 }
@@ -225,7 +232,7 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
                     if (cbBloodTyping.isChecked()) services.put(new JSONObject("{ \"id\" : 4}"));
                     if (cbBloodCount.isChecked()) services.put(new JSONObject("{ \"id\" : 5}"));
                     if (cbUrinalysis.isChecked()) services.put(new JSONObject("{ \"id\" : 6}"));
-                    if (cbFastingSugar.isChecked()) services.put(new JSONObject("{7}"));
+                    if (cbFastingSugar.isChecked()) services.put(new JSONObject("{ \"id\" : 7}"));
                     if (cbStoolExam.isChecked()) services.put(new JSONObject("{ \"id\" : 8}"));
                     if (cbEyeExam.isChecked()) services.put(new JSONObject("{ \"id\" : 9}"));
                     if (cbEarExam.isChecked()) services.put(new JSONObject("{ \"id\" : 10}"));
@@ -279,9 +286,10 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
                     request.accumulate("diagnoses", diagnoses);
                     request.accumulate("options", option);
 
-                    Log.e("AvailServices", request.toString());
+                    MainActivity.db.addServicesAvail(request.toString());
+                    MainActivity.fm.popBackStackImmediate();
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, e.getMessage());
                 }
             }
         });

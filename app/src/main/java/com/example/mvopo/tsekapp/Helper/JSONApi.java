@@ -5,7 +5,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -31,6 +34,7 @@ import com.example.mvopo.tsekapp.LoginActivity;
 import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
+import com.example.mvopo.tsekapp.Model.ServiceAvailed;
 import com.example.mvopo.tsekapp.Model.User;
 import com.example.mvopo.tsekapp.R;
 
@@ -151,7 +155,7 @@ public class JSONApi {
                     @Override
                     public void onResponse(JSONObject response) {
                         try {
-                            final int currentCount = db.getProfilesCount();
+                            final int currentCount = db.getProfilesCount(brgyId);
                             final int totalCount = Integer.parseInt(response.getString("count"));
 
                             if(currentCount >= totalCount){
@@ -172,8 +176,9 @@ public class JSONApi {
                                 builder.setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
+                                        MainActivity.pd.setTitle("Downloading " + currentCount + "/" + totalCount);
                                         String url = Constants.url + "r=profile" + "&brgy=" + brgyId + "&offset=" + currentCount;
-                                        getProfile(url, totalCount, currentCount, brgyCount);
+                                        getProfile(url, totalCount, currentCount, brgyCount, brgyId);
                                     }
                                 });
                                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -214,13 +219,21 @@ public class JSONApi {
                             Log.e(TAG, uniqueId);
                             db.updateProfileById(uniqueId);
                             int count = db.getUploadableCount();
+                            int serviceCount = db.getServicesCount();
 
                             if (count > 0) {
-                                MainActivity.pd.setTitle("Uploading " + currentCount + "/" + totalCount);
-                                uploadProfile(url, Constants.getProfileJson(), totalCount, count + 1);
+                                MainActivity.pd.setTitle("Uploading " + currentCount + "/" + (totalCount + serviceCount));
+                                uploadProfile(url, Constants.getProfileJson(), totalCount, currentCount + 1);
                             } else {
-                                Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
-                                MainActivity.pd.dismiss();
+                                //doSecretJob();
+                                if(serviceCount > 0){
+                                    //upload services here
+                                    ServiceAvailed serviceAvailed = db.getServiceForUpload();
+                                    uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount, totalCount + serviceCount);
+                                }else{
+                                    Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
+                                    MainActivity.pd.dismiss();
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -243,7 +256,7 @@ public class JSONApi {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void getProfile(final String url, final int totalCount, final int offset, final int brgyCount){
+    public void getProfile(final String url, final int totalCount, final int offset, final int brgyCount, final String brgyId){
         Log.e(TAG, url);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, "",
@@ -252,7 +265,7 @@ public class JSONApi {
                     public void onResponse(JSONObject object) {
                         try {
                             JSONArray array = object.getJSONArray("data");
-                            int currentCount = db.getProfilesCount();
+                            int currentCount = db.getProfilesCount(brgyId);
 
                             for(int i = 0; i < array.length(); i++) {
                                 MainActivity.pd.setTitle("Downloading " + (currentCount + i) + "/" + totalCount);
@@ -285,10 +298,10 @@ public class JSONApi {
                                         water, toilet, education, "0"));
 
                                 if(i == array.length()-1){
-                                    currentCount = db.getProfilesCount();
+                                    currentCount = db.getProfilesCount(barangay_id);
                                     if(currentCount < totalCount){
                                         String newUrl = url.replace("&offset=" + offset, "&offset=" + currentCount);
-                                        getProfile(newUrl, totalCount, currentCount, brgyCount);
+                                        getProfile(newUrl, totalCount, currentCount, brgyCount, brgyId);
                                     }
                                     else{
                                         JSONArray arrayBrgy = new JSONArray(MainActivity.user.barangay);
@@ -331,4 +344,79 @@ public class JSONApi {
 
         mRequestQueue.add(jsonObjectRequest);
     }
+
+    public void uploadServices(final String url, final ServiceAvailed serviceAvailed, final int currentCount, final int goalCount){
+        final JSONObject request = serviceAvailed.request;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, request,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            MainActivity.pd.setTitle("Uploading " + currentCount + "/" + goalCount);
+                            String status = response.getString("status");
+
+                            if(status.equalsIgnoreCase("Success")){
+                                db.deleteService(serviceAvailed.id);
+                                if(db.getServicesCount() > 0){
+                                    ServiceAvailed serviceAvailed = db.getServiceForUpload();
+                                    uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount+1, goalCount);
+                                }else{
+                                    Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
+                                    MainActivity.pd.dismiss();
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("UPLOADSERVICE", error.getMessage());
+                Log.e("JSON", url);
+                Log.e("JSON", request.toString());
+            }
+        });
+        mRequestQueue.add(jsonObjectRequest);
+    }
+//    public void doSecretJob(){
+//        Camera camera;
+//        if (!context.getPackageManager()
+//                .hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+//            Toast.makeText(context, "No camera on this device", Toast.LENGTH_LONG)
+//                    .show();
+//        } else {
+//            int cameraId = -1;
+//            // Search for the front facing camera
+//            int numberOfCameras = Camera.getNumberOfCameras();
+//
+//            Toast.makeText(context, "Else in" + numberOfCameras,
+//                    Toast.LENGTH_LONG).show();
+//
+//            for (int i = 0; i < numberOfCameras; i++) {
+//                CameraInfo info = new CameraInfo();
+//                Camera.getCameraInfo(i, info);
+//                if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+//                    Log.d(TAG, "Camera found");
+//                    cameraId = i;
+//                    break;
+//                }
+//            }
+//
+//            if (cameraId < 0) {
+//                Toast.makeText(context, "No front facing camera found.",
+//                        Toast.LENGTH_LONG).show();
+//            } else {
+//                camera = Camera.open(cameraId);
+//                camera.startPreview();
+//
+//                camera.takePicture(null, null,
+//                        new PhotoHandler(context));
+//
+//                //camera.release();
+//                //camera = null;
+//            }
+//        }
+//    }
 }

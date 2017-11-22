@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Constants {
 
-    public static String url = "http://210.4.59.4/tsekap/vii/api?";
+    public static String url = "http://210.4.59.4/tsekap/dummy/api?";
 
     public static JSONObject getProfileJson() {
 
@@ -49,7 +49,16 @@ public class Constants {
             data.accumulate("income", profile.income);
             data.accumulate("unmet", profile.unmetNeed);
             data.accumulate("water", profile.waterSupply);
-            data.accumulate("toilet", profile.sanitaryToilet);
+
+            String toilet = profile.sanitaryToilet;
+
+            if(!toilet.isEmpty()) {
+                if(toilet.equals("1")) toilet = "non";
+                else if(toilet.equals("2")) toilet = "comm";
+                else if(toilet.equals("3")) toilet = "indi";
+            }
+
+            data.accumulate("toilet",toilet);
             data.accumulate("education", profile.educationalAttainment);
 
             request.accumulate("data", data);

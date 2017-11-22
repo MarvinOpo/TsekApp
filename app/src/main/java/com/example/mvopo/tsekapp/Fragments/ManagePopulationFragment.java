@@ -1,6 +1,7 @@
 package com.example.mvopo.tsekapp.Fragments;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -172,6 +174,12 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 showOptionDialog(0, txtBrgy);
                 break;
             case R.id.manageBtn:
+                View view = getActivity().getCurrentFocus();
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+
                 famId = txtFamilyId.getText().toString().trim();
                 philId = txtPhilHealthId.getText().toString().trim();
                 nhtsId = txtNhtsId.getText().toString().trim();
@@ -268,8 +276,23 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 .getStringArray(R.array.unmet_needs)[Integer.parseInt(familyProfile.unmetNeed) - 1]);
         if(!familyProfile.waterSupply.isEmpty() && !familyProfile.waterSupply.equals("0")) txtSupply.setText(getResources()
                 .getStringArray(R.array.water_supply)[Integer.parseInt(familyProfile.waterSupply) - 1]);
-        if(!familyProfile.sanitaryToilet.isEmpty() && !familyProfile.sanitaryToilet.equals("0")) txtToilet.setText(getResources()
-                .getStringArray(R.array.sanitary_toilet)[Integer.parseInt(familyProfile.sanitaryToilet) - 1]);
+        try{
+            if(!familyProfile.sanitaryToilet.isEmpty() && !familyProfile.sanitaryToilet.equals("0")) txtToilet.setText(getResources()
+                    .getStringArray(R.array.sanitary_toilet)[Integer.parseInt(familyProfile.sanitaryToilet) - 1]);
+        }catch (Exception e){
+            String toilet = familyProfile.sanitaryToilet;
+
+            if(toilet.equals("non")){
+                txtToilet.setText(getResources()
+                        .getStringArray(R.array.sanitary_toilet)[0]);
+            }else if(toilet.equals("comm")){
+                txtToilet.setText(getResources()
+                        .getStringArray(R.array.sanitary_toilet)[1]);
+            }else{
+                txtToilet.setText(getResources()
+                        .getStringArray(R.array.sanitary_toilet)[2]);
+            }
+        }
 
         for(int i = 0; i < value.length; i++){
             if(familyProfile.educationalAttainment.equals(value[i])){
@@ -317,7 +340,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             radioGroup.addView(lineView);
         }
 
-        ((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
+        //((RadioButton) radioGroup.getChildAt(0)).setChecked(true);
         optionHolder.addView(radioGroup);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -330,25 +353,31 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 RadioButton radioButton = radioGroup.findViewById(radioGroup.getCheckedRadioButtonId());
-                txtView.setText(radioButton.getText());
+                if(radioButton != null) {
+                    txtView.setText(radioButton.getText());
 
-                if (txtView.getId() == R.id.manage_barangay) {
-                    txtView.setTag(radioButton.getId());
-                    txtBrgy = txtView;
-                } else if(txtView.getId() == R.id.manage_education){
-                    txtView.setTag(radioButton.getTag().toString());
-                } else if(txtView.getId() == R.id.manage_income || txtView.getId() == R.id.manage_unmet ||
-                        txtView.getId() == R.id.manage_supply || txtView.getId() == R.id.manage_toilet){
-                    txtView.setTag(radioButton.getId());
-                } else if(txtView.getId() == R.id.manage_head) {
-                    if (txtView.getText().toString().equalsIgnoreCase("NO")) {
-                        updateFields.setVisibility(View.GONE);
-                        ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
-                        txtRelation.setText("Son");
-                    } else {
-                        updateFields.setVisibility(View.VISIBLE);
-                        ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.GONE);
+                    if (txtView.getId() == R.id.manage_barangay) {
+                        txtView.setTag(radioButton.getId());
+                        txtBrgy = txtView;
+                    } else if (txtView.getId() == R.id.manage_education) {
+                        txtView.setTag(radioButton.getTag().toString());
+                    } else if (txtView.getId() == R.id.manage_income || txtView.getId() == R.id.manage_unmet ||
+                            txtView.getId() == R.id.manage_supply || txtView.getId() == R.id.manage_toilet) {
+                        txtView.setTag(radioButton.getId());
+                    } else if (txtView.getId() == R.id.manage_head) {
+                        if (txtView.getText().toString().equalsIgnoreCase("NO")) {
+                            updateFields.setVisibility(View.GONE);
+                            ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
+                            txtRelation.setText("Son");
+                        } else {
+                            updateFields.setVisibility(View.VISIBLE);
+                            ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.GONE);
+                        }
                     }
+
+                }else{
+                    txtView.setText("");
+                    txtView.setTag("");
                 }
 
                 optionDialog.dismiss();
