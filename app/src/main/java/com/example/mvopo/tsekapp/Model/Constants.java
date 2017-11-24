@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Constants {
 
-    public static String url = "http://210.4.59.4/tsekap/dummy/api?";
+    public static String url = "http://210.4.59.4/tsekap/vii/api?";
 
     public static JSONObject getProfileJson() {
 

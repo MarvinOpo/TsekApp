@@ -3,9 +3,9 @@
     package="com.example.mvopo.tsekapp">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -34,6 +34,7 @@
             </intent-filter>
         </activity>
 
+        <meta-data android:name="CLOUDINARY_URL" android:value="cloudinary://979931267823771:2_Gm-d7uOhBLtWEjkX6PejJ7UlA@guia"/>
     </application>
 
 </manifest>

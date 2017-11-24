@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.mvopo.tsekapp.MainActivity;
@@ -36,7 +37,8 @@ import java.util.Calendar;
 
 public class ManagePopulationFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
-    LinearLayout updateFields, optionHolder;
+    LinearLayout updateFields;
+    ScrollView optionHolder;
     EditText txtFamilyId, txtPhilHealthId, txtNhtsId, txtFname, txtMname, txtLname, txtBday, txtBrgy,
             txtHead, txtEducation, txtSuffix, txtSex, txtIncome, txtUnmet, txtSupply, txtToilet, txtRelation;
     Button manageBtn, optionBtn;
@@ -58,6 +60,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         view = inflater.inflate(R.layout.fragment_manage_member, container, false);
         toUpdate = getArguments().getBoolean("toUpdate");
         addHead = getArguments().getBoolean("addHead");
+
         familyProfile = getArguments().getParcelable("familyProfile");
 
         //Toast.makeText(getContext(), addHead+"", Toast.LENGTH_SHORT).show();
@@ -189,7 +192,10 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 bday = txtBday.getText().toString().trim();
                 brgy = txtBrgy.getText().toString().trim();
                 head = txtHead.getText().toString().trim();
+
                 relation = txtRelation.getText().toString().trim();
+                if(relation.equalsIgnoreCase("Live-in Partner")) relation = "partner";
+
                 suffix = txtSuffix.getText().toString().trim();
                 sex = txtSex.getText().toString().trim();
 
@@ -253,7 +259,10 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtMname.setText(familyProfile.mname);
         txtLname.setText(familyProfile.lname);
         txtBday.setText(familyProfile.dob);
-        txtRelation.setText(familyProfile.relation);
+
+        if(familyProfile.relation.equalsIgnoreCase("partner")) txtRelation.setText("Live-in Partner");
+        else txtRelation.setText(familyProfile.relation);
+
         txtBrgy.setText(Constants.getBrgyName(familyProfile.barangayId));
 
         if (toUpdate) {

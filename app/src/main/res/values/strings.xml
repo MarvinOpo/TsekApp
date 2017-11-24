@@ -44,6 +44,24 @@
         <item>Mother</item>
         <item>Brother</item>
         <item>Sister</item>
+        <item>Nephew</item>
+        <item>Niece</item>
+        <item>Grandfather</item>
+        <item>Grandmother</item>
+        <item>Grandson</item>
+        <item>Granddaughter</item>
+        <item>Cousin</item>
+        <item>Relative</item>
+        <item>Granddaughter</item>
+        <item>Daughter in Law</item>
+        <item>Son in Law</item>
+        <item>Sister in Law</item>
+        <item>Brother in Law</item>
+        <item>Father in Law</item>
+        <item>Mother in Law</item>
+        <item>Live-in Partner</item>
+        <item>Deceased</item>
+        <item>Others</item>
     </string-array>
 
     <string-array name="suffix">

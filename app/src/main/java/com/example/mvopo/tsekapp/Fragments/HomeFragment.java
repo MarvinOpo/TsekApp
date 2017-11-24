@@ -1,32 +1,18 @@
 package com.example.mvopo.tsekapp.Fragments;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.pm.PackageManager;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.mvopo.tsekapp.Helper.JSONApi;
-import com.example.mvopo.tsekapp.Helper.PhotoHandler;
 import com.example.mvopo.tsekapp.MainActivity;
-import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by mvopo on 10/19/2017.

