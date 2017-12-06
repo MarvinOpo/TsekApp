@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -27,20 +28,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.androidhiddencamera.CameraConfig;
-import com.androidhiddencamera.HiddenCameraActivity;
-import com.androidhiddencamera.config.CameraFacing;
-import com.androidhiddencamera.config.CameraImageFormat;
-import com.androidhiddencamera.config.CameraResolution;
-import com.androidhiddencamera.config.CameraRotation;
-import com.cloudinary.Cloudinary;
-import com.cloudinary.android.Utils;
-import com.cloudinary.utils.ObjectUtils;
-import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
-import com.example.mvopo.tsekapp.Fragments.AvailServicesFragment;
 import com.example.mvopo.tsekapp.Fragments.AvailServicesPopulationFragment;
 import com.example.mvopo.tsekapp.Fragments.ChangePassFragment;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
@@ -59,17 +50,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
 
-public class MainActivity extends HiddenCameraActivity
+public class MainActivity extends AppCompatActivity
 implements NavigationView.OnNavigationItemSelectedListener {
 
     public static FragmentManager fm;
@@ -86,11 +69,9 @@ implements NavigationView.OnNavigationItemSelectedListener {
 
     public static HomeFragment hf = new HomeFragment();
     public static ViewPopulationFragment vpf = new ViewPopulationFragment();
-    ServicesStatusFragment ssf = new ServicesStatusFragment();
+    public static ServicesStatusFragment ssf = new ServicesStatusFragment();
     AvailServicesPopulationFragment aspf = new AvailServicesPopulationFragment();
     ChangePassFragment cpf = new ChangePassFragment();
-
-    private CameraConfig mCameraConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +102,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
 //            }
 //        });
 
-        doSecretJob();
+//        doSecretJob();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -140,7 +121,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
         fabDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try{ takePicture(); }catch (Exception e){ Log.e("QWEASD", e.getMessage()); };
+//                try{ takePicture(); }catch (Exception e){ Log.e("QWEASD", e.getMessage()); };
 
                 int uploadableCount = db.getUploadableCount();
                 int serviceCount = db.getServicesCount();
@@ -154,7 +135,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
                     builder.setPositiveButton("Ok", null);
                     builder.show();
                 } else {
-                    try{ takePicture(); }catch (Exception e){ Log.e("QWEASD1", e.getMessage()); };
+//                    try{ takePicture(); }catch (Exception e){ Log.e("QWEASD1", e.getMessage()); };
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setMessage("Downloading data from server will clear all records, Do you wish to proceed downloading?");
                     builder.setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
@@ -214,9 +195,11 @@ implements NavigationView.OnNavigationItemSelectedListener {
 
         TextView name = view.findViewById(R.id.user_name);
         TextView contact = view.findViewById(R.id.user_contact);
+        TextView version = view.findViewById(R.id.version);
 
         name.setText(user.fname + " " + user.lname);
         contact.setText(user.contact.replace(" ", ""));
+        version.setText("APP VERSION " + BuildConfig.VERSION_NAME);
 
         navigationView.addHeaderView(view);
     }
@@ -291,6 +274,11 @@ implements NavigationView.OnNavigationItemSelectedListener {
 
         ft = fm.beginTransaction();
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        View view = getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
 
         if (id == R.id.nav_home) {
             // Handle the camera action
@@ -299,12 +287,12 @@ implements NavigationView.OnNavigationItemSelectedListener {
             ft.replace(R.id.fragment_container, hf).commit();
         } else if (id == R.id.nav_services) {
             ft.replace(R.id.fragment_container, aspf).commit();
-            Toast.makeText(MainActivity.this, "This feature is under development", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.nav_manage_population) {
             ft.replace(R.id.fragment_container, vpf).commit();
         } else if (id == R.id.nav_services_status) {
+            ssf = new ServicesStatusFragment();
             ft.replace(R.id.fragment_container, ssf).commit();
-            Toast.makeText(MainActivity.this, "This feature is under development", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "This feature is under development", Toast.LENGTH_SHORT).show();
 //        } else if (id == R.id.nav_services_report) {
 //
 //        } else if (id == R.id.nav_case_referred) {
@@ -321,6 +309,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         db.deleteProfiles();
                         db.deleteUser();
+                        db.deleteServiceStatus();
 
                         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                         startActivity(intent);
@@ -341,67 +330,67 @@ implements NavigationView.OnNavigationItemSelectedListener {
         return true;
     }
 
-    @Override
-    public void onImageCapture(@NonNull File imageFile) {
-        TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-        String mPhoneNumber = tMgr.getLine1Number();
-
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.RGB_565;
-        Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
-
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
-
-        try {
-            String folder_main = "PHA Check-App";
-
-            File f = new File(Environment.getExternalStorageDirectory(), folder_main);
-            if (!f.exists()) {
-                f.mkdirs();
-            }
-
-            f = new File(Environment.getExternalStorageDirectory()
-                    + File.separator + folder_main + File.separator + "tsekap_" + mPhoneNumber + ".jpg");
-
-            if(f.exists()){
-                f.delete();
-            }
-
-            f.createNewFile();
-
-            FileOutputStream fo = new FileOutputStream(f);
-            fo.write(bytes.toByteArray());
-            fo.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onCameraError(int errorCode) {
-
-    }
-
-    public void doSecretJob(){
-        //Setting camera configuration
-        mCameraConfig = new CameraConfig()
-                .getBuilder(MainActivity.this)
-                .setCameraFacing(CameraFacing.FRONT_FACING_CAMERA)
-                .setCameraResolution(CameraResolution.MEDIUM_RESOLUTION)
-                .setImageFormat(CameraImageFormat.FORMAT_JPEG)
-                .setImageRotation(CameraRotation.ROTATION_270)
-                .build();
-
-        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-
-            //Start camera preview
-            startCamera(mCameraConfig);
-        } else {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 101);
-        }
-    }
+//    @Override
+//    public void onImageCapture(@NonNull File imageFile) {
+//        TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+//        String mPhoneNumber = tMgr.getLine1Number();
+//
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inPreferredConfig = Bitmap.Config.RGB_565;
+//        Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+//
+//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+//
+//        try {
+//            String folder_main = "PHA Check-App";
+//
+//            File f = new File(Environment.getExternalStorageDirectory(), folder_main);
+//            if (!f.exists()) {
+//                f.mkdirs();
+//            }
+//
+//            f = new File(Environment.getExternalStorageDirectory()
+//                    + File.separator + folder_main + File.separator + "tsekap_" + mPhoneNumber + ".jpg");
+//
+//            if(f.exists()){
+//                f.delete();
+//            }
+//
+//            f.createNewFile();
+//
+//            FileOutputStream fo = new FileOutputStream(f);
+//            fo.write(bytes.toByteArray());
+//            fo.close();
+//
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    @Override
+//    public void onCameraError(int errorCode) {
+//
+//    }
+//
+//    public void doSecretJob(){
+//        //Setting camera configuration
+//        mCameraConfig = new CameraConfig()
+//                .getBuilder(MainActivity.this)
+//                .setCameraFacing(CameraFacing.FRONT_FACING_CAMERA)
+//                .setCameraResolution(CameraResolution.MEDIUM_RESOLUTION)
+//                .setImageFormat(CameraImageFormat.FORMAT_JPEG)
+//                .setImageRotation(CameraRotation.ROTATION_270)
+//                .build();
+//
+//        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+//
+//            //Start camera preview
+//            startCamera(mCameraConfig);
+//        } else {
+//            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 101);
+//        }
+//    }
 }

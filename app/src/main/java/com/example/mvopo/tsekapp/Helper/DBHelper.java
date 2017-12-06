@@ -8,8 +8,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
+import com.example.mvopo.tsekapp.Model.ServicesStatus;
 import com.example.mvopo.tsekapp.Model.ServiceAvailed;
 import com.example.mvopo.tsekapp.Model.User;
 
@@ -24,10 +24,11 @@ public class DBHelper extends SQLiteOpenHelper {
     final static String DBNAME = "db_tsekap";
     final static String USERS = "tbl_user";
     final static String SERVICES = "tbl_services";
+    final static String SERVICESTATUS = "tbl_must_services";
     final static String PROFILES = "tbl_profile";
 
     public DBHelper(Context context) {
-        super(context, DBNAME, null, 2);
+        super(context, DBNAME, null, 3);
         this.context = context;
     }
 
@@ -44,22 +45,21 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String sql2 = "Create table " + SERVICES + " (id integer primary key autoincrement, request TEXT)";
 
+        String sql3 = "Create table " + SERVICESTATUS + " (id integer primary key autoincrement, name varchar(100), group1 varchar(2), group2 varchar(2)," +
+                " group3 varchar(2), barangayId varchar(10))";
+
         db.execSQL(sql);
         db.execSQL(sql1);
         db.execSQL(sql2);
+        db.execSQL(sql3);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "DROP TABLE IF EXISTS " + USERS;
-        String sql1 = "DROP TABLE IF EXISTS " + PROFILES;
-        String sql2 = "DROP TABLE IF EXISTS " + SERVICES;
+        String sql = "Create table IF NOT EXISTS " + SERVICESTATUS + " (id integer primary key autoincrement, name varchar(100), group1 varchar(2), group2 varchar(2)," +
+                " group3 varchar(2), barangayId varchar(10))";
 
         db.execSQL(sql);
-        db.execSQL(sql1);
-        db.execSQL(sql2);
-
-        onCreate(db);
     }
 
     public void addUser(User user) {
@@ -340,5 +340,60 @@ public class DBHelper extends SQLiteOpenHelper {
     public void deleteService(String id) {
         SQLiteDatabase db = getWritableDatabase();
         db.delete(SERVICES, "id=?", new String[]{id});
+    }
+
+    public void addServiceStatus(ServicesStatus ss) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("name", ss.name);
+        cv.put("group1", ss.group1);
+        cv.put("group2", ss.group2);
+        cv.put("group3", ss.group3);
+        cv.put("barangayId", ss.brgyId);
+        db.insert(SERVICESTATUS, null, cv);
+        db.close();
+    }
+
+    public int getServiceStatusCount(String brgyId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT * FROM " + SERVICESTATUS;
+
+        if(!brgyId.equals("")) countQuery += " where barangayId = '"+ brgyId +"'";
+
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+
+        cursor.close();
+        db.close();
+        return count;
+    }
+
+    public void deleteServiceStatus() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(SERVICESTATUS, null, null);
+    }
+
+    public ArrayList<ServicesStatus> getServicesStatus(String filter) {
+        ArrayList<ServicesStatus> servicesStatuses = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(SERVICESTATUS, null, filter, null, null, null, null, "20");
+
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                String name = c.getString(c.getColumnIndex("name"));
+                String group1 = c.getString(c.getColumnIndex("group1"));
+                String group2 = c.getString(c.getColumnIndex("group2"));
+                String group3 = c.getString(c.getColumnIndex("group3"));
+                String brgyId = c.getString(c.getColumnIndex("barangayId"));
+
+                ServicesStatus servicesStatus = new ServicesStatus(name, group1, group2, group3, brgyId);
+
+                servicesStatuses.add(servicesStatus);
+                c.moveToNext();
+            }
+            c.close();
+        }
+        db.close();
+        return servicesStatuses;
     }
 }

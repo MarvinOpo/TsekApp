@@ -1,6 +1,7 @@
 package com.example.mvopo.tsekapp.Fragments;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -69,13 +71,19 @@ public class ViewPopulationFragment extends Fragment {
 //        familyProfiles.add(new FamilyProfile("06082017-1203-2391263", "", "", "Nacario", "Abelgas", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
 //        familyProfiles.add(new FamilyProfile("06022017-1203-1759539", "", "", "Alexander James", "Abenaza", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
 
-        adapter = new ListAdapter(getContext(), R.layout.population_item, familyProfiles);
+        adapter = new ListAdapter(getContext(), R.layout.population_item, familyProfiles, null);
         lv.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                View focusedView = getActivity().getCurrentFocus();
+                if (focusedView != null) {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+
                 View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.population_dialog, null);
                 tvId = dialogView.findViewById(R.id.population_id);
                 tvName = dialogView.findViewById(R.id.population_name);

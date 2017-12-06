@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class Constants {
 
     public static String url = "http://210.4.59.4/tsekap/vii/api?";
+    public static String apkUrl = "http://210.4.59.4/tsekap/vii/resources/apk/PHA%20Check-App.apk";
 
     public static JSONObject getProfileJson() {
 

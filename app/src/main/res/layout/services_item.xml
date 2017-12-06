@@ -7,7 +7,7 @@
         android:orientation="vertical"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="3"
+        android:layout_weight="2"
         android:padding="10dp">
 
         <TextView
@@ -15,7 +15,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="06022017-1203-1760826"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimary"
+            android:visibility="gone"/>
 
         <TextView
             android:id="@+id/services_name"
@@ -27,7 +28,8 @@
             android:id="@+id/services_barangay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cubacub"/>
+            android:text="Cubacub"
+            android:visibility="gone"/>
 
     </LinearLayout>
 
@@ -37,18 +39,7 @@
         android:layout_weight="1">
 
         <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/success"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
-
-        <ImageView
+            android:id="@+id/iv_group1"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"
@@ -61,9 +52,23 @@
         android:layout_weight="1">
 
         <ImageView
+            android:id="@+id/iv_group2"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_centerInParent="true"
-            android:src="@drawable/success"/>
+            android:src="@drawable/failed"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/iv_group3"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/failed"/>
     </RelativeLayout>
 </LinearLayout>

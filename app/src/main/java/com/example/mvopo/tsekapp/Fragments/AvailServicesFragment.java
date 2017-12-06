@@ -262,17 +262,20 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
                     if (cbAnimalBite.isChecked()) diagnoses.put(new JSONObject("{ \"id\" : 10}"));
                     if (cbOthers.isChecked()) diagnoses.put(new JSONObject("{ \"id\" : 11}"));
 
-                    String status="";
-                    switch (rgFemaleStatus.indexOfChild(getActivity().findViewById(rgFemaleStatus.getCheckedRadioButtonId()))){
-                        case 0:
-                            status = "pregnant";
-                            break;
-                        case 1:
-                            status = "post";
-                            break;
-                        case 2:
-                            status = "non";
-                            break;
+                    String status = "";
+
+                    if(!familyProfile.sex.equalsIgnoreCase("Male")) {
+                        switch (rgFemaleStatus.indexOfChild(getActivity().findViewById(rgFemaleStatus.getCheckedRadioButtonId()))) {
+                            case 0:
+                                status = "pregnant";
+                                break;
+                            case 1:
+                                status = "post";
+                                break;
+                            case 2:
+                                status = "non";
+                                break;
+                        }
                     }
 
                     request.accumulate("sex", familyProfile.sex);

@@ -13,6 +13,7 @@ import android.os.PersistableBundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -59,12 +60,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mSignInBtn.setOnClickListener(this);
 
         if (Build.VERSION.SDK_INT >= 23) {
-            if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
-                    ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
+            if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
                     ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 showDialog();
             }
         }
+
     }
 
     @Override
@@ -73,8 +74,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         switch (id){
             case R.id.signInBtn:
-                if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED &&
+                if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED &&
                         ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
                     String loginId = txtId.getText().toString().trim();
@@ -100,7 +100,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public void showDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Please allow all permissions required for this app, go to Settings then permissions.");
+        builder.setMessage("Please allow all permissions required for this app." +
+                "\n\nPhone - Reading phone number for upcoming development in user services management (i.e Request, Complaints, Reports, etc)." +
+                "\n\nStorage - Writing Storage for Application updates inline to version checker.");
         builder.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {

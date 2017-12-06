@@ -229,8 +229,8 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                         }
                         else head = "NO";
 
-                        FamilyProfile newFamilyProfile = new FamilyProfile("", fname+lname+suffix+brgy+MainActivity.user.muncity, famId, philId, nhtsId, head,
-                                relation, fname, lname, mname, suffix, bday, sex, brgy, "", "", income, unmet, supply, toilet, education, "1");
+                        FamilyProfile newFamilyProfile = new FamilyProfile("", fname+mname+lname+suffix+brgy+MainActivity.user.muncity, famId, philId, nhtsId, head,
+                                relation, fname, lname, mname, suffix, bday, sex, brgy, MainActivity.user.muncity, "", income, unmet, supply, toilet, education, "1");
                         MainActivity.db.addProfile(newFamilyProfile);
                         Toast.makeText(getContext(), "Successfully added", Toast.LENGTH_SHORT).show();
                     } else {

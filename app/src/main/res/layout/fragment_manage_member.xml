@@ -117,6 +117,8 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:hint="First Name"
+                android:inputType="textCapWords"
+                android:capitalize="sentences"
                 android:padding="5dp"
                 android:singleLine="true" />
 
@@ -135,6 +137,8 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:hint="Middle Name"
+                android:inputType="textCapWords"
+                android:capitalize="sentences"
                 android:padding="5dp"
                 android:singleLine="true" />
 
@@ -153,6 +157,8 @@
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
                 android:hint="Last Name"
+                android:inputType="textCapWords"
+                android:capitalize="sentences"
                 android:padding="5dp"
                 android:singleLine="true" />
 

