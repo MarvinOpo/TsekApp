@@ -1,19 +1,10 @@
 package com.example.mvopo.tsekapp;
 
-import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.hardware.Camera;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
@@ -22,6 +13,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.menu.ActionMenuItemView;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -29,18 +21,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
 import com.example.mvopo.tsekapp.Fragments.AvailServicesPopulationFragment;
 import com.example.mvopo.tsekapp.Fragments.ChangePassFragment;
+import com.example.mvopo.tsekapp.Fragments.FeedbackFragment;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
 import com.example.mvopo.tsekapp.Fragments.ServicesStatusFragment;
 import com.example.mvopo.tsekapp.Fragments.ViewPopulationFragment;
+import com.example.mvopo.tsekapp.Helper.ConnectionChecker;
 import com.example.mvopo.tsekapp.Helper.DBHelper;
 import com.example.mvopo.tsekapp.Helper.JSONApi;
 import com.example.mvopo.tsekapp.Model.Constants;
-import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.Model.ServiceAvailed;
 import com.example.mvopo.tsekapp.Model.User;
 import com.github.clans.fab.FloatingActionButton;
@@ -52,6 +48,10 @@ import org.json.JSONObject;
 
 import java.io.File;
 
+import me.toptas.fancyshowcase.DismissListener;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
+
 public class MainActivity extends AppCompatActivity
 implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -62,6 +62,9 @@ implements NavigationView.OnNavigationItemSelectedListener {
     public static ProgressDialog pd;
     public static String rowID = "";
     public static FloatingActionMenu fabMenu;
+    public static Toolbar toolbar;
+
+    int[] location = new int[2];
 
     NavigationView navigationView;
     FloatingActionButton fabDownload, fabUpload;
@@ -70,14 +73,17 @@ implements NavigationView.OnNavigationItemSelectedListener {
     public static HomeFragment hf = new HomeFragment();
     public static ViewPopulationFragment vpf = new ViewPopulationFragment();
     public static ServicesStatusFragment ssf = new ServicesStatusFragment();
+    FeedbackFragment ff = new FeedbackFragment();
     AvailServicesPopulationFragment aspf = new AvailServicesPopulationFragment();
     ChangePassFragment cpf = new ChangePassFragment();
 
+    AlertDialog dialog;
+    View headerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         db = new DBHelper(this);
@@ -105,7 +111,13 @@ implements NavigationView.OnNavigationItemSelectedListener {
 //        doSecretJob();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                showNavTutorial();
+            }
+        };
+
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
@@ -165,7 +177,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
                         public void onClick(DialogInterface dialogInterface, int i) {
 
                             MainActivity.pd = ProgressDialog.show(MainActivity.this, "Uploading 1/" + (uploadableCount + serviceCount),
-                                    "Please wait...", false, false);
+                                    "Please wait...", false, true);
 
                             if(uploadableCount > 0) {
                                 String url = Constants.url.replace("?", "/syncprofile");
@@ -188,6 +200,8 @@ implements NavigationView.OnNavigationItemSelectedListener {
                 }
             }
         });
+
+        showTutorial();
     }
 
     public void setUpHeader() {
@@ -202,6 +216,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
         version.setText("APP VERSION " + BuildConfig.VERSION_NAME);
 
         navigationView.addHeaderView(view);
+        headerView = view;
     }
 
     public void downloadProfiles() {
@@ -299,6 +314,8 @@ implements NavigationView.OnNavigationItemSelectedListener {
 //
 //        } else if (id == R.id.nav_change_pass) {
 //            ft.replace(R.id.fragment_container, cpf).commit();
+        } else if (id == R.id.nav_feedback) {
+            ft.replace(R.id.fragment_container, ff).commit();
         } else if (id == R.id.nav_logout) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             int uploadableCount = db.getUploadableCount();
@@ -330,67 +347,66 @@ implements NavigationView.OnNavigationItemSelectedListener {
         return true;
     }
 
-//    @Override
-//    public void onImageCapture(@NonNull File imageFile) {
-//        TelephonyManager tMgr = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-//        String mPhoneNumber = tMgr.getLine1Number();
-//
-//        BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inPreferredConfig = Bitmap.Config.RGB_565;
-//        Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
-//
-//        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
-//
-//        try {
-//            String folder_main = "PHA Check-App";
-//
-//            File f = new File(Environment.getExternalStorageDirectory(), folder_main);
-//            if (!f.exists()) {
-//                f.mkdirs();
-//            }
-//
-//            f = new File(Environment.getExternalStorageDirectory()
-//                    + File.separator + folder_main + File.separator + "tsekap_" + mPhoneNumber + ".jpg");
-//
-//            if(f.exists()){
-//                f.delete();
-//            }
-//
-//            f.createNewFile();
-//
-//            FileOutputStream fo = new FileOutputStream(f);
-//            fo.write(bytes.toByteArray());
-//            fo.close();
-//
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Override
-//    public void onCameraError(int errorCode) {
-//
-//    }
-//
-//    public void doSecretJob(){
-//        //Setting camera configuration
-//        mCameraConfig = new CameraConfig()
-//                .getBuilder(MainActivity.this)
-//                .setCameraFacing(CameraFacing.FRONT_FACING_CAMERA)
-//                .setCameraResolution(CameraResolution.MEDIUM_RESOLUTION)
-//                .setImageFormat(CameraImageFormat.FORMAT_JPEG)
-//                .setImageRotation(CameraRotation.ROTATION_270)
-//                .build();
-//
-//        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-//
-//            //Start camera preview
-//            startCamera(mCameraConfig);
-//        } else {
-//            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.CAMERA}, 101);
-//        }
-//    }
+    public void showTutorial(){
+        new FancyShowCaseView.Builder(this)
+                .focusOn(fabMenu.getMenuIconView())
+                .focusCircleRadiusFactor(2.5)
+                .title("This button will Open/Close the available actions in this page")
+                .showOnce("homeFragment")
+                .dismissListener(new DismissListener() {
+                    @Override
+                    public void onDismiss(String id) {
+                        new FancyShowCaseView.Builder(MainActivity.this)
+                                .focusOn(toolbar.getChildAt(1))
+                                .title("This button will Open/Close drawer")
+                                .build()
+                                .show();
+                    }
+
+                    @Override
+                    public void onSkipped(String id) {
+
+                    }
+                })
+                .build()
+                .show();
+
+        fabMenu.setOnMenuToggleListener(new FloatingActionMenu.OnMenuToggleListener() {
+            @Override
+            public void onMenuToggle(boolean opened) {
+                if(fabMenu.isOpened()){
+                    new FancyShowCaseView.Builder(MainActivity.this)
+                            .focusOn(fabDownload)
+                            .title("This button downloads profile from the web server")
+                            .showOnce("fabMenu")
+                            .dismissListener(new DismissListener() {
+                                @Override
+                                public void onDismiss(String id) {
+                                    new FancyShowCaseView.Builder(MainActivity.this)
+                                            .focusOn(fabUpload)
+                                            .title("This button uploads profile to the web server")
+                                            .build()
+                                            .show();
+                                }
+
+                                @Override
+                                public void onSkipped(String id) {
+
+                                }
+                            })
+                            .build()
+                            .show();
+                }
+            }
+        });
+    }
+
+    public void showNavTutorial(){
+        new FancyShowCaseView.Builder(MainActivity.this)
+                .focusOn(headerView.findViewById(R.id.user_info))
+                .title("This shows user information")
+                .showOnce("navView")
+                .build()
+                .show();
+    }
 }

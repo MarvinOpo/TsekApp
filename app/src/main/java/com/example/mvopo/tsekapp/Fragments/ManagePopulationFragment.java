@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,10 @@ import org.json.JSONException;
 import java.util.Arrays;
 import java.util.Calendar;
 
+import me.toptas.fancyshowcase.DismissListener;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
+
 /**
  * Created by mvopo on 10/20/2017.
  */
@@ -53,6 +58,9 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
     String[] brgyIds;
     boolean brgyFieldClicked = false;
     View view;
+
+    String males = "Son, Husband, Father, Brother, Nephew, Grandfather, Grandson, Son in Law, Brother in Law, Father in Law";
+    String females = "Daughter, Wife, Mother, Sister, Niece, Grandmother, Granddaugther, Daughter in Law, Sister in Law, Mother in Law";
 
     @Nullable
     @Override
@@ -126,6 +134,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtSupply.setOnClickListener(this);
         txtToilet.setOnClickListener(this);
         manageBtn.setOnClickListener(this);
+
         return view;
     }
 
@@ -382,6 +391,11 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                             updateFields.setVisibility(View.VISIBLE);
                             ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.GONE);
                         }
+                    } else if (txtView.getId() == R.id.manage_relation){
+                        String relation = txtView.getText().toString();
+                        if(males.contains(txtView.getText().toString())) txtSex.setText("Male");
+                        else if(females.contains(txtView.getText().toString())) txtSex.setText("Female");
+                        else txtSex.setText("");
                     }
 
                 }else{

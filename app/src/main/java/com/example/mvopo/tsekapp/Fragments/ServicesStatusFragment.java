@@ -8,6 +8,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,6 +37,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+
+import me.toptas.fancyshowcase.DismissListener;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 
 /**
  * Created by mvopo on 10/20/2017.
@@ -104,7 +110,7 @@ public class ServicesStatusFragment extends Fragment {
         servicesStatuses.clear();
         servicesStatuses = MainActivity.db.getServicesStatus(null);
 
-        adapter = new ListAdapter(getContext(), R.layout.services_item, null, servicesStatuses);
+        adapter = new ListAdapter(getContext(), R.layout.services_item, null, servicesStatuses, null);
         lv.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -138,6 +144,7 @@ public class ServicesStatusFragment extends Fragment {
 
         initiateFilter();
 
+        showTutorial();
         return view;
     }
 
@@ -218,9 +225,12 @@ public class ServicesStatusFragment extends Fragment {
                     }
                 }
 
-                MainActivity.db.getServicesStatus(filterText);
+                String nameSearch = txtSearch.getText().toString().trim();
+                String finalFilter = filterText;
+                if(!nameSearch.isEmpty()) finalFilter = "name LIKE '" + nameSearch + "%' and " + filterText;
+
                 servicesStatuses.clear();
-                servicesStatuses.addAll(MainActivity.db.getServicesStatus(filterText));
+                servicesStatuses.addAll(MainActivity.db.getServicesStatus(finalFilter));
                 adapter.notifyDataSetChanged();
                 dialog.dismiss();
             }
@@ -236,5 +246,68 @@ public class ServicesStatusFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(filter);
         dialog = builder.create();
+    }
+
+    public void showTutorial(){
+        new FancyShowCaseView.Builder(getActivity())
+                .focusOn(txtSearch)
+                .title("This section is for searching specific profile")
+                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                .roundRectRadius(15)
+                .showOnce("serviceStatus")
+                .dismissListener(new DismissListener() {
+                    @Override
+                    public void onDismiss(String id) {
+                        new FancyShowCaseView.Builder(getActivity())
+                                .focusOn(lv)
+                                .title("This portion shows list of profiles and status indicator for services")
+                                .titleGravity(Gravity.TOP)
+                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                                .roundRectRadius(15)
+                                .dismissListener(new DismissListener() {
+                                    @Override
+                                    public void onDismiss(String id) {
+                                        new FancyShowCaseView.Builder(getActivity())
+                                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_download))
+                                                .title("This downloads Services status from web server")
+                                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+                                                .dismissListener(new DismissListener() {
+                                                    @Override
+                                                    public void onDismiss(String id) {
+                                                        new FancyShowCaseView.Builder(getActivity())
+                                                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_filter))
+                                                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+                                                                .title("And this filters the profiles shown in the list")
+                                                                .build()
+                                                                .show();
+                                                    }
+
+                                                    @Override
+                                                    public void onSkipped(String id) {
+
+                                                    }
+                                                })
+                                                .build()
+                                                .show();
+                                }
+
+                                    @Override
+                                    public void onSkipped(String id) {
+
+                                    }
+                                })
+                                .build()
+                                .show();
+                    }
+
+                    @Override
+                    public void onSkipped(String id) {
+
+                    }
+                })
+                .build()
+                .show();
     }
 }

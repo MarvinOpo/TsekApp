@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/home"
-            android:title="Home" />
+            android:title="Home"/>
 
         <item
             android:id="@+id/nav_services"
@@ -49,9 +50,13 @@
                         <!--android:icon="@drawable/change_pass"-->
                         <!--android:title="Change Password" />-->
                     <item
-                        android:id="@+id/nav_logout"
-                        android:icon="@drawable/logout"
-                        android:title="Logout" />
+                        android:id="@+id/nav_feedback"
+                        android:icon="@android:drawable/ic_menu_send"
+                        android:title="Send Feedback" />
+                    <item
+                    android:id="@+id/nav_logout"
+                    android:icon="@drawable/logout"
+                    android:title="Logout" />
                 </group>
             </menu>
         </item>

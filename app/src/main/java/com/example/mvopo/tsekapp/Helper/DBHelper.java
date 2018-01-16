@@ -8,7 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
+import com.example.mvopo.tsekapp.Model.FeedBack;
 import com.example.mvopo.tsekapp.Model.ServicesStatus;
 import com.example.mvopo.tsekapp.Model.ServiceAvailed;
 import com.example.mvopo.tsekapp.Model.User;
@@ -26,9 +28,10 @@ public class DBHelper extends SQLiteOpenHelper {
     final static String SERVICES = "tbl_services";
     final static String SERVICESTATUS = "tbl_must_services";
     final static String PROFILES = "tbl_profile";
+    final static String FEEDBACK = "tbl_feedback";
 
     public DBHelper(Context context) {
-        super(context, DBNAME, null, 3);
+        super(context, DBNAME, null, 4);
         this.context = context;
     }
 
@@ -48,10 +51,13 @@ public class DBHelper extends SQLiteOpenHelper {
         String sql3 = "Create table " + SERVICESTATUS + " (id integer primary key autoincrement, name varchar(100), group1 varchar(2), group2 varchar(2)," +
                 " group3 varchar(2), barangayId varchar(10))";
 
+        String sql4 = "Create table " + FEEDBACK + " (id integer primary key autoincrement, subject varchar(25), body varchar(255))";
+
         db.execSQL(sql);
         db.execSQL(sql1);
         db.execSQL(sql2);
         db.execSQL(sql3);
+        db.execSQL(sql4);
     }
 
     @Override
@@ -59,7 +65,10 @@ public class DBHelper extends SQLiteOpenHelper {
         String sql = "Create table IF NOT EXISTS " + SERVICESTATUS + " (id integer primary key autoincrement, name varchar(100), group1 varchar(2), group2 varchar(2)," +
                 " group3 varchar(2), barangayId varchar(10))";
 
+        String sql1 = "Create table IF NOT EXISTS " + FEEDBACK + " (id integer primary key autoincrement, subject varchar(25), body varchar(255))";
+
         db.execSQL(sql);
+        db.execSQL(sql1);
     }
 
     public void addUser(User user) {
@@ -395,5 +404,72 @@ public class DBHelper extends SQLiteOpenHelper {
         }
         db.close();
         return servicesStatuses;
+    }
+
+    public void addFeedback(FeedBack fb) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("subject", fb.subject);
+        cv.put("body", fb.body);
+        db.insert(FEEDBACK, null, cv);
+        db.close();
+    }
+
+    public void deleteFeedback(String id) {
+        SQLiteDatabase db = getWritableDatabase();
+        if(id.isEmpty()) db.delete(FEEDBACK, null, null);
+        else db.delete(FEEDBACK, "id=?", new String[]{id});
+    }
+
+    public String getFeedbacksForUpload() {
+        String feedback = "";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(FEEDBACK, null, null, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                String subject = c.getString(c.getColumnIndex("subject"));
+                String body = c.getString(c.getColumnIndex("body"));
+
+                feedback +=  (c.getPosition() + 1) + ". " + subject + " - " + body + "\n\n";
+                c.moveToNext();
+            }
+            c.close();
+        }
+        db.close();
+        return feedback;
+    }
+
+    public ArrayList<FeedBack> getFeedbacks() {
+        ArrayList<FeedBack> feedBacks = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(FEEDBACK, null, null, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                String id = c.getString(c.getColumnIndex("id"));
+                String subject = c.getString(c.getColumnIndex("subject"));
+                String body = c.getString(c.getColumnIndex("body"));
+
+                feedBacks.add(new FeedBack(id, subject, body));
+                c.moveToNext();
+            }
+            c.close();
+        }
+        db.close();
+        return feedBacks;
+    }
+
+    public int getFeedbacksCount() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String countQuery = "SELECT  * FROM " + FEEDBACK;
+
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = cursor.getCount();
+
+        cursor.close();
+        db.close();
+        return count;
     }
 }

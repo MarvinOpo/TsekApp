@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,6 +34,10 @@ import com.example.mvopo.tsekapp.R;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import me.toptas.fancyshowcase.DismissListener;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
+
 /**
  * Created by mvopo on 10/19/2017.
  */
@@ -40,7 +46,8 @@ public class ViewPopulationFragment extends Fragment {
 
     ListView lv;
     ArrayList<FamilyProfile> familyProfiles = new ArrayList<>();
-    ListAdapter adapter;
+    ArrayList<FamilyProfile> memberProfiles = new ArrayList<>();
+    ListAdapter adapter, memAdapter;
 
     TextView tvId, tvName, tvAge, tvSex, tvBarangay;
     Button btnUpdate, btnAdd;
@@ -50,6 +57,7 @@ public class ViewPopulationFragment extends Fragment {
     Bundle bundle = new Bundle();
     ManagePopulationFragment mpf = new ManagePopulationFragment();
 
+    Menu menu;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,7 +79,7 @@ public class ViewPopulationFragment extends Fragment {
 //        familyProfiles.add(new FamilyProfile("06082017-1203-2391263", "", "", "Nacario", "Abelgas", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
 //        familyProfiles.add(new FamilyProfile("06022017-1203-1759539", "", "", "Alexander James", "Abenaza", "Basd", "", "1/1/11", "Male", "Cubacub", "", "", "", "", "", true));
 
-        adapter = new ListAdapter(getContext(), R.layout.population_item, familyProfiles, null);
+        adapter = new ListAdapter(getContext(), R.layout.population_item, familyProfiles, null, null);
         lv.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -84,23 +92,33 @@ public class ViewPopulationFragment extends Fragment {
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
 
-                View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.population_dialog, null);
-                tvId = dialogView.findViewById(R.id.population_id);
-                tvName = dialogView.findViewById(R.id.population_name);
-                tvAge = dialogView.findViewById(R.id.population_age);
-                tvSex = dialogView.findViewById(R.id.population_sex);
-                tvBarangay = dialogView.findViewById(R.id.population_barangay);
+//                View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.population_dialog, null);
+//                tvId = dialogView.findViewById(R.id.population_id);
+//                tvName = dialogView.findViewById(R.id.population_name);
+//                tvAge = dialogView.findViewById(R.id.population_age);
+//                tvSex = dialogView.findViewById(R.id.population_sex);
+//                tvBarangay = dialogView.findViewById(R.id.population_barangay);
+//                btnUpdate = dialogView.findViewById(R.id.population_updateBtn);
+//                btnAdd = dialogView.findViewById(R.id.population_addBtn);
+//
+//                String fullName = familyProfiles.get(position).lname + ", " + familyProfiles.get(position).fname + " " +
+//                        familyProfiles.get(position).mname + " " + familyProfiles.get(position).suffix;
+//
+//                tvId.setText("Profile ID: " + familyProfiles.get(position).familyId);
+//                tvName.setText("Name: " + fullName);
+//                tvAge.setText("Age: " + Constants.getAge(familyProfiles.get(position).dob));
+//                tvSex.setText("Sex: " + familyProfiles.get(position).sex);
+//                tvBarangay.setText("Barangay: " + Constants.getBrgyName(familyProfiles.get(position).barangayId));
+
+                View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.population_list_dialog, null);
+
+                ListView lvMembers = dialogView.findViewById(R.id.members_lv);
                 btnUpdate = dialogView.findViewById(R.id.population_updateBtn);
                 btnAdd = dialogView.findViewById(R.id.population_addBtn);
 
-                String fullName = familyProfiles.get(position).lname + ", " + familyProfiles.get(position).fname + " " +
-                        familyProfiles.get(position).mname + " " + familyProfiles.get(position).suffix;
-
-                tvId.setText("Profile ID: " + familyProfiles.get(position).familyId);
-                tvName.setText("Name: " + fullName);
-                tvAge.setText("Age: " + Constants.getAge(familyProfiles.get(position).dob));
-                tvSex.setText("Sex: " + familyProfiles.get(position).sex);
-                tvBarangay.setText("Barangay: " + Constants.getBrgyName(familyProfiles.get(position).barangayId));
+                memberProfiles = MainActivity.db.getFamilyProfiles(familyProfiles.get(position).familyId);
+                memAdapter = new ListAdapter(getContext(), R.layout.population_dialog_item, memberProfiles, null, null);
+                lvMembers.setAdapter(memAdapter);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setView(dialogView);
@@ -130,12 +148,10 @@ public class ViewPopulationFragment extends Fragment {
                         bundle.putBoolean("addHead", false);
                         mpf.setArguments(bundle);
                         MainActivity.ft = MainActivity.fm.beginTransaction();
-                        MainActivity.ft.replace(R.id.fragment_container, mpf).addToBackStack("").commit();
+                            MainActivity.ft.replace(R.id.fragment_container, mpf).addToBackStack("").commit();
                         dialog.dismiss();
                     }
                 });
-
-
             }
         });
 
@@ -176,6 +192,7 @@ public class ViewPopulationFragment extends Fragment {
 //            }
 //        });
 
+        showTutorial();
         return view;
     }
 
@@ -183,6 +200,8 @@ public class ViewPopulationFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.add_head, menu);
+
+        this.menu = menu;
     }
 
     @Override
@@ -210,5 +229,50 @@ public class ViewPopulationFragment extends Fragment {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void showTutorial(){
+        new FancyShowCaseView.Builder(getActivity())
+                .focusOn(txtSearch)
+                .title("This section is for searching specific profile")
+                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                .roundRectRadius(15)
+                .showOnce("viewPopulation")
+                .dismissListener(new DismissListener() {
+                    @Override
+                    public void onDismiss(String id) {
+                        new FancyShowCaseView.Builder(getActivity())
+                                .focusOn(lv)
+                                .title("This shows list of family profiles")
+                                .titleGravity(Gravity.TOP)
+                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                                .roundRectRadius(15)
+                                .dismissListener(new DismissListener() {
+                                    @Override
+                                    public void onDismiss(String id) {
+                                        new FancyShowCaseView.Builder(getActivity())
+                                                .focusOn(MainActivity.toolbar.getChildAt(2))
+                                                .title("To add head directly, just tap this button")
+                                                .build()
+                                                .show();
+                                    }
+
+                                    @Override
+                                    public void onSkipped(String id) {
+
+                                    }
+                                })
+                                .build()
+                                .show();
+                    }
+
+                    @Override
+                    public void onSkipped(String id) {
+
+                    }
+                })
+                .build()
+                .show();
     }
 }

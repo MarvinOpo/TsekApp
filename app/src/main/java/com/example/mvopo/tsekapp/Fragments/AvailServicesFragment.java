@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +27,10 @@ import com.example.mvopo.tsekapp.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import me.toptas.fancyshowcase.DismissListener;
+import me.toptas.fancyshowcase.FancyShowCaseView;
+import me.toptas.fancyshowcase.FocusShape;
 
 /**
  * Created by mvopo on 10/23/2017.
@@ -46,6 +53,8 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
     String[] profileAgeInfo;
     String date, bracketId = "1", TAG = "AvailServices";
 
+    View view;
+    ScrollView scrollView;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,8 +62,9 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
         familyProfile = getArguments().getParcelable("profile");
         date = getArguments().getString("date");
 
-        View view = inflater.inflate(R.layout.fragment_avail_services, container, false);
+        view = inflater.inflate(R.layout.fragment_avail_services, container, false);
 
+        scrollView = view.findViewById(R.id.avail_scrollview);
         cvFemaleStatus = view.findViewById(R.id.cv_female_status);
         cvHealthEduc = view.findViewById(R.id.cv_health_educ);
         cvDrugRehab = view.findViewById(R.id.cv_drug_rehab);
@@ -264,7 +274,7 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
 
                     String status = "";
 
-                    if(!familyProfile.sex.equalsIgnoreCase("Male")) {
+                       if(!familyProfile.sex.equalsIgnoreCase("Male")) {
                         switch (rgFemaleStatus.indexOfChild(getActivity().findViewById(rgFemaleStatus.getCheckedRadioButtonId()))) {
                             case 0:
                                 status = "pregnant";
@@ -297,6 +307,7 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
             }
         });
 
+        showTutorial();
         return view;
     }
 
@@ -318,5 +329,36 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
                 rgHeight.setVisibility(visibility);
                 break;
         }
+    }
+
+    public void showTutorial(){
+        new FancyShowCaseView.Builder(getActivity())
+                .focusOn(view.findViewById(R.id.avail_profile_info))
+                .title("This is the profile information of the person who avails service")
+                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+                .showOnce("availServices")
+                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                .roundRectRadius(15)
+                .dismissListener(new DismissListener() {
+                    @Override
+                    public void onDismiss(String id) {
+                        new FancyShowCaseView.Builder(getActivity())
+                                .focusOn(view.findViewById(R.id.avail_services))
+                                .title("This shows available services inline with the person's age")
+                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+                                .titleGravity(Gravity.TOP)
+                                .roundRectRadius(15)
+                                .build()
+                                .show();
+                    }
+
+                    @Override
+                    public void onSkipped(String id) {
+
+                    }
+                })
+                .build()
+                .show();
     }
 }
