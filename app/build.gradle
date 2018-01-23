@@ -34,4 +34,5 @@ dependencies {
     compile 'com.github.yesidlazaro:GmailBackground:1.2.0'
     compile 'com.cloudinary:cloudinary-android:1.2.2'
     compile 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.10'
 }

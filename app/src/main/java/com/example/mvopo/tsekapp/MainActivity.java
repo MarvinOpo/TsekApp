@@ -214,6 +214,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
         name.setText(user.fname + " " + user.lname);
         contact.setText(user.contact.replace(" ", ""));
         version.setText("APP VERSION " + BuildConfig.VERSION_NAME);
+//        version.setText("DUMMY VERSION " + BuildConfig.VERSION_NAME);
 
         navigationView.addHeaderView(view);
         headerView = view;

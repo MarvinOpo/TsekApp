@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
@@ -47,17 +48,18 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
     EditText txtFamilyId, txtPhilHealthId, txtNhtsId, txtFname, txtMname, txtLname, txtBday, txtBrgy,
             txtHead, txtEducation, txtSuffix, txtSex, txtIncome, txtUnmet, txtSupply, txtToilet, txtRelation;
     Button manageBtn, optionBtn;
+    TextInputLayout unmetFrame;
+    View view;
 
     FamilyProfile familyProfile;
-    boolean toUpdate, addHead;
 
     String famId, philId, nhtsId, fname, mname, lname, bday, brgy, head, relation, education,
             suffix, sex, income, unmet, supply, toilet;
-
     String[] brgys, value;
     String[] brgyIds;
+    int age = 0;
     boolean brgyFieldClicked = false;
-    View view;
+    boolean toUpdate, addHead;
 
     String males = "Son, Husband, Father, Brother, Nephew, Grandfather, Grandson, Son in Law, Brother in Law, Father in Law";
     String females = "Daughter, Wife, Mother, Sister, Niece, Grandmother, Granddaugther, Daughter in Law, Sister in Law, Mother in Law";
@@ -103,15 +105,17 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtSupply = view.findViewById(R.id.manage_supply);
         txtToilet = view.findViewById(R.id.manage_toilet);
         txtHead = view.findViewById(R.id.manage_head);
-        updateFields = view.findViewById(R.id.updateFields_holder);
-        manageBtn = view.findViewById(R.id.manageBtn);
         txtRelation = view.findViewById(R.id.manage_relation);
+        updateFields = view.findViewById(R.id.updateFields_holder);
+        unmetFrame = view.findViewById(R.id.unmet_frame);
+        manageBtn = view.findViewById(R.id.manageBtn);
 
         txtFamilyId.setText(familyProfile.familyId);
         if (!toUpdate) {
             view.findViewById(R.id.layout_head).setVisibility(View.GONE);
             if (!addHead || txtHead.getText().toString().equalsIgnoreCase("NO")) {
                 updateFields.setVisibility(View.GONE);
+                unmetFrame.setVisibility(View.GONE);
                 view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
             }
 
@@ -279,6 +283,8 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
             if (txtHead.getText().toString().equalsIgnoreCase("NO")) {
                 updateFields.setVisibility(View.GONE);
+                age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
+                if(age < 14 || age > 49) unmetFrame.setVisibility(View.GONE);
                 view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
             }
         }
@@ -349,8 +355,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                     txtView.getId() == R.id.manage_supply || txtView.getId() == R.id.manage_toilet){
                 radioButton.setId(i+1);
             }
-
-            View lineView = new View(getContext());
+            View lineView = new View(getContext()); 
             lineView.setBackgroundColor(getResources().getColor(R.color.colorAccent));
             lineView.setLayoutParams(params);
 
@@ -385,10 +390,13 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                     } else if (txtView.getId() == R.id.manage_head) {
                         if (txtView.getText().toString().equalsIgnoreCase("NO")) {
                             updateFields.setVisibility(View.GONE);
+                            age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
+                            if(age < 14 || age > 49) unmetFrame.setVisibility(View.GONE);
                             ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
                             txtRelation.setText("Son");
                         } else {
                             updateFields.setVisibility(View.VISIBLE);
+                            unmetFrame.setVisibility(View.VISIBLE);
                             ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.GONE);
                         }
                     } else if (txtView.getId() == R.id.manage_relation){
@@ -411,5 +419,9 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         txtBday.setText(year + "-" + String.format("%02d", (monthOfYear + 1)) + "-" + String.format("%02d", dayOfMonth));
+
+        age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
+        if( age >= 14 && age <= 49) unmetFrame.setVisibility(View.VISIBLE);
+        else if(!txtHead.getText().toString().equalsIgnoreCase("Yes")) unmetFrame.setVisibility(View.GONE);
     }
 }

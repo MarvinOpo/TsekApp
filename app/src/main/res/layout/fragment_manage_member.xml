@@ -236,6 +236,25 @@
 
         </android.support.design.widget.TextInputLayout>
 
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/unmet_frame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/manage_unmet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:focusable="false"
+                android:hint="Unmet Needs"
+                android:padding="5dp" />
+
+        </android.support.design.widget.TextInputLayout>
+
         <LinearLayout
             android:id="@+id/updateFields_holder"
             android:layout_width="match_parent"
@@ -256,24 +275,6 @@
                     android:background="@android:color/transparent"
                     android:focusable="false"
                     android:hint="Monthly Family Income"
-                    android:padding="5dp" />
-
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/rounded_edittext"
-                android:padding="5dp">
-
-                <EditText
-                    android:id="@+id/manage_unmet"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:focusable="false"
-                    android:hint="Unmet Needs"
                     android:padding="5dp" />
 
             </android.support.design.widget.TextInputLayout>

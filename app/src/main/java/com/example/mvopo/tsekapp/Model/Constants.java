@@ -24,6 +24,9 @@ public class Constants {
     public static String url = "http://203.177.67.124/tsekap/vii/api?";
     public static String apkUrl = "http://203.177.67.124/tsekap/vii/resources/apk/PHA%20Check-App.apk";
 
+//    public static String url = "http://203.177.67.124/tsekap/dummy/api?";
+//    public static String apkUrl = "http://203.177.67.124/tsekap/dummy/resources/apk/PHA%20Check-App.apk";
+
     public static JSONObject getProfileJson() {
 
         FamilyProfile profile = MainActivity.db.getProfileForSync();
