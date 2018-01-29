@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -104,11 +105,11 @@ public class FeedbackFragment extends Fragment{
                         public void onClick(DialogInterface dialogInterface, int i) {
                             if (new ConnectionChecker(getContext()).isConnectedToInternet()) {
                                 String body = MainActivity.db.getFeedbacksForUpload();
+                                Log.e("QWEQWE", body);
                                 BackgroundMail.newBuilder(getContext())
                                         .withUsername("phacheckapp@gmail.com")
                                         .withPassword("phacheckapp123")
-                                        .withMailto("hontoudesu123@gmail.com, jimmy.lomocso@gmail.com, " +
-                                                "doh.gflores@gmail.com, Kpnurses.doh7@gmail.com")
+                                        .withMailto("hontoudesu123@gmail.com")
                                         .withSubject("PHA Check-App Feedback")
                                         .withBody(getSenderInfo() + body)
                                         .withOnSuccessCallback(new BackgroundMail.OnSuccessCallback() {
@@ -154,8 +155,8 @@ public class FeedbackFragment extends Fragment{
         dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String subject = edtxSubject.getText().toString().trim();
-                String body = edtxBody.getText().toString().trim();
+                final String subject = edtxSubject.getText().toString().trim();
+                final String body = edtxBody.getText().toString().trim();
 
                 if(subject.isEmpty()){
                     edtxSubject.setError("Required.");
@@ -169,10 +170,18 @@ public class FeedbackFragment extends Fragment{
                         BackgroundMail.newBuilder(getContext())
                                 .withUsername("phacheckapp@gmail.com")
                                 .withPassword("phacheckapp123")
-                                .withMailto("hontoudesu123@gmail.com, jimmy.lomocso@gmail.com, " +
-                                        "doh.gflores@gmail.com, Kpnurses.doh7@gmail.com")
+                                .withMailto("hontoudesu123@gmail.com, games.jlomocso@gmail.com, " +
+                                        "tsekap.dohro7@gmail.com")
                                 .withSubject("PHA Check-App Feedback")
-                                .withBody(getSenderInfo() + body)
+                                .withBody(getSenderInfo() + subject + " - " + body)
+                                .withOnFailCallback(new BackgroundMail.OnFailCallback() {
+                                    @Override
+                                    public void onFail() {
+                                        MainActivity.db.addFeedback(new FeedBack("", subject, body));
+                                        Toast.makeText(getContext(), "No internet conenction, feedback saved locally.", Toast.LENGTH_SHORT).show();
+                                        refreshList();
+                                    }
+                                })
                                 .send();
                     }else {
                         MainActivity.db.addFeedback(new FeedBack("", subject, body));

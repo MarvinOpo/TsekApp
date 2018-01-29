@@ -525,11 +525,13 @@ public class JSONApi {
                         try {
                             String version = response.getString("version");
                             String updateInfo = response.getString("description");
-                            String versionName = BuildConfig.VERSION_NAME;
+//                            String versionName = BuildConfig.VERSION_NAME;
+                            String versionName = "1.4, 1.5";
 
                             updateInfo = updateInfo.replace("\\n", "\n");
 
-                            if (!version.equalsIgnoreCase(versionName)) {
+//                            if (!version.equalsIgnoreCase(versionName)) {
+                            if (!versionName.contains(version)) {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
                                 builder.setTitle("Notice!");
                                 builder.setMessage("PHA Check-App v" + version + " is now available, please update your app." +
