@@ -3,10 +3,12 @@ package com.example.mvopo.tsekapp.Fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -44,7 +46,7 @@ import me.toptas.fancyshowcase.FocusShape;
 
 public class ViewPopulationFragment extends Fragment {
 
-    ListView lv;
+    ListView lv, lvMembers;
     ArrayList<FamilyProfile> familyProfiles = new ArrayList<>();
     ArrayList<FamilyProfile> memberProfiles = new ArrayList<>();
     ListAdapter adapter, memAdapter;
@@ -112,7 +114,7 @@ public class ViewPopulationFragment extends Fragment {
 
                 View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.population_list_dialog, null);
 
-                ListView lvMembers = dialogView.findViewById(R.id.members_lv);
+                lvMembers = dialogView.findViewById(R.id.members_lv);
                 btnUpdate = dialogView.findViewById(R.id.population_updateBtn);
                 btnAdd = dialogView.findViewById(R.id.population_addBtn);
 
@@ -126,24 +128,27 @@ public class ViewPopulationFragment extends Fragment {
                 final AlertDialog dialog = builder.create();
                 dialog.show();
 
-                bundle.putParcelable("familyProfile", familyProfiles.get(position));
-
                 mpf = new ManagePopulationFragment();
                 btnUpdate.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if(lvMembers.getCheckedItemPosition() >= 0) bundle.putParcelable("familyProfile", memberProfiles.get(lvMembers.getCheckedItemPosition()));
+                        else bundle.putParcelable("familyProfile", familyProfiles.get(position));
+
                         bundle.putBoolean("toUpdate", true);
                         bundle.putBoolean("addHead", false);
                         mpf.setArguments(bundle);
                         MainActivity.ft = MainActivity.fm.beginTransaction();
                         MainActivity.ft.replace(R.id.fragment_container, mpf).addToBackStack("").commit();
                         dialog.dismiss();
+
                     }
                 });
 
                 btnAdd.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        bundle.putParcelable("familyProfile", familyProfiles.get(position));
                         bundle.putBoolean("toUpdate", false);
                         bundle.putBoolean("addHead", false);
                         mpf.setArguments(bundle);

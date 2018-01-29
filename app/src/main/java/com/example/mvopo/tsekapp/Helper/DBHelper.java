@@ -205,7 +205,9 @@ public class DBHelper extends SQLiteOpenHelper {
                         lname, mname, suffix, dob, sex, barangayId, muncityId, provinceId, income, unmetNeed, waterSupply,
                         sanitaryToilet, educationalAttainment, status);
 
-                profiles.add(profile);
+                if(familyId.equals(name.substring(0, name.length()-1)) && relation.equalsIgnoreCase("Head")) profiles.add(0, profile);
+                else profiles.add(profile);
+
                 c.moveToNext();
             }
             c.close();
