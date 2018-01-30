@@ -50,9 +50,15 @@
                         <!--android:icon="@drawable/change_pass"-->
                         <!--android:title="Change Password" />-->
                     <item
+                        android:id="@+id/nav_chat"
+                        android:icon="@android:drawable/ic_menu_send"
+                        android:title="Online Chat" />
+
+                    <item
                         android:id="@+id/nav_feedback"
                         android:icon="@android:drawable/ic_menu_send"
                         android:title="Send Feedback" />
+
                     <item
                     android:id="@+id/nav_logout"
                     android:icon="@drawable/logout"

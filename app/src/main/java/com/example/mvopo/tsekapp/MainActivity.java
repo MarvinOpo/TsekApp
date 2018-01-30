@@ -34,6 +34,7 @@ import com.example.mvopo.tsekapp.Fragments.ChangePassFragment;
 import com.example.mvopo.tsekapp.Fragments.FeedbackFragment;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
 import com.example.mvopo.tsekapp.Fragments.ServicesStatusFragment;
+import com.example.mvopo.tsekapp.Fragments.ViewChatThreadFragment;
 import com.example.mvopo.tsekapp.Fragments.ViewPopulationFragment;
 import com.example.mvopo.tsekapp.Helper.ConnectionChecker;
 import com.example.mvopo.tsekapp.Helper.DBHelper;
@@ -328,6 +329,8 @@ implements NavigationView.OnNavigationItemSelectedListener {
 //
 //        } else if (id == R.id.nav_change_pass) {
 //            ft.replace(R.id.fragment_container, cpf).commit();
+        } else if (id == R.id.nav_chat) {
+            ft.replace(R.id.fragment_container, new ViewChatThreadFragment()).commit();
         } else if (id == R.id.nav_feedback) {
             ft.replace(R.id.fragment_container, ff).commit();
         } else if (id == R.id.nav_logout) {
