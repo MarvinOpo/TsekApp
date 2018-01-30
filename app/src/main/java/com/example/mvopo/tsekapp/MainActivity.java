@@ -1,10 +1,12 @@
 package com.example.mvopo.tsekapp;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.design.widget.NavigationView;
@@ -48,6 +50,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.toptas.fancyshowcase.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
 import me.toptas.fancyshowcase.FocusShape;
@@ -79,6 +82,8 @@ implements NavigationView.OnNavigationItemSelectedListener {
 
     AlertDialog dialog;
     View headerView;
+    CircleImageView profile_image;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -206,6 +211,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
     public void setUpHeader() {
         View view = getLayoutInflater().inflate(R.layout.nav_header_main, null);
 
+       profile_image = view.findViewById(R.id.profile_image);
         TextView name = view.findViewById(R.id.user_name);
         TextView contact = view.findViewById(R.id.user_contact);
         TextView version = view.findViewById(R.id.version);
@@ -214,6 +220,14 @@ implements NavigationView.OnNavigationItemSelectedListener {
         contact.setText(user.contact.replace(" ", ""));
         version.setText("APP VERSION " + BuildConfig.VERSION_NAME);
 //        version.setText("DUMMY VERSION " + BuildConfig.VERSION_NAME);
+
+        profile_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, 100);
+            }
+        });
 
         navigationView.addHeaderView(view);
         headerView = view;
@@ -345,6 +359,18 @@ implements NavigationView.OnNavigationItemSelectedListener {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == Activity.RESULT_OK){
+            switch (requestCode){
+                case 100:
+                    profile_image.setImageURI(data.getData());
+            }
+        }
     }
 
     public void showTutorial(){
