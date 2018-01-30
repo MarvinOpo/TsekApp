@@ -34,6 +34,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ChatActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
         <meta-data android:name="CLOUDINARY_URL" android:value="cloudinary://979931267823771:2_Gm-d7uOhBLtWEjkX6PejJ7UlA@guia"/>
     </application>
 

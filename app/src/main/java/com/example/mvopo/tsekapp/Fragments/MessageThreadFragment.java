@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mvopo.tsekapp.ChatActivity;
 import com.example.mvopo.tsekapp.Helper.ChatAdapter;
-import com.example.mvopo.tsekapp.MainActivity;
+import com.example.mvopo.tsekapp.ChatActivity;
 import com.example.mvopo.tsekapp.Model.Message;
 import com.example.mvopo.tsekapp.Model.User;
 import com.example.mvopo.tsekapp.R;
@@ -41,12 +43,12 @@ public class MessageThreadFragment extends Fragment {
         View view = inflater.inflate(R.layout.message_list_layout, container, false);
         messageThread = getArguments().getString("messageThread");
 
-        MainActivity.toolbar.setTitle(getArguments().getString("messageName"));
+        ChatActivity.toolbar.setTitle(getArguments().getString("messageName"));
 
-        messages.add(new Message("1", MainActivity.user.id, "Bai"));
-        messages.add(new Message(MainActivity.user.id, "2", "Bai ni chat si mark nako adto ta kalingawan ron, game?"));
-        messages.add(new Message(MainActivity.user.id, "1", "Oh? unsa man?"));
-        messages.add(new Message("1", MainActivity.user.id, "Adto ta kalingawan na"));
+        messages.add(new Message("1", ChatActivity.user.id, "Bai"));
+        messages.add(new Message(ChatActivity.user.id, "2", "Bai ni chat si mark nako adto ta kalingawan ron, game?"));
+        messages.add(new Message(ChatActivity.user.id, "1", "Oh? unsa man?"));
+        messages.add(new Message("1", ChatActivity.user.id, "Adto ta kalingawan na"));
 
         lv = view.findViewById(R.id.message_list);
         txtMessage = view.findViewById(R.id.message_text);
@@ -63,7 +65,7 @@ public class MessageThreadFragment extends Fragment {
                 final String message_body = txtMessage.getText().toString().trim();
 
                 if(!message_body.isEmpty()){
-                    messages.add( new Message(MainActivity.user.id, messageThread, message_body));
+                    messages.add( new Message(ChatActivity.user.id, messageThread, message_body));
                     txtMessage.setText("");
                     adapter.notifyDataSetChanged();
 
@@ -72,17 +74,17 @@ public class MessageThreadFragment extends Fragment {
                         @Override
                         public void run() {
                             if(message_body.contains("jimmy")){
-                                messages.add(new Message(messageThread, MainActivity.user.id, "Asay jimmy ato? katong gwapo?"));
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "Asay jimmy ato? katong gwapo?"));
                             }else if(message_body.contains("hi")){
-                                messages.add(new Message(messageThread, MainActivity.user.id, "hello"));
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "hello"));
                             }else if(message_body.contains("blue")){
-                                messages.add(new Message(messageThread, MainActivity.user.id, "Lagi blue nga DOH shirt, Gwapo man gud to!"));
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "Lagi blue nga DOH shirt, Gwapo man gud to!"));
                             }else if(message_body.contains("dili man")){
-                                messages.add(new Message(messageThread, MainActivity.user.id, "Lagi si Jimmy Lomocso lagi, ako gi search. Siya lagi! gwapo kaau oy!"));
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "Lagi si Jimmy Lomocso lagi, ako gi search. Siya lagi! gwapo kaau oy!"));
                             } else if(message_body.contains("")){
-                                messages.add(new Message(messageThread, MainActivity.user.id, "Lagi si Jimmy Lomocso lagi, ako gi search. Siya lagi! gwapo kaau oy!"));
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "Lagi si Jimmy Lomocso lagi, ako gi search. Siya lagi! gwapo kaau oy!"));
                             } else{
-                                messages.add(new Message(messageThread, MainActivity.user.id, "Unsa?"));
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "Unsa?"));
                             }
 
                             adapter.notifyDataSetChanged();

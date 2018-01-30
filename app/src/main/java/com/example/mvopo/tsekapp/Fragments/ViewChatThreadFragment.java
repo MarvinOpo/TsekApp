@@ -1,5 +1,6 @@
 package com.example.mvopo.tsekapp.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.example.mvopo.tsekapp.ChatActivity;
 import com.example.mvopo.tsekapp.Helper.ChatAdapter;
 import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.User;
@@ -46,15 +48,20 @@ public class ViewChatThreadFragment extends Fragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Bundle bundle = new Bundle();
-                bundle.putString("messageThread", chatUsers.get(i).id);
-                bundle.putString("messageName", chatUsers.get(i).fname + " " + chatUsers.get(i).lname);
-
-                MessageThreadFragment mtf = new MessageThreadFragment();
-                mtf.setArguments(bundle);
-
-                MainActivity.ft = MainActivity.fm.beginTransaction();
-                MainActivity.ft.replace(R.id.fragment_container, mtf).addToBackStack("").commit();
+//                Bundle bundle = new Bundle();
+//                bundle.putString("messageThread", chatUsers.get(i).id);
+//                bundle.putString("messageName", chatUsers.get(i).fname + " " + chatUsers.get(i).lname);
+//
+//                MessageThreadFragment mtf = new MessageThreadFragment();
+//                mtf.setArguments(bundle);
+//
+//                MainActivity.ft = MainActivity.fm.beginTransaction();
+//                MainActivity.ft.replace(R.id.fragment_container, mtf).addToBackStack("").commit();
+                Intent intent = new Intent(getContext(), ChatActivity.class);
+                intent.putExtra("messageThread", chatUsers.get(i).id);
+                intent.putExtra("messageName", chatUsers.get(i).fname + " " + chatUsers.get(i).lname);
+                intent.putExtra("user", MainActivity.user);
+                startActivity(intent);
             }
         });
         return view;
