@@ -36,9 +36,9 @@ public class ViewChatThreadFragment extends Fragment {
         MainActivity.toolbar.setTitle("PHA Check-App");
 
         chatUsers.clear();
-        chatUsers.add(new User("1", "Mark Vincent", "B.", "Opo", "", "09123456789", "", ""));
-        chatUsers.add(new User("2", "Jimmy", "B.", "Tumalon", "", "0909876543", "", ""));
-        chatUsers.add(new User("3", "NDP", "O.", "Nathalie", "", "09876543211", "", ""));
+        chatUsers.add(new User("1", "Mark Vincent", "B.", "Opo", "", "0912-345-6789", "", ""));
+        chatUsers.add(new User("2", "Jimmy", "B.", "Parker", "", "0916-207-2427", "", ""));
+        chatUsers.add(new User("3", "NDP", "O.", "Assistant", "", "418-7633", "", ""));
 
         lv = view.findViewById(R.id.lv);
         adapter = new ChatAdapter(getContext(), R.layout.chat_list_item, chatUsers, null);

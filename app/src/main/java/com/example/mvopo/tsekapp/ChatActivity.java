@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -34,6 +35,8 @@ public class ChatActivity extends AppCompatActivity {
 
         Bundle b = getIntent().getExtras();
         user = b.getParcelable("user");
+
+        getSupportActionBar().setTitle(b.getString("messageName"));
 
         MessageThreadFragment mtf = new MessageThreadFragment();
         mtf.setArguments(b);

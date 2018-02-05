@@ -73,18 +73,25 @@ public class MessageThreadFragment extends Fragment {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if(message_body.contains("jimmy")){
-                                messages.add(new Message(messageThread, ChatActivity.user.id, "Asay jimmy ato? katong gwapo?"));
+                            if(message_body.contains("login")){
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "Make sure naa kay internet connection maam/sir"));
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "And make sure naa kay user account :-)"));
                             }else if(message_body.contains("hi")){
                                 messages.add(new Message(messageThread, ChatActivity.user.id, "hello"));
-                            }else if(message_body.contains("blue")){
-                                messages.add(new Message(messageThread, ChatActivity.user.id, "Lagi blue nga DOH shirt, Gwapo man gud to!"));
-                            }else if(message_body.contains("dili man")){
-                                messages.add(new Message(messageThread, ChatActivity.user.id, "Lagi si Jimmy Lomocso lagi, ako gi search. Siya lagi! gwapo kaau oy!"));
-                            } else if(message_body.contains("")){
-                                messages.add(new Message(messageThread, ChatActivity.user.id, "Lagi si Jimmy Lomocso lagi, ako gi search. Siya lagi! gwapo kaau oy!"));
+                            }else if(message_body.contains("online")){
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "You only need an internet during login, downloading and uploading of data"));
+                            }else if(message_body.contains("future")){
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "Magstorya lang nya ta about sa atong future. hehehe. Bitaw, our future plans for our mobile app are....hmmmmmmm, e-announce lang namu sa online haha"));
+                            }else if(message_body.contains("upload")){
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "To upload your data, please connect to the internet. Don't worry if ma-disconnect kay it will continue to where it left off once you re-upload!"));
+                            }else if(message_body.contains("double entry")){
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "Para dili mag-double entry maam/sir, it is advised nga e-search daan ang name before adding the profile. "));
+                            }else if(message_body.contains("thank you")){
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "You're welcome :-). "));
+                            }else if(message_body.contains("fuck") || message_body.contains("shit") || message_body.contains("damn")){
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "Please refrain from using inappropriate words."));
                             } else{
-                                messages.add(new Message(messageThread, ChatActivity.user.id, "Unsa?"));
+                                messages.add(new Message(messageThread, ChatActivity.user.id, "..."));
                             }
 
                             adapter.notifyDataSetChanged();
