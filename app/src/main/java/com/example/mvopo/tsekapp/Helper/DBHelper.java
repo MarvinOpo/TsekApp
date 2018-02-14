@@ -254,6 +254,52 @@ public class DBHelper extends SQLiteOpenHelper {
         return familyProfile;
     }
 
+    public ArrayList<FamilyProfile> getMatchingProfiles(String cFname, String cMname, String cLname, String cSuffix) {
+        ArrayList<FamilyProfile> profiles = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(PROFILES, null, "fname LIKE ? and mname LIKE ? and lname LIKE ? and suffix LIKE ?",
+                new String[]{cFname + "%", cMname + "%", cLname + "%", cSuffix + "%"}, null, null, null);
+
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                int id = c.getInt(c.getColumnIndex("id"));
+                String uniqueId = c.getString(c.getColumnIndex("uniqueId"));
+                String familyId = c.getString(c.getColumnIndex("familyId"));
+                String philId = c.getString(c.getColumnIndex("philId"));
+                String nhtsId = c.getString(c.getColumnIndex("nhtsId"));
+                String isHead = c.getString(c.getColumnIndex("isHead"));
+                String relation = c.getString(c.getColumnIndex("relation"));
+                String fname = c.getString(c.getColumnIndex("fname"));
+                String mname = c.getString(c.getColumnIndex("mname"));
+                String lname = c.getString(c.getColumnIndex("lname"));
+                String suffix = c.getString(c.getColumnIndex("suffix"));
+                String dob = c.getString(c.getColumnIndex("dob"));
+                String sex = c.getString(c.getColumnIndex("sex"));
+                String barangayId = c.getString(c.getColumnIndex("barangayId"));
+                String muncityId = c.getString(c.getColumnIndex("muncityId"));
+                String provinceId = c.getString(c.getColumnIndex("provinceId"));
+                String income = c.getString(c.getColumnIndex("income"));
+                String unmetNeed = c.getString(c.getColumnIndex("unmetNeed"));
+                String waterSupply = c.getString(c.getColumnIndex("waterSupply"));
+                String sanitaryToilet = c.getString(c.getColumnIndex("sanitaryToilet"));
+                String educationalAttainment = c.getString(c.getColumnIndex("educationalAttainment"));
+                String status = c.getString(c.getColumnIndex("status"));
+
+                FamilyProfile profile = new FamilyProfile(id + "", uniqueId, familyId, philId, nhtsId, isHead, relation, fname,
+                        lname, mname, suffix, dob, sex, barangayId, muncityId, provinceId, income, unmetNeed, waterSupply,
+                        sanitaryToilet, educationalAttainment, status);
+
+                if(relation.equalsIgnoreCase("Head")) profiles.add(0, profile);
+                else profiles.add(profile);
+
+                c.moveToNext();
+            }
+            c.close();
+        }
+        db.close();
+        return profiles;
+    }
+
     public void updateProfileById(String uniqueId) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues cv = new ContentValues();

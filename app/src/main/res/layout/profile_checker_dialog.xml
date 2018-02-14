@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:id="@+id/chercker_lv_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ListView
+            android:id="@+id/checker_lv"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:choiceMode="singleChoice"
+            android:listSelector="@drawable/rounded_edittext" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right">
+
+            <TextView
+                android:id="@+id/checker_btnNew"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create New"
+                android:textColor="@color/colorAccent"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="right"/>
+
+            <TextView
+                android:id="@+id/checker_btnUpdate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Update"
+                android:textColor="@color/colorAccent"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
+                android:layout_gravity="right"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/checker_txt_frame"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/checker_fname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:capitalize="sentences"
+                android:hint="First Name"
+                android:inputType="textCapWords"
+                android:padding="5dp"
+                android:singleLine="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/checker_mname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:capitalize="sentences"
+                android:hint="Middle Name"
+                android:inputType="textCapWords"
+                android:padding="5dp"
+                android:singleLine="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/checker_lname"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:capitalize="sentences"
+                android:hint="Last Name"
+                android:inputType="textCapWords"
+                android:padding="5dp"
+                android:singleLine="true" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_edittext"
+            android:padding="5dp">
+
+            <EditText
+                android:id="@+id/checker_suffix"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:focusable="false"
+                android:hint="Suffix"
+                android:padding="5dp" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/checker_btnCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Check"
+            android:textColor="@color/colorAccent"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="right"
+            android:padding="10dp"/>
+    </LinearLayout>
+</RelativeLayout>

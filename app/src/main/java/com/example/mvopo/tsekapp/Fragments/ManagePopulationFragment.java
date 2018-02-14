@@ -2,10 +2,13 @@ package com.example.mvopo.tsekapp.Fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -16,11 +19,14 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mvopo.tsekapp.Helper.ListAdapter;
 import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
@@ -30,8 +36,10 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 import me.toptas.fancyshowcase.DismissListener;
 import me.toptas.fancyshowcase.FancyShowCaseView;
@@ -52,6 +60,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
     View view;
 
     FamilyProfile familyProfile;
+    List<FamilyProfile> matchingProfiles = new ArrayList<>();
 
     String famId, philId, nhtsId, fname, mname, lname, bday, brgy, head, relation, education,
             suffix, sex, income, unmet, supply, toilet;
@@ -139,6 +148,20 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtToilet.setOnClickListener(this);
         manageBtn.setOnClickListener(this);
 
+        txtSex.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                sex = txtSex.getText().toString();
+                if(((age >= 15 && age <= 49) || addHead) && sex.equalsIgnoreCase("Female")) unmetFrame.setVisibility(View.VISIBLE);
+                else unmetFrame.setVisibility(View.GONE);
+            }
+
+            @Override public void afterTextChanged(Editable editable) {}
+        });
+
+        if(!toUpdate) showProfileCheckerDialog();
         return view;
     }
 
@@ -284,7 +307,8 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             if (txtHead.getText().toString().equalsIgnoreCase("NO")) {
                 updateFields.setVisibility(View.GONE);
                 age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
-                if(age < 14 || age > 49) unmetFrame.setVisibility(View.GONE);
+                if((age < 15 || age > 49) && sex.equalsIgnoreCase("Female")) unmetFrame.setVisibility(View.GONE);
+
                 view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
             }
         }
@@ -391,12 +415,12 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                         if (txtView.getText().toString().equalsIgnoreCase("NO")) {
                             updateFields.setVisibility(View.GONE);
                             age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
-                            if(age < 14 || age > 49) unmetFrame.setVisibility(View.GONE);
+                            if((age < 15 || age > 49) && txtSex.getText().toString().equalsIgnoreCase("Female")) unmetFrame.setVisibility(View.GONE);
                             ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
                             txtRelation.setText("Son");
                         } else {
                             updateFields.setVisibility(View.VISIBLE);
-                            unmetFrame.setVisibility(View.VISIBLE);
+                            if(txtSex.getText().toString().equalsIgnoreCase("Female")) unmetFrame.setVisibility(View.VISIBLE);
                             ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.GONE);
                         }
                     } else if (txtView.getId() == R.id.manage_relation){
@@ -421,7 +445,84 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtBday.setText(year + "-" + String.format("%02d", (monthOfYear + 1)) + "-" + String.format("%02d", dayOfMonth));
 
         age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
-        if( age >= 14 && age <= 49) unmetFrame.setVisibility(View.VISIBLE);
-        else if(!txtHead.getText().toString().equalsIgnoreCase("Yes")) unmetFrame.setVisibility(View.GONE);
+        if(((age >= 15 && age <= 49) || addHead) && txtSex.getText().toString().equalsIgnoreCase("Female")) unmetFrame.setVisibility(View.VISIBLE);
+        else unmetFrame.setVisibility(View.GONE);
+    }
+
+    public void showProfileCheckerDialog(){
+        View checkerDialogView = LayoutInflater.from(getContext()).inflate(R.layout.profile_checker_dialog, null, false);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(checkerDialogView);
+
+        final EditText txtCheckerFname, txtCheckerMname, txtCheckerLname, txtCheckerSuffix;
+        final ListView lvMatchingProfiles;
+        final LinearLayout txtFrame, lvFrame;
+        TextView btnCheck, btnUpdate, btnNew;
+
+        txtCheckerFname = checkerDialogView.findViewById(R.id.checker_fname);
+        txtCheckerMname = checkerDialogView.findViewById(R.id.checker_mname);
+        txtCheckerLname = checkerDialogView.findViewById(R.id.checker_lname);
+        txtCheckerSuffix = checkerDialogView.findViewById(R.id.checker_suffix);
+        lvMatchingProfiles = checkerDialogView.findViewById(R.id.checker_lv);
+        lvFrame = checkerDialogView.findViewById(R.id.chercker_lv_frame);
+        txtFrame = checkerDialogView.findViewById(R.id.checker_txt_frame);
+        btnCheck = checkerDialogView.findViewById(R.id.checker_btnCheck);
+        btnUpdate = checkerDialogView.findViewById(R.id.checker_btnUpdate);
+        btnNew = checkerDialogView.findViewById(R.id.checker_btnNew);
+
+        final AlertDialog checkerDialog = builder.create();
+        checkerDialog.show();
+
+        btnCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String fname, mname, lname, suffix;
+
+                fname = txtCheckerFname.getText().toString().trim();
+                mname = txtCheckerMname.getText().toString().trim();
+                lname = txtCheckerLname.getText().toString().trim();
+                suffix = txtCheckerSuffix.getText().toString().trim();
+
+                matchingProfiles = MainActivity.db.getMatchingProfiles(fname, mname, lname, suffix);
+
+                if(matchingProfiles.size() > 0){
+                    ListAdapter adapter = new ListAdapter(getContext(), R.layout.population_dialog_item, matchingProfiles, null, null);
+                    lvMatchingProfiles.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
+
+                    lvFrame.setVisibility(View.VISIBLE);
+                    txtFrame.setVisibility(View.GONE);
+                }else{
+                    txtFname.setText(fname);
+                    txtMname.setText(mname);
+                    txtLname.setText(lname);
+                    txtSuffix.setText(suffix);
+                    checkerDialog.dismiss();
+                }
+            }
+        });
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(lvMatchingProfiles.getCheckedItemPosition() >= 0){
+                    familyProfile = matchingProfiles.get(lvMatchingProfiles.getCheckedItemPosition());
+                    setFieldTexts();
+                    checkerDialog.dismiss();
+                } else Toast.makeText(getContext(), "Please select profile to update.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        btnNew.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                txtFname.setText( txtCheckerFname.getText().toString().trim());
+                txtMname.setText(txtCheckerMname.getText().toString().trim());
+                txtLname.setText(txtCheckerLname.getText().toString().trim());
+                txtSuffix.setText(txtCheckerSuffix.getText().toString().trim());
+                checkerDialog.dismiss();
+            }
+        });
     }
 }
