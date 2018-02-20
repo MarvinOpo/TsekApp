@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "25300662914",
+    "firebase_url": "https://tsekap-82741.firebaseio.com",
+    "project_id": "tsekap-82741",
+    "storage_bucket": "tsekap-82741.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:25300662914:android:e999556386eec084",
+        "android_client_info": {
+          "package_name": "com.example.mvopo.tsekapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "25300662914-makfk7a67mmgd7e8oa5eeqidaapdh2ib.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mvopo.tsekapp",
+            "certificate_hash": "48b2bdf9d4cbc4bc11f58e2f99e3fd708e1f8097"
+          }
+        },
+        {
+          "client_id": "25300662914-2e73s709pboe0ip0o1us9igjuu1j2llq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnjANuU72OOT1qeoSM7P1vlMVTbL6afFI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "25300662914-2e73s709pboe0ip0o1us9igjuu1j2llq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
