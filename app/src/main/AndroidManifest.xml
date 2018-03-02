@@ -39,6 +39,7 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <meta-data android:name="CLOUDINARY_URL" android:value="cloudinary://979931267823771:2_Gm-d7uOhBLtWEjkX6PejJ7UlA@guia"/>
+
     </application>
 
 </manifest>

@@ -650,7 +650,6 @@ public class JSONApi {
                 Toast.makeText(context, "Unable to connect to server.", Toast.LENGTH_SHORT).show();
             }
         });
-
         mRequestQueue.add(jsonObjectRequest);
     }
 }

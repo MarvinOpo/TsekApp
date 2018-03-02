@@ -306,11 +306,13 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
             if (txtHead.getText().toString().equalsIgnoreCase("NO")) {
                 updateFields.setVisibility(View.GONE);
-                age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
-                if((age < 15 || age > 49) && sex.equalsIgnoreCase("Female")) unmetFrame.setVisibility(View.GONE);
-
                 view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
             }
+
+            age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
+            if((age < 15 || age > 49) && txtSex.getText().toString().equalsIgnoreCase("Female")) unmetFrame.setVisibility(View.GONE);
+            else unmetFrame.setVisibility(View.VISIBLE);
+
         }
         else txtHead.setText(familyProfile.relation);
 

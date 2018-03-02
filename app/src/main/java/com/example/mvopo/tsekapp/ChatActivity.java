@@ -13,6 +13,7 @@ import android.view.View;
 import com.example.mvopo.tsekapp.Fragments.MessageThreadFragment;
 import com.example.mvopo.tsekapp.Model.User;
 import com.github.clans.fab.FloatingActionMenu;
+import com.google.firebase.database.Query;
 
 /**
  * Created by mvopo on 1/30/2018.
@@ -22,6 +23,8 @@ public class ChatActivity extends AppCompatActivity {
 
     public static Toolbar toolbar;
     public static User user;
+
+    MessageThreadFragment mtf;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,16 +39,16 @@ public class ChatActivity extends AppCompatActivity {
         Bundle b = getIntent().getExtras();
         user = b.getParcelable("user");
 
-        getSupportActionBar().setTitle(b.getString("messageName"));
+        getSupportActionBar().setTitle(b.getString("messageTo"));
 
-        MessageThreadFragment mtf = new MessageThreadFragment();
+        mtf = new MessageThreadFragment();
         mtf.setArguments(b);
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.fragment_container, mtf).commit();
 
-        FloatingActionMenu fabMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
+        FloatingActionMenu fabMenu = findViewById(R.id.fabMenu);
         fabMenu.setVisibility(View.GONE);
     }
 
@@ -53,6 +56,7 @@ public class ChatActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         if (menuItem.getItemId() == android.R.id.home) {
             this.finish();
+            mtf.removeRegisteredListener();
         }
         return super.onOptionsItemSelected(menuItem);
     }

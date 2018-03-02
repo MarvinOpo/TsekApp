@@ -80,6 +80,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
     FeedbackFragment ff = new FeedbackFragment();
     AvailServicesPopulationFragment aspf = new AvailServicesPopulationFragment();
     ChangePassFragment cpf = new ChangePassFragment();
+    ViewChatThreadFragment vctf = new ViewChatThreadFragment();
 
     AlertDialog dialog;
     View headerView;
@@ -300,6 +301,10 @@ implements NavigationView.OnNavigationItemSelectedListener {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
+        try {
+            vctf.removeRegisteredListener();
+        }catch (Exception e){}
+
         if(id != R.id.nav_logout) fabMenu.setVisibility(View.GONE);
 
         ft = fm.beginTransaction();
@@ -330,7 +335,8 @@ implements NavigationView.OnNavigationItemSelectedListener {
 //        } else if (id == R.id.nav_change_pass) {
 //            ft.replace(R.id.fragment_container, cpf).commit();
         } else if (id == R.id.nav_chat) {
-            ft.replace(R.id.fragment_container, new ViewChatThreadFragment()).commit();
+            vctf = new ViewChatThreadFragment();
+            ft.replace(R.id.fragment_container, vctf).commit();
         } else if (id == R.id.nav_feedback) {
             ft.replace(R.id.fragment_container, ff).commit();
         } else if (id == R.id.nav_logout) {
