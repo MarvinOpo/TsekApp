@@ -33,10 +33,10 @@ dependencies {
     compile 'com.github.clans:fab:1.6.4'
     compile 'com.github.yesidlazaro:GmailBackground:1.2.0'
     compile 'com.cloudinary:cloudinary-android:1.2.2'
-    compile 'com.github.faruktoptas:FancyShowCaseView:1.0.0'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.2.10'
     compile 'de.hdodenhof:circleimageview:2.2.0'
     compile 'com.google.firebase:firebase-database:11.8.0'
+    compile 'com.github.wooplr:Spotlight:1.2.3'
 }
 
 apply plugin: 'com.google.gms.google-services'

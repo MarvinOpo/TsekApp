@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentManager;
@@ -44,20 +45,23 @@ import com.example.mvopo.tsekapp.Model.ServiceAvailed;
 import com.example.mvopo.tsekapp.Model.User;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.wooplr.spotlight.SpotlightView;
+import com.wooplr.spotlight.prefs.PreferencesManager;
+import com.wooplr.spotlight.utils.SpotlightListener;
+import com.wooplr.spotlight.utils.SpotlightSequence;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import me.toptas.fancyshowcase.DismissListener;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 
 public class MainActivity extends AppCompatActivity
-implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     public static FragmentManager fm;
     public static FragmentTransaction ft;
@@ -67,6 +71,8 @@ implements NavigationView.OnNavigationItemSelectedListener {
     public static String rowID = "";
     public static FloatingActionMenu fabMenu;
     public static Toolbar toolbar;
+    public static Activity mainActivity;
+    public static Queue<SpotlightView.Builder> queue = new LinkedList<>();
 
     int[] location = new int[2];
 
@@ -93,6 +99,8 @@ implements NavigationView.OnNavigationItemSelectedListener {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        new PreferencesManager(this).resetAll();
+        mainActivity = this;
         db = new DBHelper(this);
 
         try {
@@ -117,7 +125,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 showNavTutorial();
@@ -185,14 +193,14 @@ implements NavigationView.OnNavigationItemSelectedListener {
                             MainActivity.pd = ProgressDialog.show(MainActivity.this, "Uploading 1/" + (uploadableCount + serviceCount),
                                     "Please wait...", false, true);
 
-                            if(uploadableCount > 0) {
+                            if (uploadableCount > 0) {
                                 String url = Constants.url.replace("?", "/syncprofile");
                                 JSONApi.getInstance(MainActivity.this).uploadProfile(url, Constants.getProfileJson(), uploadableCount, 1);
-                            }else if(serviceCount > 0){
+                            } else if (serviceCount > 0) {
                                 ServiceAvailed serviceAvailed = db.getServiceForUpload();
                                 JSONApi.getInstance(MainActivity.this).uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed,
-                                        1, uploadableCount+serviceCount);
-                            }else{
+                                        1, uploadableCount + serviceCount);
+                            } else {
                                 //upload services here
                                 Toast.makeText(MainActivity.this, "Uploading services is under development", Toast.LENGTH_SHORT).show();
                                 MainActivity.pd.dismiss();
@@ -213,7 +221,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
     public void setUpHeader() {
         View view = getLayoutInflater().inflate(R.layout.nav_header_main, null);
 
-       profile_image = view.findViewById(R.id.profile_image);
+        profile_image = view.findViewById(R.id.profile_image);
         TextView name = view.findViewById(R.id.user_name);
         TextView contact = view.findViewById(R.id.user_contact);
         TextView version = view.findViewById(R.id.version);
@@ -303,9 +311,10 @@ implements NavigationView.OnNavigationItemSelectedListener {
 
         try {
             vctf.removeRegisteredListener();
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
 
-        if(id != R.id.nav_logout) fabMenu.setVisibility(View.GONE);
+        if (id != R.id.nav_logout) fabMenu.setVisibility(View.GONE);
 
         ft = fm.beginTransaction();
         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -342,7 +351,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
         } else if (id == R.id.nav_logout) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             int uploadableCount = db.getUploadableCount();
-            if(uploadableCount <= 0) {
+            if (uploadableCount <= 0) {
                 builder.setMessage("Logging out will delete all profile data. Are you sure you want to proceed?");
                 builder.setPositiveButton("Proceed", new DialogInterface.OnClickListener() {
                     @Override
@@ -357,7 +366,7 @@ implements NavigationView.OnNavigationItemSelectedListener {
                     }
                 });
                 builder.setNegativeButton("Cancel", null);
-            }else{
+            } else {
                 builder.setMessage("Please upload data before logging out.\n\nProfile(s): " + uploadableCount);
                 builder.setPositiveButton("Ok", null);
             }
@@ -374,74 +383,94 @@ implements NavigationView.OnNavigationItemSelectedListener {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == Activity.RESULT_OK){
-            switch (requestCode){
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
                 case 100:
                     profile_image.setImageURI(data.getData());
             }
         }
     }
 
-    public void showTutorial(){
-        new FancyShowCaseView.Builder(this)
-                .focusOn(fabMenu.getMenuIconView())
-                .focusCircleRadiusFactor(2.5)
-                .title("This button will Open/Close the available actions in this page")
-                .showOnce("homeFragment")
-                .dismissListener(new DismissListener() {
-                    @Override
-                    public void onDismiss(String id) {
-                        new FancyShowCaseView.Builder(MainActivity.this)
-                                .focusOn(toolbar.getChildAt(1))
-                                .title("This button will Open/Close drawer")
-                                .build()
-                                .show();
-                    }
-
-                    @Override
-                    public void onSkipped(String id) {
-
-                    }
-                })
-                .build()
-                .show();
+    public void showTutorial() {
+        queue.add(makeSpotlightView(fabMenu.getMenuIconView(),
+                "Whoops!\nRead Me!",
+                "Im a floating menu button, click me to show available actions for this Page",
+                "FabMenu"));
+        queue.add(makeSpotlightView(toolbar.getChildAt(1),
+                "Me! Me! Me!",
+                "Im Navigation Drawer, a toggle that shows/hides your main navigation menu for this app",
+                "NavDrawer"));
+        startSequence();
 
         fabMenu.setOnMenuToggleListener(new FloatingActionMenu.OnMenuToggleListener() {
             @Override
             public void onMenuToggle(boolean opened) {
-                if(fabMenu.isOpened()){
-                    new FancyShowCaseView.Builder(MainActivity.this)
-                            .focusOn(fabDownload)
-                            .title("This button downloads profile from the web server")
-                            .showOnce("fabMenu")
-                            .dismissListener(new DismissListener() {
-                                @Override
-                                public void onDismiss(String id) {
-                                    new FancyShowCaseView.Builder(MainActivity.this)
-                                            .focusOn(fabUpload)
-                                            .title("This button uploads profile to the web server")
-                                            .build()
-                                            .show();
-                                }
+                if (fabMenu.isOpened()) {
+                    queue.clear();
+                    queue.add(makeSpotlightView(fabDownload,
+                            "Hello!",
+                            "Im responsible for downloading profiles. Sadly, i require Internet Connection." +
+                                    " Im Download Button btw, YOROSHIKU ONEGAI!",
+                            "FabDownload"));
 
-                                @Override
-                                public void onSkipped(String id) {
+                    queue.add(makeSpotlightView(fabUpload,
+                            "Sumimasen",
+                            "Im Upload Button, I save Added/Updated profiles from you phone to the web server. I also require Internet Connection!",
+                            "FabUpload"));
 
-                                }
-                            })
-                            .build()
-                            .show();
+                    startSequence();
                 }
             }
         });
     }
 
-    public void showNavTutorial(){
-        new FancyShowCaseView.Builder(MainActivity.this)
-                .focusOn(headerView.findViewById(R.id.user_info))
-                .title("This shows user information")
-                .showOnce("navView")
-                .build()
-                .show();
+    public void showNavTutorial() {
+        queue.clear();
+        queue.add(makeSpotlightView(headerView.findViewById(R.id.user_info),
+                "You \nEquals Me",
+                "Im User Info, as you can see i have your name and other information. So basically, im you.",
+                "NavUserInfo"));
+        startSequence();
+    }
+
+    public static SpotlightView.Builder makeSpotlightView(View view, String header, String body, String id) {
+        return new SpotlightView.Builder(mainActivity)
+                //.introAnimationDuration(400)
+                .enableRevealAnimation(true)
+                .performClick(true)
+                .fadeinTextDuration(400)
+                .headingTvColor(Color.parseColor("#eb273f"))
+                .headingTvSize(25)
+                .headingTvText(header)
+                .subHeadingTvColor(Color.parseColor("#ffffff"))
+                .subHeadingTvSize(15)
+                .subHeadingTvText(body)
+                .maskColor(Color.parseColor("#dc000000"))
+                .target(view)
+                .lineAnimDuration(400)
+                .lineAndArcColor(Color.parseColor("#eb273f"))
+                .dismissOnTouch(true)
+                .dismissOnBackPress(true)
+                .enableDismissAfterShown(true)
+                .setListener(new SpotlightListener() {
+                    @Override
+                    public void onUserClicked(String s) {
+                        playNext();
+                    }
+                })
+                .usageId(id);
+//                .show();
+    }
+
+    public static void startSequence(){
+        if(queue.isEmpty()) Log.d("MainActivity", "EMPTY SEQUENCE");
+        else queue.poll().show();
+    }
+
+    public static void playNext(){
+        SpotlightView.Builder next = queue.poll();
+
+        if(next != null) next.show().setReady(true);
+        else Log.d("MainActivity", "END OF QUEUE");
     }
 }

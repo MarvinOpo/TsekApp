@@ -12,7 +12,7 @@
         android:layout_centerInParent="true"
         android:visibility="gone"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -32,16 +32,26 @@
             android:inputType="number"
             android:maxLength="10"/>
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/spotlight_date_focus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sample Text Here"
+            android:layout_marginLeft="-10dp"
+            android:layout_marginTop="15dp"
+            android:visibility="invisible"/>
+
+        <RelativeLayout
             android:id="@+id/search_holder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/rounded_edittext"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_below="@id/avail_date">
 
             <EditText
                 android:id="@+id/list_searchTxt"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="9"
                 android:background="@android:color/transparent"
@@ -52,17 +62,29 @@
 
             <ImageView
                 android:id="@+id/list_searchBtn"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="2dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
                 android:src="@drawable/search" />
-        </LinearLayout>
+
+            <TextView
+                android:id="@+id/spotlight_search_focus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sample Text Here"
+                android:layout_marginLeft="-10dp"
+                android:layout_centerVertical="true"
+                android:visibility="invisible"/>
+        </RelativeLayout>
 
         <ListView
             android:id="@+id/lv"
+            android:layout_below="@id/search_holder"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="10dp" />
-    </LinearLayout>
+    </RelativeLayout>
 </RelativeLayout>

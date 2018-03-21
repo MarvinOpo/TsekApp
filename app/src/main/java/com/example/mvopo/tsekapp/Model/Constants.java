@@ -53,6 +53,7 @@ public class Constants {
             data.accumulate("income", profile.income);
             data.accumulate("unmet", profile.unmetNeed);
             data.accumulate("water", profile.waterSupply);
+            data.accumulate("user_id", MainActivity.user.id);
 
             String toilet = profile.sanitaryToilet;
 

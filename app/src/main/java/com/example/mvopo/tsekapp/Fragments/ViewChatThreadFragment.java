@@ -82,7 +82,7 @@ public class ViewChatThreadFragment extends Fragment {
 //                MessageThreadFragment mtf = new MessageThreadFragment();
 //                mtf.setArguments(bundle);
 //
-//                MainActivity.ft = MainActivity.fm.beginTransaction();
+//                MainActivity.ft = MaindActivity.fm.beginTransaction();
 //                MainActivity.ft.replace(R.id.fragment_container, mtf).addToBackStack("").commit();
                 Intent intent = new Intent(getContext(), ChatActivity.class);
                 intent.putExtra("messageTo", chatKeys.get(i));

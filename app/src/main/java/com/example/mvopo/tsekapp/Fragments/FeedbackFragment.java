@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,10 +34,6 @@ import com.example.mvopo.tsekapp.R;
 
 import java.util.ArrayList;
 
-import me.toptas.fancyshowcase.DismissListener;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
-
 /**
  * Created by mvopo on 12/21/2017.
  */
@@ -49,7 +46,7 @@ public class FeedbackFragment extends Fragment{
     ListAdapter adapter;
 
     AlertDialog dialog;
-    LinearLayout searchholder;
+    RelativeLayout searchholder;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -216,47 +213,63 @@ public class FeedbackFragment extends Fragment{
     }
 
     public void showTutorial(){
-        new FancyShowCaseView.Builder(getActivity())
-                .focusOn(lv)
-                .title("This shows list of feedback that needs to be uploaded")
-                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                .titleGravity(Gravity.TOP)
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .roundRectRadius(15)
-                .showOnce("feedback")
-                .dismissListener(new DismissListener() {
-                    @Override
-                    public void onDismiss(String id) {
-                        new FancyShowCaseView.Builder(getActivity())
-                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_upload_feedback))
-                                .title("To upload feedbacks shown in list, tap this button")
-                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                                .dismissListener(new DismissListener() {
-                                    @Override
-                                    public void onDismiss(String id) {
-                                        new FancyShowCaseView.Builder(getActivity())
-                                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_add_feedback))
-                                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                                                .title("And to report problem/feedback, tap this button")
-                                                .build()
-                                                .show();
-                                    }
+//        new FancyShowCaseView.Builder(getActivity())
+//                .focusOn(lv)
+//                .title("This shows list of feedback that needs to be uploaded")
+//                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                .titleGravity(Gravity.TOP)
+//                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+//                .roundRectRadius(15)
+//                .showOnce("feedback")
+//                .dismissListener(new DismissListener() {
+//                    @Override
+//                    public void onDismiss(String id) {
+//                        new FancyShowCaseView.Builder(getActivity())
+//                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_upload_feedback))
+//                                .title("To upload feedbacks shown in list, tap this button")
+//                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                                .dismissListener(new DismissListener() {
+//                                    @Override
+//                                    public void onDismiss(String id) {
+//                                        new FancyShowCaseView.Builder(getActivity())
+//                                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_add_feedback))
+//                                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                                                .title("And to report problem/feedback, tap this button")
+//                                                .build()
+//                                                .show();
+//                                    }
+//
+//                                    @Override
+//                                    public void onSkipped(String id) {.
+//
+//                                    }
+//                                })
+//                                .build()
+//                                .show();
+//                    }
+//
+//                    @Override
+//                    public void onSkipped(String id) {
+//
+//                    }
+//                })
+//                .build()
+//                .show();
 
-                                    @Override
-                                    public void onSkipped(String id) {
+        MainActivity.queue.clear();
+        MainActivity.queue.add(MainActivity.makeSpotlightView(lv,
+                "Hi there!",
+                "These are list of uploadable feedbacks",
+                "FeedbackList"));
 
-                                    }
-                                })
-                                .build()
-                                .show();
-                    }
+        MainActivity.queue.add(MainActivity.makeSpotlightView(MainActivity.toolbar.getChildAt(2),
+                "Konnichiwa!",
+                "Plus Button: If you want to give some feedback, just click me dudeee!\n\n" +
+                        "Arrow Up Button: If you make feedback but doesnt have connection, it will appear in the list." +
+                        "And you need to click me to upload those feedback.",
+                "FeedbackMenus"));
 
-                    @Override
-                    public void onSkipped(String id) {
+        MainActivity.startSequence();
 
-                    }
-                })
-                .build()
-                .show();
     }
 }

@@ -36,10 +36,6 @@ import com.example.mvopo.tsekapp.R;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import me.toptas.fancyshowcase.DismissListener;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
-
 /**
  * Created by mvopo on 10/19/2017.
  */
@@ -59,6 +55,8 @@ public class ViewPopulationFragment extends Fragment {
     Bundle bundle = new Bundle();
     ManagePopulationFragment mpf = new ManagePopulationFragment();
 
+    View view;
+
     Menu menu;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -69,7 +67,7 @@ public class ViewPopulationFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.list_layout, container, false);
+       view = inflater.inflate(R.layout.list_layout, container, false);
 
         lv = view.findViewById(R.id.lv);
         txtSearch = view.findViewById(R.id.list_searchTxt);
@@ -237,47 +235,65 @@ public class ViewPopulationFragment extends Fragment {
     }
 
     public void showTutorial(){
-        new FancyShowCaseView.Builder(getActivity())
-                .focusOn(txtSearch)
-                .title("This section is for searching specific profile")
-                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .roundRectRadius(15)
-                .showOnce("viewPopulation")
-                .dismissListener(new DismissListener() {
-                    @Override
-                    public void onDismiss(String id) {
-                        new FancyShowCaseView.Builder(getActivity())
-                                .focusOn(lv)
-                                .title("This shows list of family profiles")
-                                .titleGravity(Gravity.TOP)
-                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                                .roundRectRadius(15)
-                                .dismissListener(new DismissListener() {
-                                    @Override
-                                    public void onDismiss(String id) {
-                                        new FancyShowCaseView.Builder(getActivity())
-                                                .focusOn(MainActivity.toolbar.getChildAt(2))
-                                                .title("To add head directly, just tap this button")
-                                                .build()
-                                                .show();
-                                    }
+//        new FancyShowCaseView.Builder(getActivity())
+//                .focusOn(txtSearch)
+//                .title("This section is for searching specific profile")
+//                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+//                .roundRectRadius(15)
+//                .showOnce("viewPopulation")
+//                .dismissListener(new DismissListener() {
+//                    @Override
+//                    public void onDismiss(String id) {
+//                        new FancyShowCaseView.Builder(getActivity())
+//                                .focusOn(lv)
+//                                .title("This shows list of family profiles")
+//                                .titleGravity(Gravity.TOP)
+//                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+//                                .roundRectRadius(15)
+//                                .dismissListener(new DismissListener() {
+//                                    @Override
+//                                    public void onDismiss(String id) {
+//                                        new FancyShowCaseView.Builder(getActivity())
+//                                                .focusOn(MainActivity.toolbar.getChildAt(2))
+//                                                .title("To add head directly, just tap this button")
+//                                                .build()
+//                                                .show();
+//                                    }
+//
+//                                    @Override
+//                                    public void onSkipped(String id) {
+//
+//                                    }
+//                                })
+//                                .build()
+//                                .show();
+//                    }
+//
+//                    @Override
+//                    public void onSkipped(String id) {
+//
+//                    }
+//                })
+//                .build()
+//                .show();
 
-                                    @Override
-                                    public void onSkipped(String id) {
+        MainActivity.queue.clear();
+        MainActivity.queue.add(MainActivity.makeSpotlightView(view.findViewById(R.id.spotlight_search_focus),
+                "Looking for Someone?",
+                "Well, well, well! Just type their name and i'll find them for yah.",
+                "ViewPopulationSearch"));
 
-                                    }
-                                })
-                                .build()
-                                .show();
-                    }
+        MainActivity.queue.add(MainActivity.makeSpotlightView(lv,
+                "Eyes Here!",
+                "These are list of family profiles",
+                "ViewPopulationList"));
 
-                    @Override
-                    public void onSkipped(String id) {
+        MainActivity.queue.add(MainActivity.makeSpotlightView(MainActivity.toolbar.getChildAt(2),
+                "Hey!",
+                "You want to add Family Heads? Go ahead ang click me!",
+                "ViewPopulationAddHead"));
 
-                    }
-                })
-                .build()
-                .show();
+        MainActivity.startSequence();
     }
 }

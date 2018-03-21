@@ -47,7 +47,6 @@ import java.util.Map;
 
 public class MessageThreadFragment extends Fragment {
 
-    public static String messageThread;
     ListView lv;
     ArrayList<Message> messages = new ArrayList<>();
     ChatAdapter adapter;

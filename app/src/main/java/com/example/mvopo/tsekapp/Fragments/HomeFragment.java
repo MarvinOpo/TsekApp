@@ -14,6 +14,9 @@ import com.example.mvopo.tsekapp.R;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 /**
  * Created by mvopo on 10/19/2017.
  */
@@ -43,8 +46,8 @@ public class HomeFragment extends Fragment{
         }
 
         int profCount = MainActivity.db.getProfilesCount("");
-        targetCount.setText(MainActivity.user.target);
-        profiledCount.setText(profCount + "");
+        targetCount.setText(NumberFormat.getNumberInstance(Locale.US).format(Integer.parseInt(MainActivity.user.target)));
+        profiledCount.setText(NumberFormat.getNumberInstance(Locale.US).format(profCount));
 
         float completion = profCount * 100.0f / Integer.parseInt(MainActivity.user.target);
         completionCount.setText( String.format("%.1f", completion) + "% Goal Completion");

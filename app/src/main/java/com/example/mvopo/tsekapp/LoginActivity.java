@@ -81,6 +81,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED &&
                         ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
+                    db.deleteUser();
+                    db.deleteProfiles();
+                    db.deleteServiceStatus();
+
                     loginId = txtId.getText().toString().trim();
                     loginPass = txtPass.getText().toString().trim();
 

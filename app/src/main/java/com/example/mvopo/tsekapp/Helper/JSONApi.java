@@ -211,7 +211,7 @@ public class JSONApi {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         MainActivity.pd.setTitle("Downloading " + currentCount + "/" + totalCount);
-                                        String url = Constants.url + "r=profile" + "&brgy=" + brgyId + "&offset=" + currentCount;
+                                        String url = Constants.url + "r=profile" + "&brgy=" + brgyId + "&offset=" + currentCount + "&user_id=" + MainActivity.user.id;
                                         getProfile(url, totalCount, currentCount, brgyCount, brgyId);
                                     }
                                 });
@@ -269,6 +269,9 @@ public class JSONApi {
                                     Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
                                     compareVersion(Constants.url + "r=version");
                                     MainActivity.pd.dismiss();
+
+                                    int feedbackCount = MainActivity.db.getFeedbacksCount();
+                                    if(feedbackCount > 0) showFeedbackUploadDialog(feedbackCount);
                                 }
                             }
                         } catch (JSONException e) {
@@ -410,8 +413,10 @@ public class JSONApi {
                                     uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount + 1, goalCount);
                                 } else {
                                     Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
-                                    Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
-                                    compareVersion(Constants.url + "r=version");
+
+                                    int feedbackCount = MainActivity.db.getFeedbacksCount();
+                                    if(feedbackCount > 0) showFeedbackUploadDialog(feedbackCount);
+                                    else compareVersion(Constants.url + "r=version");
                                 }
                             }
                         } catch (JSONException e) {
@@ -651,5 +656,52 @@ public class JSONApi {
             }
         });
         mRequestQueue.add(jsonObjectRequest);
+    }
+
+    public void showFeedbackUploadDialog(int feedbackCount){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage(feedbackCount + " Feedbacks uploadable. Proceed upload?");
+        builder.setPositiveButton("Upload", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (new ConnectionChecker(context).isConnectedToInternet()) {
+                    String body = MainActivity.db.getFeedbacksForUpload();
+                    Log.e("QWEQWE", body);
+                    BackgroundMail.newBuilder(context)
+                            .withUsername("phacheckapp@gmail.com")
+                            .withPassword("phacheckapp123")
+                            .withMailto("hontoudesu123@gmail.com")
+                            .withSubject("PHA Check-App Feedback")
+                            .withBody(getSenderInfo() + body)
+                            .withOnSuccessCallback(new BackgroundMail.OnSuccessCallback() {
+                                @Override
+                                public void onSuccess() {
+                                    MainActivity.db.deleteFeedback("");
+                                    compareVersion(Constants.url + "r=version");
+                                }
+                            })
+                            .send();
+                } else
+                    Toast.makeText(context, "No internet conenction", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                compareVersion(Constants.url + "r=version");
+            }
+        });
+        builder.show();
+    }
+
+    public String getSenderInfo(){
+        TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String mPhoneNumber = tMgr.getLine1Number();
+
+        String senderInfo =  "Name: " + MainActivity.user.fname + " " + MainActivity.user.lname + "\n" +
+                "Registered Number: " + MainActivity.user.contact + "\n" +
+                "Device Number:" + mPhoneNumber + "\n\n";
+
+        return senderInfo;
     }
 }

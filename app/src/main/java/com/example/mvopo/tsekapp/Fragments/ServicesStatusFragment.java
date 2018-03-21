@@ -38,10 +38,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import me.toptas.fancyshowcase.DismissListener;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
-
 /**
  * Created by mvopo on 10/20/2017.
  */
@@ -64,6 +60,8 @@ public class ServicesStatusFragment extends Fragment {
     String[] gender = new String[]{"Both", "Male", "Female"}, brgys;
     JSONArray arrayBrgy;
 
+    View view;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +71,7 @@ public class ServicesStatusFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_must_services, container, false);
+        view = inflater.inflate(R.layout.fragment_must_services, container, false);
         filter = inflater.inflate(R.layout.service_status_filter, null, false);
 
         lv = view.findViewById(R.id.lv);
@@ -249,65 +247,85 @@ public class ServicesStatusFragment extends Fragment {
     }
 
     public void showTutorial(){
-        new FancyShowCaseView.Builder(getActivity())
-                .focusOn(txtSearch)
-                .title("This section is for searching specific profile")
-                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .roundRectRadius(15)
-                .showOnce("serviceStatus")
-                .dismissListener(new DismissListener() {
-                    @Override
-                    public void onDismiss(String id) {
-                        new FancyShowCaseView.Builder(getActivity())
-                                .focusOn(lv)
-                                .title("This portion shows list of profiles and status indicator for services")
-                                .titleGravity(Gravity.TOP)
-                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                                .roundRectRadius(15)
-                                .dismissListener(new DismissListener() {
-                                    @Override
-                                    public void onDismiss(String id) {
-                                        new FancyShowCaseView.Builder(getActivity())
-                                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_download))
-                                                .title("This downloads Services status from web server")
-                                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                                                .dismissListener(new DismissListener() {
-                                                    @Override
-                                                    public void onDismiss(String id) {
-                                                        new FancyShowCaseView.Builder(getActivity())
-                                                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_filter))
-                                                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                                                                .title("And this filters the profiles shown in the list")
-                                                                .build()
-                                                                .show();
-                                                    }
+//        new FancyShowCaseView.Builder(getActivity())
+//                .focusOn(txtSearch)
+//                .title("This section is for searching specific profile")
+//                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+//                .roundRectRadius(15)
+//                .showOnce("serviceStatus")
+//                .dismissListener(new DismissListener() {
+//                    @Override
+//                    public void onDismiss(String id) {
+//                        new FancyShowCaseView.Builder(getActivity())
+//                                .focusOn(lv)
+//                                .title("This portion shows list of profiles and status indicator for services")
+//                                .titleGravity(Gravity.TOP)
+//                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+//                                .roundRectRadius(15)
+//                                .dismissListener(new DismissListener() {
+//                                    @Override
+//                                    public void onDismiss(String id) {
+//                                        new FancyShowCaseView.Builder(getActivity())
+//                                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_download))
+//                                                .title("This downloads Services status from web server")
+//                                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                                                .dismissListener(new DismissListener() {
+//                                                    @Override
+//                                                    public void onDismiss(String id) {
+//                                                        new FancyShowCaseView.Builder(getActivity())
+//                                                                .focusOn(MainActivity.toolbar.getChildAt(2).findViewById(R.id.action_filter))
+//                                                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                                                                .title("And this filters the profiles shown in the list")
+//                                                                .build()
+//                                                                .show();
+//                                                    }
+//
+//                                                    @Override
+//                                                    public void onSkipped(String id) {
+//
+//                                                    }
+//                                                })
+//                                                .build()
+//                                                .show();
+//                                    }
+//
+//                                    @Override
+//                                    public void onSkipped(String id) {
+//
+//                                    }
+//                                })
+//                                .build()
+//                                .show();
+//                    }
+//
+//                    @Override
+//                    public void onSkipped(String id) {
+//
+//                    }
+//                })
+//                .build()
+//                .show();
 
-                                                    @Override
-                                                    public void onSkipped(String id) {
+        MainActivity.queue.clear();
+        MainActivity.queue.add(MainActivity.makeSpotlightView(view.findViewById(R.id.spotlight_search_focus),
+                "Looking for Someone?",
+                "Well, well, well! Just type their LAST NAME and i'll find them for yah.",
+                "ServiceStatusSearch"));
 
-                                                    }
-                                                })
-                                                .build()
-                                                .show();
-                                }
+        MainActivity.queue.add(MainActivity.makeSpotlightView(lv,
+                "Eyes Here!",
+                "These are list of services status",
+                "ServiceStatusList"));
 
-                                    @Override
-                                    public void onSkipped(String id) {
+        MainActivity.queue.add(MainActivity.makeSpotlightView(MainActivity.toolbar.getChildAt(2),
+                "Do Something",
+                "Arrow Down Button: Click me if you want to download 3 must services status. " +
+                        "I suggest you upload first before clicking me to count your newly added services\n\n" +
+                        "Filter Button: Just click me if you want advance filter on your list. Now get/89 off!",
+                "ServiceStatusOption"));
 
-                                    }
-                                })
-                                .build()
-                                .show();
-                    }
-
-                    @Override
-                    public void onSkipped(String id) {
-
-                    }
-                })
-                .build()
-                .show();
+        MainActivity.startSequence();
     }
 }

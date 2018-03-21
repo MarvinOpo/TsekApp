@@ -28,9 +28,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import me.toptas.fancyshowcase.DismissListener;
-import me.toptas.fancyshowcase.FancyShowCaseView;
-import me.toptas.fancyshowcase.FocusShape;
 
 /**
  * Created by mvopo on 10/23/2017.
@@ -332,33 +329,46 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
     }
 
     public void showTutorial(){
-        new FancyShowCaseView.Builder(getActivity())
-                .focusOn(view.findViewById(R.id.avail_profile_info))
-                .title("This is the profile information of the person who avails service")
-                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                .showOnce("availServices")
-                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                .roundRectRadius(15)
-                .dismissListener(new DismissListener() {
-                    @Override
-                    public void onDismiss(String id) {
-                        new FancyShowCaseView.Builder(getActivity())
-                                .focusOn(view.findViewById(R.id.avail_services))
-                                .title("This shows available services inline with the person's age")
-                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
-                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
-                                .titleGravity(Gravity.TOP)
-                                .roundRectRadius(15)
-                                .build()
-                                .show();
-                    }
+//        new FancyShowCaseView.Builder(getActivity())
+//                .focusOn(view.findViewById(R.id.avail_profile_info))
+//                .title("This is the profile information of the person who avails service")
+//                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                .showOnce("availServices")
+//                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+//                .roundRectRadius(15)
+//                .dismissListener(new DismissListener() {
+//                    @Override
+//                    public void onDismiss(String id) {
+//                        new FancyShowCaseView.Builder(getActivity())
+//                                .focusOn(view.findViewById(R.id.avail_services))
+//                                .title("This shows available services inline with the person's age")
+//                                .titleSize(20, TypedValue.COMPLEX_UNIT_DIP)
+//                                .focusShape(FocusShape.ROUNDED_RECTANGLE)
+//                                .titleGravity(Gravity.TOP)
+//                                .roundRectRadius(15)
+//                                .build()
+//                                .show();
+//                    }
+//
+//                    @Override
+//                    public void onSkipped(String id) {
+//
+//                    }
+//                })
+//                .build()
+//                .show();
 
-                    @Override
-                    public void onSkipped(String id) {
+        MainActivity.queue.clear();
+        MainActivity.queue.add(MainActivity.makeSpotlightView(view.findViewById(R.id.avail_profile_info),
+                "Mate!",
+                "This is the profile information of the person who avails service",
+                "AvailServiceInfo"));
 
-                    }
-                })
-                .build()
-                .show();
+        MainActivity.queue.add(MainActivity.makeSpotlightView(view.findViewById(R.id.avail_services),
+                "You there",
+                "This shows available services inline with the person's age",
+                "AvailServices"));
+
+        MainActivity.startSequence();
     }
 }
