@@ -24,6 +24,8 @@ public class Constants {
     public static String url = "http://203.177.67.124/tsekap/vii/api?";
     public static String apkUrl = "http://203.177.67.124/tsekap/vii/resources/apk/PHA%20Check-App.apk";
 
+    public static String dengvaxiaUrl = "http://203.177.67.124/dengvaxia/api?";
+
 //    public static String url = "http://203.177.67.124/tsekap/dummy/api?";
 //    public static String apkUrl = "http://203.177.67.124/tsekap/dummy/resources/apk/PHA%20Check-App.apk";
 
@@ -75,13 +77,12 @@ public class Constants {
         return request;
     }
 
-    public static String getAge(String date) {
+    public static String getAge(String date, Calendar c) {
         int year, month, day;
         String ageString = "";
 
         try {
             SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Calendar c = Calendar.getInstance();
             Calendar dob = Calendar.getInstance();
             dob.setTime(myFormat.parse(date));
 

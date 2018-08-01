@@ -31,7 +31,7 @@
         <item>Masteral Degree</item>
     </string-array>
 
-    <string-array name="is_family_head">
+    <string-array name="yes_no">
         <item>YES</item>
         <item>NO</item>
     </string-array>

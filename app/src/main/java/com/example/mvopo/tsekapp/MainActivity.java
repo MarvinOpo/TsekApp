@@ -34,6 +34,8 @@ import com.example.mvopo.tsekapp.Fragments.AvailServicesPopulationFragment;
 import com.example.mvopo.tsekapp.Fragments.ChangePassFragment;
 import com.example.mvopo.tsekapp.Fragments.FeedbackFragment;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
+import com.example.mvopo.tsekapp.Fragments.ManagePopulationFragment;
+import com.example.mvopo.tsekapp.Fragments.PendingDengvaxiaFragment;
 import com.example.mvopo.tsekapp.Fragments.ServicesStatusFragment;
 import com.example.mvopo.tsekapp.Fragments.ViewChatThreadFragment;
 import com.example.mvopo.tsekapp.Fragments.ViewPopulationFragment;
@@ -41,6 +43,7 @@ import com.example.mvopo.tsekapp.Helper.ConnectionChecker;
 import com.example.mvopo.tsekapp.Helper.DBHelper;
 import com.example.mvopo.tsekapp.Helper.JSONApi;
 import com.example.mvopo.tsekapp.Model.Constants;
+import com.example.mvopo.tsekapp.Model.DengvaxiaDetails;
 import com.example.mvopo.tsekapp.Model.ServiceAvailed;
 import com.example.mvopo.tsekapp.Model.User;
 import com.github.clans.fab.FloatingActionButton;
@@ -84,6 +87,7 @@ public class MainActivity extends AppCompatActivity
     public static ViewPopulationFragment vpf = new ViewPopulationFragment();
     public static ServicesStatusFragment ssf = new ServicesStatusFragment();
     FeedbackFragment ff = new FeedbackFragment();
+    PendingDengvaxiaFragment pdf = new PendingDengvaxiaFragment();
     AvailServicesPopulationFragment aspf = new AvailServicesPopulationFragment();
     ChangePassFragment cpf = new ChangePassFragment();
     ViewChatThreadFragment vctf = new ViewChatThreadFragment();
@@ -99,7 +103,7 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        new PreferencesManager(this).resetAll();
+        //new PreferencesManager(this).resetAll();
         mainActivity = this;
         db = new DBHelper(this);
 
@@ -348,6 +352,10 @@ public class MainActivity extends AppCompatActivity
             ft.replace(R.id.fragment_container, vctf).commit();
         } else if (id == R.id.nav_feedback) {
             ft.replace(R.id.fragment_container, ff).commit();
+        } else if (id == R.id.nav_cross_match) {
+            Toast.makeText(this, "This feature is under development process", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.nav_pending_dengvaxia) {
+            ft.replace(R.id.fragment_container, pdf).commit();
         } else if (id == R.id.nav_logout) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             int uploadableCount = db.getUploadableCount();
@@ -431,6 +439,11 @@ public class MainActivity extends AppCompatActivity
                 "Im User Info, as you can see i have your name and other information. So basically, im you.",
                 "NavUserInfo"));
         startSequence();
+    }
+
+    public void setDetailsToDengvaxia(DengvaxiaDetails details){
+        ManagePopulationFragment mpf = vpf.getMPF();
+        mpf.setDengvaxiaDetails(details);
     }
 
     public static SpotlightView.Builder makeSpotlightView(View view, String header, String body, String id) {

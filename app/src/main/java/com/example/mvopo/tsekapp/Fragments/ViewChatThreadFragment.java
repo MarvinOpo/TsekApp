@@ -150,7 +150,7 @@ public class ViewChatThreadFragment extends Fragment {
     }
 
     public void showNewMessageDialog() {
-        View view = getLayoutInflater().inflate(R.layout.new_message_dialog, null, false);
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.new_message_dialog, null, false);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setView(view);

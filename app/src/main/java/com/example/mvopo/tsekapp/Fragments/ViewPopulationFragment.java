@@ -234,6 +234,9 @@ public class ViewPopulationFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    public ManagePopulationFragment getMPF(){
+        return mpf;
+    }
     public void showTutorial(){
 //        new FancyShowCaseView.Builder(getActivity())
 //                .focusOn(txtSearch)

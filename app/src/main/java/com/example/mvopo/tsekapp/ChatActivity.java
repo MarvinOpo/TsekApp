@@ -48,7 +48,7 @@ public class ChatActivity extends AppCompatActivity {
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.fragment_container, mtf).commit();
 
-        FloatingActionMenu fabMenu = findViewById(R.id.fabMenu);
+        FloatingActionMenu fabMenu = (FloatingActionMenu) findViewById(R.id.fabMenu);
         fabMenu.setVisibility(View.GONE);
     }
 

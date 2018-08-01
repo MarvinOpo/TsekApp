@@ -145,6 +145,7 @@ public class MessageThreadFragment extends Fragment {
                         .setValue(new Message(messageFrom, body, getDate()));
 
                 othersRef.child(messageFrom).setValue(new MessageThread(body, getDate(), key));
+                myRef.child(messageTo).setValue(new MessageThread(body, getDate(), key));
 
                 try { removeRegisteredListener();} catch (Exception e) {}
                 getMessages();

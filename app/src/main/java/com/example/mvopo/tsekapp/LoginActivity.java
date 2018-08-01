@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -34,7 +35,10 @@ import com.example.mvopo.tsekapp.Model.User;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private final int state_storage_code = 100;
+
     public static ProgressDialog pd;
+
     EditText txtId, txtPass;
     Button mSignInBtn;
     DBHelper db;
@@ -66,7 +70,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (Build.VERSION.SDK_INT >= 23) {
             if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED ||
                     ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                showDialog();
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.READ_CONTACTS)) {
+                    showDialog();
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.READ_PHONE_STATE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, state_storage_code);
+                }
             }
         }
 
@@ -95,9 +105,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         txtPass.setError("Required");
                         txtPass.requestFocus();
                     } else {
-                        showPinDialog(false);
+//                        showPinDialog(false);
+                        pd = ProgressDialog.show(LoginActivity.this, "Loading", "Please wait...", false, false);
+                        String url = Constants.url + "r=login" + "&user=" + loginId + "&pass=" + loginPass;
+                        JSONApi.getInstance(LoginActivity.this).login(url);
                     }
                 } else {
+                    showDialog();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case state_storage_code:
+                if(grantResults.length > 0 && grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED){
+
+                }else{
                     showDialog();
                 }
                 break;
@@ -149,32 +177,91 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     if (pin.isEmpty() || pin.length() < 4) {
                         txtPin.setError("Please provide a 4-digit pin.");
                         txtPin.requestFocus();
+
+                        return;
                     } else {
                         SharedPreferences.Editor editor = getSharedPreferences("CheckAppPin", MODE_PRIVATE).edit();
                         editor.putString("pin", pin);
                         editor.apply();
 
                         dialog.dismiss();
-                        pd = ProgressDialog.show(LoginActivity.this, "Loading", "Please wait...", false, false);
-                        String url = Constants.url + "r=login" + "&user=" + loginId + "&pass=" + loginPass;
-                        JSONApi.getInstance(LoginActivity.this).login(url);
                     }
                 } else {
                     SharedPreferences prefs = getSharedPreferences("CheckAppPin", MODE_PRIVATE);
                     String prefPin = prefs.getString("pin", "No pin defined");//"No name defined" is the default value.
 
-                    if (prefPin.equals(pin)) {
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        intent.putExtra("user", user);
-                        LoginActivity.this.startActivity(intent);
-                        dialog.dismiss();
-                        LoginActivity.this.finish();
-                    }else{
+                    if (!prefPin.equals(pin)) {
                         txtPin.setError("Incorrect Pin");
                         txtPin.requestFocus();
+
+                        return;
                     }
                 }
+
+                if(user == null) user = db.getUser();
+
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra("user", user);
+                LoginActivity.this.startActivity(intent);
+                dialog.dismiss();
+                LoginActivity.this.finish();
             }
         });
     }
+
+//    public void showPinDialog(final boolean hasPin) {
+//        View view = getLayoutInflater().inflate(R.layout.pin_dialog, null, false);
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setView(view);
+//
+//        TextView tvPinBtn, tvPinHeader;
+//
+//        tvPinBtn = view.findViewById(R.id.pin_btn);
+//        tvPinHeader = view.findViewById(R.id.pin_header);
+//
+//        final EditText txtPin = view.findViewById(R.id.pin_txt);
+//
+//        if (hasPin) tvPinHeader.setText("Please enter pin");
+//
+//        final AlertDialog dialog = builder.create();
+//        dialog.show();
+//
+//        tvPinBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                String pin = txtPin.getText().toString().trim();
+//
+//                if (!hasPin) {
+//                    if (pin.isEmpty() || pin.length() < 4) {
+//                        txtPin.setError("Please provide a 4-digit pin.");
+//                        txtPin.requestFocus();
+//                    } else {
+//                        SharedPreferences.Editor editor = getSharedPreferences("CheckAppPin", MODE_PRIVATE).edit();
+//                        editor.putString("pin", pin);
+//                        editor.apply();
+//
+//                        dialog.dismiss();
+//                        pd = ProgressDialog.show(LoginActivity.this, "Loading", "Please wait...", false, false);
+//                        String url = Constants.url + "r=login" + "&user=" + loginId + "&pass=" + loginPass;
+//                        JSONApi.getInstance(LoginActivity.this).login(url);
+//                    }
+//                } else {
+//                    SharedPreferences prefs = getSharedPreferences("CheckAppPin", MODE_PRIVATE);
+//                    String prefPin = prefs.getString("pin", "No pin defined");//"No name defined" is the default value.
+//
+//                    if (prefPin.equals(pin)) {
+//                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//                        intent.putExtra("user", user);
+//                        LoginActivity.this.startActivity(intent);
+//                        dialog.dismiss();
+//                        LoginActivity.this.finish();
+//                    }else{
+//                        txtPin.setError("Incorrect Pin");
+//                        txtPin.requestFocus();
+//                    }
+//                }
+//            }
+//        });
+//    }
 }

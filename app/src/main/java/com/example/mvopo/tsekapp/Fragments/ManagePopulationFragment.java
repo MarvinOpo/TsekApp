@@ -1,11 +1,22 @@
 package com.example.mvopo.tsekapp.Fragments;
 
+import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +29,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
@@ -26,19 +38,28 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mvopo.tsekapp.Helper.JSONApi;
 import com.example.mvopo.tsekapp.Helper.ListAdapter;
+import com.example.mvopo.tsekapp.LoginActivity;
 import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.Constants;
+import com.example.mvopo.tsekapp.Model.DengvaxiaDetails;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.R;
+import com.theartofdev.edmodo.cropper.CropImage;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.security.Permission;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -47,13 +68,18 @@ import java.util.List;
 
 public class ManagePopulationFragment extends Fragment implements View.OnClickListener, DatePickerDialog.OnDateSetListener {
 
+    private final int CAMERA_CODE = 100;
     LinearLayout updateFields;
     ScrollView optionHolder;
     EditText txtFamilyId, txtPhilHealthId, txtNhtsId, txtFname, txtMname, txtLname, txtBday, txtBrgy,
-            txtHead, txtEducation, txtSuffix, txtSex, txtIncome, txtUnmet, txtSupply, txtToilet, txtRelation;
-    Button manageBtn, optionBtn;
+            txtHead, txtEducation, txtSuffix, txtSex, txtIncome, txtUnmet, txtSupply, txtToilet, txtRelation,
+            txtFacilityName, txtListNumber, txtDoseScreen, txtDoseDate, txtDoseLot, txtDoseBatch, txtDoseExpiration,
+            txtDoseAefi, txtRemarks;
+    TextView  tvStatus;
+    Button manageBtn, optionBtn, manageDengvaxia, dengvaxiaRegisterBtn;
     TextInputLayout unmetFrame;
     View view;
+    ImageView ivPatient;
 
     FamilyProfile familyProfile;
     List<FamilyProfile> matchingProfiles = new ArrayList<>();
@@ -69,6 +95,14 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
     String males = "Son, Husband, Father, Brother, Nephew, Grandfather, Grandson, Son in Law, Brother in Law, Father in Law";
     String females = "Daughter, Wife, Mother, Sister, Niece, Grandmother, Granddaugther, Daughter in Law, Sister in Law, Mother in Law";
 
+    Calendar now = Calendar.getInstance();
+    DatePickerDialog dpd = DatePickerDialog.newInstance(
+            ManagePopulationFragment.this,
+            now.get(Calendar.YEAR),
+            now.get(Calendar.MONTH),
+            now.get(Calendar.DAY_OF_MONTH)
+    );
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -79,6 +113,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         familyProfile = getArguments().getParcelable("familyProfile");
 
         //Toast.makeText(getContext(), addHead+"", Toast.LENGTH_SHORT).show();
+        dpd.setMaxDate(now);
         value = getResources().getStringArray(R.array.educational_attainment_value);
         try {
             JSONArray array = new JSONArray(MainActivity.user.barangay);
@@ -111,9 +146,11 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtToilet = view.findViewById(R.id.manage_toilet);
         txtHead = view.findViewById(R.id.manage_head);
         txtRelation = view.findViewById(R.id.manage_relation);
+
         updateFields = view.findViewById(R.id.updateFields_holder);
         unmetFrame = view.findViewById(R.id.unmet_frame);
         manageBtn = view.findViewById(R.id.manageBtn);
+        manageDengvaxia = view.findViewById(R.id.manageDengvaxia);
 
         txtFamilyId.setText(familyProfile.familyId);
         if (!toUpdate) {
@@ -142,7 +179,9 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtUnmet.setOnClickListener(this);
         txtSupply.setOnClickListener(this);
         txtToilet.setOnClickListener(this);
+
         manageBtn.setOnClickListener(this);
+        manageDengvaxia.setOnClickListener(this);
 
         txtSex.addTextChangedListener(new TextWatcher() {
             @Override
@@ -162,78 +201,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             }
         });
 
-        txtBday.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //Log.e("QWEQWE", i + " " + i1 + " " + i2);
-                String date = txtBday.getText().toString();
-                Calendar c = Calendar.getInstance();
-
-                int year = c.get(Calendar.YEAR);
-                int month = c.get(Calendar.MONTH) + 1;
-                int day = c.get(Calendar.DAY_OF_MONTH);
-
-                if (i1 == 0) {
-                    if (date.length() == 4) {
-                        if (Integer.parseInt(date) > year) {
-                            Toast.makeText(getContext(), "Person cant have a future birthdate.", Toast.LENGTH_SHORT).show();
-                            date = "";
-                            txtBday.setText("");
-                        }
-                    } else if (date.length() == 7) {
-                        if (Integer.parseInt(date.substring(5, 7)) > 12) {
-
-                            if (Integer.parseInt(date.substring(0, 4)) == year) {
-                                date = date.replace(date.substring(5, 7), String.format("%02d", month));
-                                txtBday.setText(date);
-                                txtBday.setSelection(txtBday.getText().length());
-                                Toast.makeText(getContext(), "Person cant have a future birthdate.", Toast.LENGTH_SHORT).show();
-                            } else {
-                                date = date.replace(date.substring(5, 7), "12");
-                                Toast.makeText(getContext(), "Maximum month is 12", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    } else if (date.length() == 10) {
-                        c.set(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5, 7)) - 1, 1);
-                        int maxDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-                        if (Integer.parseInt(date.substring(8, 10)) > maxDay) {
-                            Toast.makeText(getContext(), "Maximum day for " + date.substring(0, date.length() - 3) + " is " + maxDay, Toast.LENGTH_LONG).show();
-                            date = date.replace(date.substring(8, 10), maxDay + "");
-
-                            txtBday.setText(date);
-                            txtBday.setSelection(txtBday.getText().length());
-                        }
-
-                        if (Integer.parseInt(date.substring(0, 4)) == year && Integer.parseInt(date.substring(5, 7)) >= month &&
-                                Integer.parseInt(date.substring(8, 10)) > day) {
-                            date = date.replace(date.substring(8, 10), String.format("%02d", day));
-                            Toast.makeText(getContext(), "Person cant have a future birthdate.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    if ((date.length() == 4 || date.length() == 7)) {
-                        txtBday.setText(date += "-");
-                        txtBday.setSelection(txtBday.getText().length());
-                    }
-                } else if (i1 == 1) {
-                    if (date.length() == 4 || date.length() == 7) {
-                        txtBday.setText(date.substring(0, date.length() - 1));
-                        txtBday.setSelection(txtBday.getText().length());
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
+        txtBday.addTextChangedListener(getDateTextWatcher(txtBday));
 
         if (!toUpdate) showProfileCheckerDialog();
         return view;
@@ -248,7 +216,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 showOptionDialog(R.array.educational_attainment, txtEducation);
                 break;
             case R.id.manage_head:
-                showOptionDialog(R.array.is_family_head, txtHead);
+                showOptionDialog(R.array.yes_no, txtHead);
                 break;
             case R.id.manage_relation:
                 showOptionDialog(R.array.realation_to_head, txtRelation);
@@ -260,15 +228,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 showOptionDialog(R.array.suffix, txtSuffix);
                 break;
             case R.id.manage_bday:
-                Calendar now = Calendar.getInstance();
-                DatePickerDialog dpd = DatePickerDialog.newInstance(
-                        ManagePopulationFragment.this,
-                        now.get(Calendar.YEAR),
-                        now.get(Calendar.MONTH),
-                        now.get(Calendar.DAY_OF_MONTH)
-                );
-                dpd.setMaxDate(now);
-                dpd.show(getActivity().getFragmentManager(), "Datepickerdialog");
+                dpd.show(getActivity().getFragmentManager(), "bday");
                 break;
             case R.id.manage_income:
                 showOptionDialog(R.array.monthly_income, txtIncome);
@@ -285,6 +245,86 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             case R.id.manage_barangay:
                 brgyFieldClicked = true;
                 showOptionDialog(0, txtBrgy);
+                break;
+            case R.id.manageDengvaxia:
+                showDengvaxiaDialog();
+                break;
+            case R.id.dengvaxia_dose_screen:
+                showOptionDialog(R.array.yes_no, txtDoseScreen);
+                break;
+            case R.id.dengvaxia_dose_date:
+                dpd.show(getActivity().getFragmentManager(), "dose_date");
+                break;
+            case R.id.dengvaxia_dose_expiration:
+                dpd.show(getActivity().getFragmentManager(), "dose_expiry");
+                break;
+            case R.id.dengvaxia_dose_aefi:
+                showOptionDialog(R.array.yes_no, txtDoseAefi);
+                break;
+            case R.id.dengvaxia_patient_image:
+                if (Build.VERSION.SDK_INT >= 23) {
+                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                        requestPermissions(new String[]{Manifest.permission.CAMERA},
+                                CAMERA_CODE);
+                        break;
+                    }
+                }
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, CAMERA_CODE);
+
+                break;
+            case R.id.dengvaxiaBtn:
+                String doseDate = txtDoseDate.getText().toString().trim();
+                if (doseDate.isEmpty() && doseDate.length() != 10) {
+                    Toast.makeText(getContext(), "Invalid date, please follow YYYY-MM-DD format", Toast.LENGTH_SHORT).show();
+                }else{
+                    try {
+                        JSONObject request = new JSONObject();
+                        request.accumulate("tsekap_id", familyProfile.id);
+                        request.accumulate("facility_name", txtFacilityName.getText().toString());
+                        request.accumulate("list_number", txtListNumber.getText().toString());
+                        request.accumulate("fname", familyProfile.fname);
+                        request.accumulate("mname", familyProfile.mname);
+                        request.accumulate("lname", familyProfile.lname);
+                        request.accumulate("muncity", familyProfile.muncityId);
+                        request.accumulate("barangay", familyProfile.barangayId);
+                        request.accumulate("dob", familyProfile.dob);
+                        request.accumulate("sex", familyProfile.sex);
+                        request.accumulate("dose_screened", txtDoseScreen.getText().toString());
+                        request.accumulate("dose_date_given", doseDate);
+
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                        Date date;
+                        Calendar c = Calendar.getInstance();
+
+                        try {
+                            date = sdf.parse(doseDate);
+                            c.setTime(date);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+                        String age = Constants.getAge(familyProfile.dob, c);
+
+                        request.accumulate("dose_age", age);
+
+                        if(!age.contains("/") && (Integer.parseInt(age) >= 9 &&
+                                Integer.parseInt(age) <= 14)) request.accumulate("validation", "Yes");
+                        else request.accumulate("validation", "No");
+
+                        request.accumulate("dose_lot_no", txtDoseLot.getText().toString());
+                        request.accumulate("dose_batch_no", txtDoseBatch.getText().toString());
+                        request.accumulate("dose_expiration", txtDoseExpiration.getText().toString());
+                        request.accumulate("dose_AEFI", txtDoseAefi.getText().toString());
+                        request.accumulate("remarks", txtRemarks.getText().toString());
+
+                        MainActivity.pd = ProgressDialog.show(getContext(), "Loading", "Please wait...", false, false);
+                        JSONApi.getInstance(getContext()).dengvaxiaRegister(Constants.dengvaxiaUrl + "cmd=register", request);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
                 break;
             case R.id.manageBtn:
                 View view = getActivity().getCurrentFocus();
@@ -380,6 +420,43 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(resultCode == Activity.RESULT_OK) {
+            Log.e("ManagePop", data.toString());
+            switch (requestCode) {
+                case CAMERA_CODE:
+                    Uri imageUri = data.getData();
+                    CropImage.activity(imageUri)
+                            .setFixAspectRatio(true)
+                            .start(getContext(), this);
+                    break;
+                case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                    Uri resultUri = result.getUri();
+                    ivPatient.setImageURI(resultUri);
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode){
+            case CAMERA_CODE:
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, CAMERA_CODE);
+                }else{
+                    Toast.makeText(getContext(), "Camera Permission Denied, cant proceed this action", Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+    }
+
     public void setFieldTexts() {
         txtFamilyId.setText(familyProfile.familyId);
         txtPhilHealthId.setText(familyProfile.philId);
@@ -403,7 +480,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
             }
 
-            age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
+            age = Integer.parseInt(Constants.getAge(txtBday.getText().toString(), Calendar.getInstance()).split(" ")[0]);
             if ((age < 15 || age > 49) && txtSex.getText().toString().equalsIgnoreCase("Female"))
                 unmetFrame.setVisibility(View.GONE);
             else unmetFrame.setVisibility(View.VISIBLE);
@@ -467,8 +544,11 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
         final RadioGroup radioGroup = new RadioGroup(getContext());
 
+        ViewGroup.LayoutParams rbParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
         for (int i = 0; i < labels.length; i++) {
             RadioButton radioButton = new RadioButton(getContext());
+            radioButton.setLayoutParams(rbParam);
             radioButton.setText(labels[i]);
 
             if (txtView.getId() == R.id.manage_barangay)
@@ -514,7 +594,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                     } else if (txtView.getId() == R.id.manage_head) {
                         if (txtView.getText().toString().equalsIgnoreCase("NO")) {
                             updateFields.setVisibility(View.GONE);
-                            age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
+                            age = Integer.parseInt(Constants.getAge(txtBday.getText().toString(), Calendar.getInstance()).split(" ")[0]);
                             if ((age < 15 || age > 49) && txtSex.getText().toString().equalsIgnoreCase("Female"))
                                 unmetFrame.setVisibility(View.GONE);
                             ManagePopulationFragment.this.view.findViewById(R.id.layout_relation).setVisibility(View.VISIBLE);
@@ -543,14 +623,85 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         });
     }
 
+    public void showDengvaxiaDialog() {
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.dengvaxia_dialog, null);
+
+        tvStatus = view.findViewById(R.id.dengvaxia_status);
+        txtFacilityName = view.findViewById(R.id.dengvaxia_facility_name);
+        txtListNumber = view.findViewById(R.id.dengvaxia_list_number);
+        txtDoseScreen = view.findViewById(R.id.dengvaxia_dose_screen);
+        txtDoseDate = view.findViewById(R.id.dengvaxia_dose_date);
+        txtDoseLot = view.findViewById(R.id.dengvaxia_dose_lot);
+        txtDoseBatch = view.findViewById(R.id.dengvaxia_dose_batch);
+        txtDoseExpiration = view.findViewById(R.id.dengvaxia_dose_expiration);
+        txtDoseAefi = view.findViewById(R.id.dengvaxia_dose_aefi);
+        txtRemarks = view.findViewById(R.id.dengvaxia_remarks);
+        dengvaxiaRegisterBtn = view.findViewById(R.id.dengvaxiaBtn);
+        ivPatient = view.findViewById(R.id.dengvaxia_patient_image);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(view);
+        builder.show();
+
+        txtDoseScreen.setOnClickListener(this);
+        txtDoseDate.setOnClickListener(this);
+        txtDoseExpiration.setOnClickListener(this);
+        txtDoseAefi.setOnClickListener(this);
+        dengvaxiaRegisterBtn.setOnClickListener(this);
+        ivPatient.setOnClickListener(this);
+
+        txtDoseDate.addTextChangedListener(getDateTextWatcher(txtDoseDate));
+        txtDoseExpiration.addTextChangedListener(getDateTextWatcher(txtDoseExpiration));
+
+        MainActivity.pd = ProgressDialog.show(getContext(), "Loading", "Please wait...", false, false);
+        JSONApi.getInstance(getContext()).getDengvaxiaDetails(Constants.dengvaxiaUrl + "cmd=dose&id="+familyProfile.id);
+    }
+
+    public void setDengvaxiaDetails(DengvaxiaDetails details){
+        tvStatus.setText("STATUS: " + details.getStatus().toUpperCase());
+        txtFacilityName.setText(details.getFacilityName());
+        txtListNumber.setText(details.getListNumber());
+        txtDoseScreen.setText(details.getDoseScreen());
+        txtDoseDate.setText(details.getDoseDate());
+        txtDoseLot.setText(details.getDoseLot());
+        txtDoseBatch.setText(details.getDoseBatch());
+        txtDoseExpiration.setText(details.getDoseExpiry());
+        txtDoseAefi.setText(details.getDoseAefi());
+        txtRemarks.setText(details.getRemarks());
+
+        txtFacilityName.setEnabled(false);
+        txtListNumber.setEnabled(false);
+        txtDoseScreen.setEnabled(false);
+        txtDoseDate.setEnabled(false);
+        txtDoseLot.setEnabled(false);
+        txtDoseBatch.setEnabled(false);
+        txtDoseExpiration.setEnabled(false);
+        txtDoseAefi.setEnabled(false);
+        txtRemarks.setEnabled(false);
+
+        dengvaxiaRegisterBtn.setVisibility(View.GONE);
+
+        MainActivity.pd.dismiss();
+    }
+
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        txtBday.setText(year + "-" + String.format("%02d", (monthOfYear + 1)) + "-" + String.format("%02d", dayOfMonth));
+        switch (view.getTag().toString()) {
+            case "bday":
+                txtBday.setText(year + "-" + String.format("%02d", (monthOfYear + 1)) + "-" + String.format("%02d", dayOfMonth));
 
-        age = Integer.parseInt(Constants.getAge(txtBday.getText().toString()).split(" ")[0]);
-        if (((age >= 15 && age <= 49) || addHead) && txtSex.getText().toString().equalsIgnoreCase("Female"))
-            unmetFrame.setVisibility(View.VISIBLE);
-        else unmetFrame.setVisibility(View.GONE);
+                age = Integer.parseInt(Constants.getAge(txtBday.getText().toString(), Calendar.getInstance()).split(" ")[0]);
+                if (((age >= 15 && age <= 49) || addHead) && txtSex.getText().toString().equalsIgnoreCase("Female"))
+                    unmetFrame.setVisibility(View.VISIBLE);
+                else unmetFrame.setVisibility(View.GONE);
+                break;
+            case "dose_date":
+                txtDoseDate.setText(year + "-" + String.format("%02d", (monthOfYear + 1)) + "-" + String.format("%02d", dayOfMonth));
+                break;
+            case "dose_expiry":
+                txtDoseExpiration.setText(year + "-" + String.format("%02d", (monthOfYear + 1)) + "-" + String.format("%02d", dayOfMonth));
+                break;
+        }
     }
 
     public void showProfileCheckerDialog() {
@@ -630,4 +781,82 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             }
         });
     }
+
+    public TextWatcher getDateTextWatcher(final EditText editText){
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //Log.e("QWEQWE", i + " " + i1 + " " + i2);
+
+                String date = editText.getText().toString();
+                Calendar c = Calendar.getInstance();
+
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH) + 1;
+                int day = c.get(Calendar.DAY_OF_MONTH);
+
+                if (i1 == 0) {
+                    if (date.length() == 4) {
+                        if (Integer.parseInt(date) > year) {
+                            Toast.makeText(getContext(), "Person cant have a future birthdate.", Toast.LENGTH_SHORT).show();
+                            date = "";
+                            editText.setText("");
+                        }
+                    } else if (date.length() == 7) {
+                        if (Integer.parseInt(date.substring(5, 7)) > 12) {
+
+                            if (Integer.parseInt(date.substring(0, 4)) == year) {
+                                date = date.replace(date.substring(5, 7), String.format("%02d", month));
+                                editText.setText(date);
+                                editText.setSelection(editText.getText().length());
+                                Toast.makeText(getContext(), "Date should not exceed current date.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                date = date.replace(date.substring(5, 7), "12");
+                                Toast.makeText(getContext(), "Maximum month is 12", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else if (date.length() == 10) {
+                        c.set(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5, 7)) - 1, 1);
+                        int maxDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+                        if (Integer.parseInt(date.substring(8, 10)) > maxDay) {
+                            Toast.makeText(getContext(), "Maximum day for " + date.substring(0, date.length() - 3) + " is " + maxDay, Toast.LENGTH_LONG).show();
+                            date = date.replace(date.substring(8, 10), maxDay + "");
+
+                            editText.setText(date);
+                            editText.setSelection(editText.getText().length());
+                        }
+
+                        if (Integer.parseInt(date.substring(0, 4)) == year && Integer.parseInt(date.substring(5, 7)) >= month &&
+                                Integer.parseInt(date.substring(8, 10)) > day) {
+                            date = date.replace(date.substring(8, 10), String.format("%02d", day));
+                            Toast.makeText(getContext(), "Date should not exceed current date.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    if ((date.length() == 4 || date.length() == 7)) {
+                        txtBday.setText(date += "-");
+                        txtBday.setSelection(txtBday.getText().length());
+                    }   
+                } else if (i1 == 1) {
+                    if (date.length() == 4 || date.length() == 7) {
+                        txtBday.setText(date.substring(0, date.length() - 1));
+                        txtBday.setSelection(txtBday.getText().length());
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        };
+    }
+
+
 }

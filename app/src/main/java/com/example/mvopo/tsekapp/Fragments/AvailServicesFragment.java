@@ -28,6 +28,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
+
 
 /**
  * Created by mvopo on 10/23/2017.
@@ -112,7 +114,7 @@ public class AvailServicesFragment extends Fragment implements CompoundButton.On
         cbOthers = view.findViewById(R.id.avail_others);
         btnAvail = view.findViewById(R.id.availBtn);
 
-        String age = Constants.getAge(familyProfile.dob);
+        String age = Constants.getAge(familyProfile.dob, Calendar.getInstance());
 
         tvName.setText(": " + familyProfile.fname + " " + familyProfile.lname + " " + familyProfile.suffix);
         tvAge.setText(": " + age);

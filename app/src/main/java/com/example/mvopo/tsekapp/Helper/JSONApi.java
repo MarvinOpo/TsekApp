@@ -27,6 +27,7 @@ import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
 import android.webkit.WebView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
@@ -49,10 +50,13 @@ import com.cloudinary.utils.ObjectUtils;
 import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
 import com.example.mvopo.tsekapp.BuildConfig;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
+import com.example.mvopo.tsekapp.Fragments.PendingDengvaxiaFragment;
 import com.example.mvopo.tsekapp.Fragments.ServicesStatusFragment;
 import com.example.mvopo.tsekapp.LoginActivity;
 import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.Constants;
+import com.example.mvopo.tsekapp.Model.DengvaxiaDetails;
+import com.example.mvopo.tsekapp.Model.DengvaxiaPatient;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.Model.ServiceAvailed;
 import com.example.mvopo.tsekapp.Model.ServicesStatus;
@@ -71,6 +75,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Random;
 
@@ -157,10 +162,12 @@ public class JSONApi {
                                 User user = new User(id, fname, mname, lname, muncity, contact, userBrgy, target);
 
                                 db.addUser(user);
-                                Intent intent = new Intent(context, MainActivity.class);
-                                intent.putExtra("user", user);
-                                context.startActivity(intent);
-                                ((Activity) context).finish();
+//                                Intent intent = new Intent(context, MainActivity.class);
+//                                intent.putExtra("user", user);
+//                                context.startActivity(intent);
+//                                ((Activity) context).finish();
+
+                                ((LoginActivity) context).showPinDialog(false);
                             } else {
                                 Toast.makeText(context, "Invalid credentials.", Toast.LENGTH_SHORT).show();
                             }
@@ -271,7 +278,7 @@ public class JSONApi {
                                     MainActivity.pd.dismiss();
 
                                     int feedbackCount = MainActivity.db.getFeedbacksCount();
-                                    if(feedbackCount > 0) showFeedbackUploadDialog(feedbackCount);
+                                    if (feedbackCount > 0) showFeedbackUploadDialog(feedbackCount);
                                 }
                             }
                         } catch (JSONException e) {
@@ -415,7 +422,7 @@ public class JSONApi {
                                     Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
 
                                     int feedbackCount = MainActivity.db.getFeedbacksCount();
-                                    if(feedbackCount > 0) showFeedbackUploadDialog(feedbackCount);
+                                    if (feedbackCount > 0) showFeedbackUploadDialog(feedbackCount);
                                     else compareVersion(Constants.url + "r=version");
                                 }
                             }
@@ -475,6 +482,131 @@ public class JSONApi {
             }
         });
         mRequestQueue.add(jsonObjectRequest);
+    }
+
+    public void getDengvaxiaPending(String url) {
+        Log.e(TAG, url);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, "",
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            ArrayList<DengvaxiaPatient> patients = new ArrayList<>();
+
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject object = response.getJSONObject(i);
+
+                                String id = object.getString("id");
+                                String name = object.getString("full_name");
+                                String address = object.getString("address");
+                                String dob = object.getString("dob");
+                                String remarks = object.getString("remarks");
+                                String status = object.getString("status");
+
+                                patients.add(new DengvaxiaPatient(id, name, address, remarks, dob, status));
+
+                                if (i == response.length() - 1) {
+                                    PendingDengvaxiaFragment.flag = false;
+                                    PendingDengvaxiaFragment.patients.addAll(patients);
+                                    PendingDengvaxiaFragment.adapter.notifyDataSetChanged();
+                                }
+                            }
+
+                            if (response.length() == 0) {
+                                PendingDengvaxiaFragment.adapter.notifyDataSetChanged();
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("GETDENGVAXIAPENDING", error.getMessage());
+            }
+        });
+        mRequestQueue.add(jsonArrayRequest);
+    }
+
+    public void dengvaxiaRegister(String url, final JSONObject request) {
+        Log.e(TAG, url);
+        Log.e(TAG, request.toString());
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, request,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Toast.makeText(context, response.getString("status"), Toast.LENGTH_SHORT).show();
+
+                            String facilityName = request.getString("facility_name");
+                            String listNumber = request.getString("list_number");
+                            String doseScreen = request.getString("dose_screened");
+                            String doseDate = request.getString("dose_date_given");
+                            String doseLot = request.getString("dose_lot_no");
+                            String doseBatch = request.getString("dose_batch_no");
+                            String doseExpiry = request.getString("dose_expiration");
+                            String doseAefi = request.getString("dose_AEFI");
+                            String remarks = request.getString("remarks");
+                            String status = "Pending";
+
+                            DengvaxiaDetails details = new DengvaxiaDetails(facilityName, listNumber, doseScreen,
+                                    doseDate, doseLot, doseBatch, doseExpiry, doseAefi, remarks, status);
+
+                            ((MainActivity) context).setDetailsToDengvaxia(details);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("DENGVAXIAREGISTRATION", error.getMessage());
+
+            }
+        });
+        mRequestQueue.add(jsonObjectRequest);
+    }
+
+    public void getDengvaxiaDetails(final String url) {
+        Log.e(TAG, url);
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, "",
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            if(response.length() > 0) {
+                                JSONObject object = response.getJSONObject(0);
+
+                                String facilityName = object.getString("facility_name");
+                                String listNumber = object.getString("list_number");
+                                String doseScreen = object.getString("dose_screened");
+                                String doseDate = object.getString("dose_date_given");
+                                String doseLot = object.getString("dose_lot_no");
+                                String doseBatch = object.getString("dose_batch_no");
+                                String doseExpiry = object.getString("dose_expiration");
+                                String doseAefi = object.getString("dose_AEFI");
+                                String remarks = object.getString("remarks");
+                                String status = object.getString("status");
+
+                                DengvaxiaDetails details = new DengvaxiaDetails(facilityName, listNumber, doseScreen,
+                                        doseDate, doseLot, doseBatch, doseExpiry, doseAefi, remarks, status);
+
+                                ((MainActivity) context).setDetailsToDengvaxia(details);
+                            }else MainActivity.pd.dismiss();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("GETDENGVAXIAPENDING", error.getMessage());
+                getDengvaxiaDetails(url);
+            }
+        });
+        mRequestQueue.add(jsonArrayRequest);
     }
 
     public void downloadAndInstallApk() {
@@ -634,9 +766,9 @@ public class JSONApi {
                                     }
                                 });
                                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialogInterface, int i) {
-                                                MainActivity.pd.dismiss();
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        MainActivity.pd.dismiss();
                                     }
                                 });
                                 builder.show();
@@ -658,7 +790,7 @@ public class JSONApi {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void showFeedbackUploadDialog(int feedbackCount){
+    public void showFeedbackUploadDialog(int feedbackCount) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(feedbackCount + " Feedbacks uploadable. Proceed upload?");
         builder.setPositiveButton("Upload", new DialogInterface.OnClickListener() {
@@ -694,11 +826,11 @@ public class JSONApi {
         builder.show();
     }
 
-    public String getSenderInfo(){
+    public String getSenderInfo() {
         TelephonyManager tMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String mPhoneNumber = tMgr.getLine1Number();
 
-        String senderInfo =  "Name: " + MainActivity.user.fname + " " + MainActivity.user.lname + "\n" +
+        String senderInfo = "Name: " + MainActivity.user.fname + " " + MainActivity.user.lname + "\n" +
                 "Registered Number: " + MainActivity.user.contact + "\n" +
                 "Device Number:" + mPhoneNumber + "\n\n";
 
