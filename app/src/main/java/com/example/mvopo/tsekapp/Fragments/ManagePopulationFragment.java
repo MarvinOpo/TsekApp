@@ -176,8 +176,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtSex.setOnClickListener(this);
         txtSuffix.setOnClickListener(this);
         txtIncome.setOnClickListener(this);
-        txtUnmet.setOnClickListener(this);
-        txtSupply.setOnClickListener(this);
+        txtUnmet.setOnClickListener(this);        txtSupply.setOnClickListener(this);
         txtToilet.setOnClickListener(this);
 
         manageBtn.setOnClickListener(this);
