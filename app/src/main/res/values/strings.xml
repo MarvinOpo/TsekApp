@@ -105,4 +105,49 @@
         <item>Communal</item>
         <item>Individual Household</item>
     </string-array>
+
+    <string-array name="phic_status">
+        <item>Member</item>
+        <item>Dependent</item>
+        <item>Non-Member</item>
+    </string-array>
+
+    <string-array name="phic_type">
+        <item>Lifetime</item>
+        <item>Sponsored by DOH</item>
+        <item>Sponsored by PLGU</item>
+        <item>Sponsored by MLGU</item>
+        <item>Sponsored by Private</item>
+        <item>Sponsored by Others</item>
+    </string-array>
+
+    <string-array name="phic_employment">
+        <item>Government</item>
+        <item>Private</item>
+        <item>Self-Employed</item>
+    </string-array>
+
+    <string-array name="personal_smoking">
+        <item>Never Smoked</item>
+        <item>Current Smoker</item>
+        <item>Former Smoker</item>
+        <item>Secondhand Smoker</item>
+        <item>Thirdhand Smoker</item>
+    </string-array>
+
+    <string-array name="vaccine_received">
+        <item>School</item>
+        <item>Health Center/Community</item>
+        <item>Priv. MD</item>
+    </string-array>
+
+    <string-array name="physical_skin">
+        <item>Good Skin Turgor</item>
+        <item>Pallor</item>
+        <item>Jaundice</item>
+        <item>Rashes</item>
+        <item>Lesions</item>
+        <item>Others</item>
+    </string-array>
+
 </resources>

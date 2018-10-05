@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/medical_tuberculosis_section"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="gone"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tuberculosis_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:padding="10dp"
+            android:text="Tuberculosis Section"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#fff" />
+
+        <com.example.mvopo.tsekapp.Helper.CheckBoxGroup
+            android:id="@+id/tuberculosis_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="1"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Any of the following? (Check all that apply.)"
+                android:textColor="@color/colorPrimary" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_weight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weight Loss" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_fever"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fever" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_appetite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loss of Appetite" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_cough"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cough > 2 weeks" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_chest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chest Pain" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back Pain" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_neck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Neck Nodes" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_smear_positive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Smear Positive" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_smear_negative"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Smear Negative" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_relapse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Relapse" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_extrapulmonary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Extrapulmonary" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_clinically_diagnosed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clinically Diagnosed" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_tb_children"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TB in Children" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Labs Done"
+                android:textColor="@color/colorPrimary" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_ppd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PPD" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_sputum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sputum Exam" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_cxr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CXR" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_genxpert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GenXpert" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Medications"
+                android:textColor="@color/colorPrimary" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_cat1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CAT I" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_cat2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CAT II" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_cat3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CAT III" />
+
+            <CheckBox
+                android:id="@+id/tuberculosis_med_tb_children"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TB in Children" />
+        </com.example.mvopo.tsekapp.Helper.CheckBoxGroup>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

@@ -1,6 +1,11 @@
 package com.example.mvopo.tsekapp.Model;
 
+import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.mvopo.tsekapp.Helper.DBHelper;
 import com.example.mvopo.tsekapp.MainActivity;
@@ -25,9 +30,11 @@ public class Constants {
     public static String apkUrl = "http://203.177.67.124/tsekap/vii/resources/apk/PHA%20Check-App.apk";
 
     public static String dengvaxiaUrl = "http://203.177.67.124/dengvaxia/api?";
+    public static String dengvaxiaRegUrl = "http://192.168.100.145:8080/tsekap/vii/api/insertDengvaxia";
+    public static String imageBaseUrl = "http://210.4.59.6/hrh/public/upload_picture/picture/";
 
-//    public static String url = "http://203.177.67.124/tsekap/dummy/api?";
-//    public static String apkUrl = "http://203.177.67.124/tsekap/dummy/resources/apk/PHA%20Check-App.apk";
+//    public static String url = "http://192.168.100.145:8080/tsekap/vii/api?";
+//    public static String apkUrl = "http://192.168.100.145:8080/tsekap/vii/resources/apk/PHA%20Check-App.apk";
 
     public static JSONObject getProfileJson() {
 
@@ -77,6 +84,81 @@ public class Constants {
         return request;
     }
 
+    public static void setDateTextWatcher(final Context context, final EditText editText){
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //                //Log.e("QWEQWE", i + " " + i1 + " " + i2);
+
+                String date = editText.getText().toString();
+                Calendar c = Calendar.getInstance();
+
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH) + 1;
+                int day = c.get(Calendar.DAY_OF_MONTH);
+
+                if (i1 == 0) {
+                    if (date.length() == 4) {
+                        if (Integer.parseInt(date) > year) {
+                            Toast.makeText(context, "Future date is invalid+.", Toast.LENGTH_SHORT).show();
+                            date = "";
+                            editText.setText("");
+                        }
+                    } else if (date.length() == 7) {
+                        if (Integer.parseInt(date.substring(5, 7)) > 12) {
+
+                            if (Integer.parseInt(date.substring(0, 4)) == year) {
+                                date = date.substring(0,5) + String.format("%02d", month);
+                                editText.setText(date);
+                                editText.setSelection(editText.getText().length());
+                                Toast.makeText(context, "Date should not exceed current date.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                date = date.substring(0,5) + "12";
+                                Toast.makeText(context, "Maximum month is 12", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    } else if (date.length() == 10) {
+                        c.set(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5, 7)) - 1, 1);
+                        int maxDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+                        if (Integer.parseInt(date.substring(8, 10)) > maxDay) {
+                            Toast.makeText(context, "Maximum day for " + date.substring(0, date.length() - 3) + " is " + maxDay, Toast.LENGTH_LONG).show();
+                            date = date.substring(0,8) + maxDay;
+
+                            editText.setText(date);
+                            editText.setSelection(editText.getText().length());
+                        }
+
+                        if (Integer.parseInt(date.substring(0, 4)) == year && Integer.parseInt(date.substring(5, 7)) >= month &&
+                                Integer.parseInt(date.substring(8, 10)) > day) {
+                            date = date.substring(0,5) + String.format("%02d", day);
+                            Toast.makeText(context, "Date should not exceed current date.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    if ((date.length() == 4 || date.length() == 7)) {
+                        editText.setText(date += "-");
+                        editText.setSelection(editText.getText().length());
+                    }
+                } else if (i1 == 1) {
+                    if (date.length() == 4 || date.length() == 7) {
+                        editText.setText(date.substring(0, date.length() - 1));
+                        editText.setSelection(editText.getText().length());
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+    }
     public static String getAge(String date, Calendar c) {
         int year, month, day;
         String ageString = "";
@@ -151,6 +233,4 @@ public class Constants {
         }
         return name;
     }
-
-
 }

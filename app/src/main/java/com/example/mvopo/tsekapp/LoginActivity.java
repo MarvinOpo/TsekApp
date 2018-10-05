@@ -57,7 +57,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         try {
             user = db.getUser();
             if (user != null) {
-                showPinDialog(true);
+                showPinDialog(true, user);
             }
         } catch (Exception e) {
         }
@@ -150,7 +150,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         builder.show();
     }
 
-    public void showPinDialog(final boolean hasPin) {
+    public void showPinDialog(final boolean hasPin, User loggedUser) {
+        user = loggedUser;
+
         View view = getLayoutInflater().inflate(R.layout.pin_dialog, null, false);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -28,20 +28,20 @@
             </menu>
         </item>
 
-        <item android:title="Dengvaxia">
-            <menu>
-                <group android:checkableBehavior="single">
-                    <item
-                        android:id="@+id/nav_cross_match"
-                        android:icon="@drawable/manage"
-                        android:title="Cross Match" />
-                    <item
-                        android:id="@+id/nav_pending_dengvaxia"
-                        android:icon="@drawable/view"
-                        android:title="View Pending" />
-                </group>
-            </menu>
-        </item>
+        <!--<item android:title="Dengvaxia">-->
+            <!--<menu>-->
+                <!--<group android:checkableBehavior="single">-->
+                    <!--<item-->
+                        <!--android:id="@+id/nav_cross_match"-->
+                        <!--android:icon="@drawable/manage"-->
+                        <!--android:title="Cross Match" />-->
+                    <!--<item-->
+                        <!--android:id="@+id/nav_pending_dengvaxia"-->
+                        <!--android:icon="@drawable/view"-->
+                        <!--android:title="View Pending" />-->
+                <!--</group>-->
+            <!--</menu>-->
+        <!--</item>-->
 
         <!--<item android:title="Report">-->
         <!--<menu>-->
@@ -64,6 +64,11 @@
                         <!--android:id="@+id/nav_change_pass"-->
                         <!--android:icon="@drawable/change_pass"-->
                         <!--android:title="Change Password" />-->
+                    <item
+                        android:id="@+id/nav_check_update"
+                        android:icon="@drawable/check_update_icon"
+                        android:title="Check for Update" />
+
                     <item
                         android:id="@+id/nav_chat"
                         android:icon="@drawable/chat_icon"

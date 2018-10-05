@@ -294,7 +294,7 @@ public class ViewPopulationFragment extends Fragment {
 
         MainActivity.queue.add(MainActivity.makeSpotlightView(MainActivity.toolbar.getChildAt(2),
                 "Hey!",
-                "You want to add Family Heads? Go ahead ang click me!",
+                "You want to add Family Heads? Go ahead and click me!",
                 "ViewPopulationAddHead"));
 
         MainActivity.startSequence();

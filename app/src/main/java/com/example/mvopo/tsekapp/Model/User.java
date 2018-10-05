@@ -12,9 +12,10 @@ import java.util.List;
  */
 
 public class User implements Parcelable{
-    public String id, fname, mname, lname, muncity, contact, barangay, target;
+    public String id, fname, mname, lname, muncity, contact, barangay, target, image;
 
-    public User(String id, String fname, String mname, String lname, String muncity, String contact, String barangay, String target) {
+    public User(String id, String fname, String mname, String lname, String muncity,
+                String contact, String barangay, String target, String image) {
         this.id = id;
         this.fname = fname;
         this.mname = mname;
@@ -23,6 +24,15 @@ public class User implements Parcelable{
         this.contact = contact;
         this.barangay = barangay;
         this.target = target;
+        this.image = image;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     protected User(Parcel in) {
@@ -34,6 +44,7 @@ public class User implements Parcelable{
         contact = in.readString();
         barangay = in.readString();
         target = in.readString();
+        image = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -63,5 +74,6 @@ public class User implements Parcelable{
         parcel.writeString(contact);
         parcel.writeString(barangay);
         parcel.writeString(target);
+        parcel.writeString(image);
     }
 }

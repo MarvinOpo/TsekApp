@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/procedures_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:padding="10dp"
+            android:text="Other Procedures Done"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#fff" />
+
+        <com.example.mvopo.tsekapp.Helper.CheckBoxGroup
+            android:id="@+id/procedures_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="1"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <CheckBox
+                android:id="@+id/procedures_cbc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CBC" />
+
+            <CheckBox
+                android:id="@+id/procedures_urinalysis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Urinalysis" />
+
+            <CheckBox
+                android:id="@+id/procedures_chest_xray"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chest X-ray" />
+
+            <CheckBox
+                android:id="@+id/procedures_diagnostic_dengue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Enzymes Based Rapid Daignostic test for dengue" />
+
+            <CheckBox
+                android:id="@+id/procedures_ns1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NS1 Test" />
+
+            <CheckBox
+                android:id="@+id/procedures_pcr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PCR" />
+
+            <CheckBox
+                android:id="@+id/procedures_igg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IgG Positive" />
+
+            <CheckBox
+                android:id="@+id/procedures_igm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IgM Positive" />
+
+        </com.example.mvopo.tsekapp.Helper.CheckBoxGroup>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

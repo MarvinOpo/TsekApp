@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/medical_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:padding="10dp"
+            android:text="Medical History"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#fff" />
+
+        <com.example.mvopo.tsekapp.Helper.CheckBoxGroup
+            android:id="@+id/medical_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="1"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <CheckBox
+                android:id="@+id/medical_allergy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Allergy" />
+
+            <CheckBox
+                android:id="@+id/medical_asthma"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Asthma" />
+
+            <CheckBox
+                android:id="@+id/medical_tuberculosis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tuberculosis" />
+
+            <CheckBox
+                android:id="@+id/medical_peptic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Peptic Ulcer Disease" />
+
+            <CheckBox
+                android:id="@+id/medical_diabetes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Diabetes Mellitus" />
+
+            <CheckBox
+                android:id="@+id/medical_urinary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Urinary Tract Infections" />
+
+            <CheckBox
+                android:id="@+id/medical_malaria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Malaria" />
+
+            <CheckBox
+                android:id="@+id/medical_pnuemonia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pnuemonia" />
+
+            <CheckBox
+                android:id="@+id/medical_epilepsy_seizure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Epilepsy/Seizure Disorder" />
+
+            <CheckBox
+                android:id="@+id/medical_kidney"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kidney Disease" />
+
+            <CheckBox
+                android:id="@+id/medical_immune"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Immune Deficiency Disease" />
+
+            <CheckBox
+                android:id="@+id/medical_hepatitis"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hepatitis" />
+
+            <CheckBox
+                android:id="@+id/medical_heart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Heart Disease" />
+
+            <CheckBox
+                android:id="@+id/medical_poisoning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Poisoning" />
+
+            <CheckBox
+                android:id="@+id/medical_sti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="STIs" />
+
+            <CheckBox
+                android:id="@+id/medical_thyroid"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thyroid Disease" />
+
+            <CheckBox
+                android:id="@+id/medical_cancer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancer" />
+
+            <CheckBox
+                android:id="@+id/medical_others"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Others" />
+        </com.example.mvopo.tsekapp.Helper.CheckBoxGroup>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

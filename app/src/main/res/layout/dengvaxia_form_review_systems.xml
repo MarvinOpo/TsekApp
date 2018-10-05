@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardUseCompatPadding="true">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/review_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:padding="10dp"
+            android:text="Review of Systems"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#fff" />
+
+        <com.example.mvopo.tsekapp.Helper.CheckBoxGroup
+            android:id="@+id/review_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="1"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Tick all that apply."
+                android:textColor="@color/colorPrimary" />
+
+            <CheckBox
+                android:id="@+id/review_jaundice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Jaundice" />
+
+            <CheckBox
+                android:id="@+id/review_pallor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pallor" />
+
+            <CheckBox
+                android:id="@+id/review_rashes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rashes" />
+
+            <CheckBox
+                android:id="@+id/review_headache"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Severe/Recurrent Headache" />
+
+            <CheckBox
+                android:id="@+id/review_dizziness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Severe/Recurrent Dizziness" />
+
+            <CheckBox
+                android:id="@+id/review_vision"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Bluring of Vission" />
+
+            <CheckBox
+                android:id="@+id/review_hearing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hearing Loss" />
+
+            <CheckBox
+                android:id="@+id/review_seizures"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seizures" />
+
+            <CheckBox
+                android:id="@+id/review_fatigability"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Easy Fatigability" />
+
+            <CheckBox
+                android:id="@+id/review_cough"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cough/Colds" />
+
+            <CheckBox
+                android:id="@+id/review_dyspnea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dyspnea" />
+
+            <CheckBox
+                android:id="@+id/review_orthopnea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Orthopnea" />
+
+            <CheckBox
+                android:id="@+id/review_chest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chest Pain" />
+
+            <CheckBox
+                android:id="@+id/review_palpitations"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Palpitations" />
+
+            <CheckBox
+                android:id="@+id/review_murmur"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Murmur" />
+
+            <CheckBox
+                android:id="@+id/review_breast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Breast Pain" />
+
+            <CheckBox
+                android:id="@+id/review_nausea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nausea and/or Vomiting" />
+
+            <CheckBox
+                android:id="@+id/review_abdominal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Severe/Recurrent Abnominal Pain" />
+
+            <CheckBox
+                android:id="@+id/review_constipation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recurrent Constipation" />
+
+            <CheckBox
+                android:id="@+id/review_diarrhea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Diarrhea" />
+
+            <CheckBox
+                android:id="@+id/review_polyphagia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Polyphagia" />
+
+            <CheckBox
+                android:id="@+id/review_polydypsia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Polydypsia" />
+
+            <CheckBox
+                android:id="@+id/review_polyuria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Polyuria" />
+
+            <CheckBox
+                android:id="@+id/review_vaginal_bleeding"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vaginal Bleeding" />
+
+            <CheckBox
+                android:id="@+id/review_foul_smell_vagina"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Foul Smelling Vagina" />
+
+            <CheckBox
+                android:id="@+id/review_urethral"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Urethral Discharge" />
+
+            <CheckBox
+                android:id="@+id/review_dysuria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dysuria" />
+
+            <CheckBox
+                android:id="@+id/review_leg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Leg Pain" />
+
+            <CheckBox
+                android:id="@+id/review_joint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Joint Pain" />
+
+            <CheckBox
+                android:id="@+id/review_muscle_wasting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Muscle Wasting" />
+
+            <CheckBox
+                android:id="@+id/review_muscle_weakness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Muscle Weakness" />
+
+            <CheckBox
+                android:id="@+id/review_weight_loss"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weight Loss" />
+
+            <CheckBox
+                android:id="@+id/review_others"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Others" />
+        </com.example.mvopo.tsekapp.Helper.CheckBoxGroup>
+    </LinearLayout>
+</android.support.v7.widget.CardView>

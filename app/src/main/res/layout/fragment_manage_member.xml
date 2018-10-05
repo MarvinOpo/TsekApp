@@ -2,7 +2,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:scrollbars="none">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -352,7 +353,8 @@
             android:layout_marginTop="5dp"
             android:background="#1565c0"
             android:text="Register for Dengvaxia"
-            android:textColor="#fff" />
+            android:textColor="#fff"
+            android:visibility="gone" />
 
     </LinearLayout>
 </ScrollView>

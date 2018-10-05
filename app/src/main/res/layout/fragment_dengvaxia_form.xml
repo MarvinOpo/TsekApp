@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:scrollbars="none"
+    android:padding="5dp">
+
+    <LinearLayout
+        android:id="@+id/form_parent_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <include layout="@layout/dengvaxia_form_phic" />
+
+        <include layout="@layout/dengvaxia_form_family_history" />
+
+        <include layout="@layout/dengvaxia_form_medical_history" />
+
+        <include layout="@layout/dengvaxia_form_bronchial_asthma" />
+
+        <include layout="@layout/dengvaxia_form_tuberculosis" />
+
+        <include layout="@layout/dengvaxia_form_disability" />
+
+        <include layout="@layout/dengvaxia_form_hospital_history" />
+
+        <include layout="@layout/dengvaxia_form_surgical_history" />
+
+        <include layout="@layout/dengvaxia_form_personal" />
+
+        <include layout="@layout/dengvaxia_form_mens_gyne_history" />
+
+        <include layout="@layout/dengvaxia_form_vaccination" />
+
+        <include layout="@layout/dengvaxia_form_review_systems" />
+
+        <include layout="@layout/dengvaxia_form_physical_exam" />
+
+        <include layout="@layout/dengvaxia_form_other_procedures" />
+
+        <Button
+            android:id="@+id/register_dengvaxia_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="#1565c0"
+            android:text="Register for Dengvaxia"
+            android:textColor="#fff" />
+    </LinearLayout>
+</ScrollView>

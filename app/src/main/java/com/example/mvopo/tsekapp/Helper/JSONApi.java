@@ -8,31 +8,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.hardware.Camera;
-import android.hardware.Camera.CameraInfo;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
-import android.os.StrictMode;
-import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.util.LruCache;
-import android.webkit.CookieManager;
-import android.webkit.DownloadListener;
-import android.webkit.URLUtil;
-import android.webkit.WebView;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Network;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -44,9 +32,6 @@ import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.cloudinary.Cloudinary;
-import com.cloudinary.android.Utils;
-import com.cloudinary.utils.ObjectUtils;
 import com.creativityapps.gmailbackgroundlibrary.BackgroundMail;
 import com.example.mvopo.tsekapp.BuildConfig;
 import com.example.mvopo.tsekapp.Fragments.HomeFragment;
@@ -68,18 +53,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Random;
-
-import static android.content.Context.DOWNLOAD_SERVICE;
 
 /**
  * Created by mvopo on 10/30/2017.
@@ -156,10 +130,12 @@ public class JSONApi {
                                 String lname = data.getString("lname");
                                 String muncity = data.getString("muncity");
                                 String contact = data.getString("contact");
+//                                String image = data.getString("hrh_photo");
+                                String image = "";
                                 String userBrgy = response.getJSONArray("userBrgy").toString();
                                 String target = response.getString("target");
 
-                                User user = new User(id, fname, mname, lname, muncity, contact, userBrgy, target);
+                                User user = new User(id, fname, mname, lname, muncity, contact, userBrgy, target, image);
 
                                 db.addUser(user);
 //                                Intent intent = new Intent(context, MainActivity.class);
@@ -167,7 +143,7 @@ public class JSONApi {
 //                                context.startActivity(intent);
 //                                ((Activity) context).finish();
 
-                                ((LoginActivity) context).showPinDialog(false);
+                                ((LoginActivity) context).showPinDialog(false, user);
                             } else {
                                 Toast.makeText(context, "Invalid credentials.", Toast.LENGTH_SHORT).show();
                             }
@@ -274,7 +250,7 @@ public class JSONApi {
                                     uploadServices(Constants.url.replace("?", "/syncservices"), serviceAvailed, currentCount, totalCount + serviceCount);
                                 } else {
                                     Toast.makeText(context, "Upload completed", Toast.LENGTH_SHORT).show();
-                                    compareVersion(Constants.url + "r=version");
+//                                    compareVersion(Constants.url + "r=version");
                                     MainActivity.pd.dismiss();
 
                                     int feedbackCount = MainActivity.db.getFeedbacksCount();
@@ -423,7 +399,7 @@ public class JSONApi {
 
                                     int feedbackCount = MainActivity.db.getFeedbacksCount();
                                     if (feedbackCount > 0) showFeedbackUploadDialog(feedbackCount);
-                                    else compareVersion(Constants.url + "r=version");
+//                                    else compareVersion(Constants.url + "r=version");
                                 }
                             }
                         } catch (JSONException e) {
@@ -468,6 +444,8 @@ public class JSONApi {
                                 });
                                 builder.setNegativeButton("Later", null);
                                 builder.show();
+                            }else{
+                                Toast.makeText(context, "This is the latest version.", Toast.LENGTH_SHORT).show();
                             }
 
                             MainActivity.pd.dismiss();
@@ -479,8 +457,15 @@ public class JSONApi {
             @Override
             public void onErrorResponse(VolleyError error) {
                 VolleyLog.e("GETVERSION", error.getMessage());
+                if(error instanceof NoConnectionError) Toast.makeText(context, "No Internet Connection.", Toast.LENGTH_SHORT).show();
+                else compareVersion(url);
             }
         });
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                5000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         mRequestQueue.add(jsonObjectRequest);
     }
 
@@ -566,6 +551,40 @@ public class JSONApi {
 
             }
         });
+        mRequestQueue.add(jsonObjectRequest);
+    }
+
+    public void registerToDengvaxia(final String url, final JSONObject request) {
+        Log.e(TAG, url);
+        Log.e(TAG, request.toString());
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, request,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            Toast.makeText(context, response.getString("status"), Toast.LENGTH_SHORT).show();
+                            MainActivity.fm.popBackStackImmediate();
+                            MainActivity.pd.dismiss();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("DENGVAXIAREGISTRATION", error.toString());
+                if(error instanceof NoConnectionError){
+                    Toast.makeText(context, "No internet connection.", Toast.LENGTH_SHORT).show();
+                    MainActivity.pd.dismiss();
+                } else registerToDengvaxia(url, request);
+            }
+        });
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
         mRequestQueue.add(jsonObjectRequest);
     }
 
@@ -809,18 +828,18 @@ public class JSONApi {
                                 @Override
                                 public void onSuccess() {
                                     MainActivity.db.deleteFeedback("");
-                                    compareVersion(Constants.url + "r=version");
+//                                    compareVersion(Constants.url + "r=version");
                                 }
                             })
                             .send();
                 } else
-                    Toast.makeText(context, "No internet conenction", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                compareVersion(Constants.url + "r=version");
+//                compareVersion(Constants.url + "r=version");
             }
         });
         builder.show();

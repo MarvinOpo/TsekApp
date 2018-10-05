@@ -163,6 +163,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
             manageBtn.setText("Add");
         } else {
+            manageDengvaxia.setVisibility(View.VISIBLE);
             setFieldTexts();
         }
 
@@ -176,7 +177,8 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtSex.setOnClickListener(this);
         txtSuffix.setOnClickListener(this);
         txtIncome.setOnClickListener(this);
-        txtUnmet.setOnClickListener(this);        txtSupply.setOnClickListener(this);
+        txtUnmet.setOnClickListener(this);
+        txtSupply.setOnClickListener(this);
         txtToilet.setOnClickListener(this);
 
         manageBtn.setOnClickListener(this);
@@ -200,7 +202,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             }
         });
 
-        txtBday.addTextChangedListener(getDateTextWatcher(txtBday));
+        Constants.setDateTextWatcher(getContext(), txtBday);
 
         if (!toUpdate) showProfileCheckerDialog();
         return view;
@@ -246,7 +248,15 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 showOptionDialog(0, txtBrgy);
                 break;
             case R.id.manageDengvaxia:
-                showDengvaxiaDialog();
+//                showDengvaxiaDialog();
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("familyProfile", familyProfile);
+
+                DengvaxiaFormFragment dff = new DengvaxiaFormFragment();
+                dff.setArguments(bundle);
+
+                MainActivity.ft = MainActivity.fm.beginTransaction();
+                MainActivity.ft.replace(R.id.fragment_container, dff).addToBackStack(null).commit();
                 break;
             case R.id.dengvaxia_dose_screen:
                 showOptionDialog(R.array.yes_no, txtDoseScreen);
@@ -649,8 +659,8 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         dengvaxiaRegisterBtn.setOnClickListener(this);
         ivPatient.setOnClickListener(this);
 
-        txtDoseDate.addTextChangedListener(getDateTextWatcher(txtDoseDate));
-        txtDoseExpiration.addTextChangedListener(getDateTextWatcher(txtDoseExpiration));
+        Constants.setDateTextWatcher(getContext(), txtDoseDate);
+        Constants.setDateTextWatcher(getContext(), txtDoseExpiration);
 
         MainActivity.pd = ProgressDialog.show(getContext(), "Loading", "Please wait...", false, false);
         JSONApi.getInstance(getContext()).getDengvaxiaDetails(Constants.dengvaxiaUrl + "cmd=dose&id="+familyProfile.id);
@@ -780,82 +790,4 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             }
         });
     }
-
-    public TextWatcher getDateTextWatcher(final EditText editText){
-        return new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                //Log.e("QWEQWE", i + " " + i1 + " " + i2);
-
-                String date = editText.getText().toString();
-                Calendar c = Calendar.getInstance();
-
-                int year = c.get(Calendar.YEAR);
-                int month = c.get(Calendar.MONTH) + 1;
-                int day = c.get(Calendar.DAY_OF_MONTH);
-
-                if (i1 == 0) {
-                    if (date.length() == 4) {
-                        if (Integer.parseInt(date) > year) {
-                            Toast.makeText(getContext(), "Person cant have a future birthdate.", Toast.LENGTH_SHORT).show();
-                            date = "";
-                            editText.setText("");
-                        }
-                    } else if (date.length() == 7) {
-                        if (Integer.parseInt(date.substring(5, 7)) > 12) {
-
-                            if (Integer.parseInt(date.substring(0, 4)) == year) {
-                                date = date.replace(date.substring(5, 7), String.format("%02d", month));
-                                editText.setText(date);
-                                editText.setSelection(editText.getText().length());
-                                Toast.makeText(getContext(), "Date should not exceed current date.", Toast.LENGTH_SHORT).show();
-                            } else {
-                                date = date.replace(date.substring(5, 7), "12");
-                                Toast.makeText(getContext(), "Maximum month is 12", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    } else if (date.length() == 10) {
-                        c.set(Integer.parseInt(date.substring(0, 4)), Integer.parseInt(date.substring(5, 7)) - 1, 1);
-                        int maxDay = c.getActualMaximum(Calendar.DAY_OF_MONTH);
-
-                        if (Integer.parseInt(date.substring(8, 10)) > maxDay) {
-                            Toast.makeText(getContext(), "Maximum day for " + date.substring(0, date.length() - 3) + " is " + maxDay, Toast.LENGTH_LONG).show();
-                            date = date.replace(date.substring(8, 10), maxDay + "");
-
-                            editText.setText(date);
-                            editText.setSelection(editText.getText().length());
-                        }
-
-                        if (Integer.parseInt(date.substring(0, 4)) == year && Integer.parseInt(date.substring(5, 7)) >= month &&
-                                Integer.parseInt(date.substring(8, 10)) > day) {
-                            date = date.replace(date.substring(8, 10), String.format("%02d", day));
-                            Toast.makeText(getContext(), "Date should not exceed current date.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    if ((date.length() == 4 || date.length() == 7)) {
-                        txtBday.setText(date += "-");
-                        txtBday.setSelection(txtBday.getText().length());
-                    }   
-                } else if (i1 == 1) {
-                    if (date.length() == 4 || date.length() == 7) {
-                        txtBday.setText(date.substring(0, date.length() - 1));
-                        txtBday.setSelection(txtBday.getText().length());
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        };
-    }
-
-
 }

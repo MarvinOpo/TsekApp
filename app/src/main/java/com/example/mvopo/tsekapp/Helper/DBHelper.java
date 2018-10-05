@@ -31,14 +31,14 @@ public class DBHelper extends SQLiteOpenHelper {
     final static String FEEDBACK = "tbl_feedback";
 
     public DBHelper(Context context) {
-        super(context, DBNAME, null, 4);
+        super(context, DBNAME, null, 5);
         this.context = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         String sql = "Create table " + USERS + " (id integer, fname varchar(50), mname varchar(50), lname varchar(50)," +
-                " muncity varchar(50), contact varchar(50), barangay varchar(255), target varchar(100))";
+                " muncity varchar(50), contact varchar(50), barangay varchar(255), target varchar(100), image varchar(50))";
 
         String sql1 = "Create table " + PROFILES + " (id integer, uniqueId varchar(100), familyId varchar(50), philId varchar(50), " +
                 "nhtsId varchar(50), isHead varchar(50), relation varchar(50), fname varchar(50), mname varchar(50), lname varchar(50), " +
@@ -67,8 +67,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
         String sql1 = "Create table IF NOT EXISTS " + FEEDBACK + " (id integer primary key autoincrement, subject varchar(25), body varchar(255))";
 
+        String sql2 = "ALTER TABLE "+ USERS +" ADD image varchar(50)";
+
         db.execSQL(sql);
         db.execSQL(sql1);
+        db.execSQL(sql2);
     }
 
     public void addUser(User user) {
@@ -82,6 +85,7 @@ public class DBHelper extends SQLiteOpenHelper {
         cv.put("contact", user.contact);
         cv.put("barangay", user.barangay);
         cv.put("target", user.target);
+        cv.put("image", user.image);
         db.insert(USERS, null, cv);
         db.close();
     }
@@ -105,8 +109,9 @@ public class DBHelper extends SQLiteOpenHelper {
             String contact = c.getString(c.getColumnIndex("contact"));
             String barangay = c.getString(c.getColumnIndex("barangay"));
             String target = c.getString(c.getColumnIndex("target"));
+            String image = c.getString(c.getColumnIndex("image"));
 
-            user = new User(id, fname, mname, lname, muncity, contact, barangay, target);
+            user = new User(id, fname, mname, lname, muncity, contact, barangay, target, image);
         }
         c.close();
         return user;

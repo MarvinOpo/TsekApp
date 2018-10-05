@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -58,6 +60,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -230,6 +235,23 @@ public class MainActivity extends AppCompatActivity
         TextView contact = view.findViewById(R.id.user_contact);
         TextView version = view.findViewById(R.id.version);
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(new ConnectionChecker(MainActivity.this).isConnectedToInternet()){
+                    try {
+                        URL newurl = new URL(Constants.imageBaseUrl + user.getImage());
+                        Bitmap userImage = BitmapFactory.decodeStream(newurl.openConnection().getInputStream());
+                        profile_image.setImageBitmap(userImage);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
         name.setText(user.fname + " " + user.lname);
         contact.setText(user.contact.replace(" ", ""));
         version.setText("APP VERSION " + BuildConfig.VERSION_NAME);
@@ -347,15 +369,18 @@ public class MainActivity extends AppCompatActivity
 //
 //        } else if (id == R.id.nav_change_pass) {
 //            ft.replace(R.id.fragment_container, cpf).commit();
+        } else if (id == R.id.nav_check_update) {
+            pd = ProgressDialog.show(this, "Loading", "Please wait...", false, false);
+            JSONApi.getInstance(this).compareVersion(Constants.url + "r=version");
         } else if (id == R.id.nav_chat) {
             vctf = new ViewChatThreadFragment();
             ft.replace(R.id.fragment_container, vctf).commit();
         } else if (id == R.id.nav_feedback) {
             ft.replace(R.id.fragment_container, ff).commit();
-        } else if (id == R.id.nav_cross_match) {
-            Toast.makeText(this, "This feature is under development process", Toast.LENGTH_SHORT).show();
-        } else if (id == R.id.nav_pending_dengvaxia) {
-            ft.replace(R.id.fragment_container, pdf).commit();
+//        } else if (id == R.id.nav_cross_match) {
+//            Toast.makeText(this, "This feature is under development process", Toast.LENGTH_SHORT).show();
+//        } else if (id == R.id.nav_pending_dengvaxia) {
+//            ft.replace(R.id.fragment_container, pdf).commit();
         } else if (id == R.id.nav_logout) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             int uploadableCount = db.getUploadableCount();

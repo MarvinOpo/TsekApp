@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardUseCompatPadding="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/disability_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorAccent"
+            android:padding="10dp"
+            android:text="Disability, Injury and Medication"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#fff" />
+
+        <com.example.mvopo.tsekapp.Helper.CheckBoxGroup
+            android:id="@+id/disability_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="1"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Disability"
+                android:textColor="@color/colorPrimary" />
+
+            <CheckBox
+                android:id="@+id/disability_psych"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Psychosocial and Behavioral Conditions" />
+
+            <CheckBox
+                android:id="@+id/disability_learning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Learning or Intellectual Disability" />
+
+            <CheckBox
+                android:id="@+id/disability_mental"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mental Conditions" />
+
+            <CheckBox
+                android:id="@+id/disability_visual"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Visual or Seeing Impairment" />
+
+            <CheckBox
+                android:id="@+id/disability_hearing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hearing Impairment" />
+
+            <CheckBox
+                android:id="@+id/disability_speech"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Speech Impairment" />
+
+            <CheckBox
+                android:id="@+id/disability_musculo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Musculo-Skeletal or Injury Impairment" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:padding="5dp">
+
+                <EditText
+                    android:id="@+id/disability_with_assistive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:focusable="false"
+                    android:hint="With assistive device/s?"
+                    android:padding="5dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:padding="5dp">
+
+                <EditText
+                    android:id="@+id/disability_need_assistive"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:focusable="false"
+                    android:hint="Need assistive device/s?"
+                    android:padding="5dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:padding="5dp">
+
+                <EditText
+                    android:id="@+id/disability_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@android:color/transparent"
+                    android:gravity="top"
+                    android:hint="Give description of disability"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:padding="5dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Injury"
+                android:textColor="@color/colorPrimary" />
+
+            <CheckBox
+                android:id="@+id/injury_vehicle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vehicular Accident/Traffic-Related Injuries" />
+
+            <CheckBox
+                android:id="@+id/injury_burns"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Burns" />
+
+            <CheckBox
+                android:id="@+id/injury_drowning"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Drowning" />
+
+            <CheckBox
+                android:id="@+id/injury_fall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fall" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Medication"
+                android:textColor="@color/colorPrimary" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:padding="5dp">
+
+                <EditText
+                    android:id="@+id/disability_medication_taken"
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:background="@android:color/transparent"
+                    android:gravity="top"
+                    android:hint="Medicines and Food Supplements taken"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:padding="5dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </com.example.mvopo.tsekapp.Helper.CheckBoxGroup>
+    </LinearLayout>
+</android.support.v7.widget.CardView>
