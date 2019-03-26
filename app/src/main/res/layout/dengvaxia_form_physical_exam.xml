@@ -43,6 +43,24 @@
                 android:padding="5dp">
 
                 <EditText
+                    android:id="@+id/physical_gen_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="General Status"
+                    android:focusable="false"
+                    android:padding="5dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:padding="5dp">
+
+                <EditText
                     android:id="@+id/physical_bp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

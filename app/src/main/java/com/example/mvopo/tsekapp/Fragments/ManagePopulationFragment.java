@@ -163,7 +163,12 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
             manageBtn.setText("Add");
         } else {
-            manageDengvaxia.setVisibility(View.VISIBLE);
+            try{
+                if(Integer.parseInt(Constants.getAge(familyProfile.dob, Calendar.getInstance())) > 8){
+                    manageDengvaxia.setVisibility(View.VISIBLE);
+                }
+            }catch (Exception e){}
+
             setFieldTexts();
         }
 
@@ -283,58 +288,58 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 startActivityForResult(intent, CAMERA_CODE);
 
                 break;
-            case R.id.dengvaxiaBtn:
-                String doseDate = txtDoseDate.getText().toString().trim();
-                if (doseDate.isEmpty() && doseDate.length() != 10) {
-                    Toast.makeText(getContext(), "Invalid date, please follow YYYY-MM-DD format", Toast.LENGTH_SHORT).show();
-                }else{
-                    try {
-                        JSONObject request = new JSONObject();
-                        request.accumulate("tsekap_id", familyProfile.id);
-                        request.accumulate("facility_name", txtFacilityName.getText().toString());
-                        request.accumulate("list_number", txtListNumber.getText().toString());
-                        request.accumulate("fname", familyProfile.fname);
-                        request.accumulate("mname", familyProfile.mname);
-                        request.accumulate("lname", familyProfile.lname);
-                        request.accumulate("muncity", familyProfile.muncityId);
-                        request.accumulate("barangay", familyProfile.barangayId);
-                        request.accumulate("dob", familyProfile.dob);
-                        request.accumulate("sex", familyProfile.sex);
-                        request.accumulate("dose_screened", txtDoseScreen.getText().toString());
-                        request.accumulate("dose_date_given", doseDate);
-
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                        Date date;
-                        Calendar c = Calendar.getInstance();
-
-                        try {
-                            date = sdf.parse(doseDate);
-                            c.setTime(date);
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-
-                        String age = Constants.getAge(familyProfile.dob, c);
-
-                        request.accumulate("dose_age", age);
-
-                        if(!age.contains("/") && (Integer.parseInt(age) >= 9 &&
-                                Integer.parseInt(age) <= 14)) request.accumulate("validation", "Yes");
-                        else request.accumulate("validation", "No");
-
-                        request.accumulate("dose_lot_no", txtDoseLot.getText().toString());
-                        request.accumulate("dose_batch_no", txtDoseBatch.getText().toString());
-                        request.accumulate("dose_expiration", txtDoseExpiration.getText().toString());
-                        request.accumulate("dose_AEFI", txtDoseAefi.getText().toString());
-                        request.accumulate("remarks", txtRemarks.getText().toString());
-
-                        MainActivity.pd = ProgressDialog.show(getContext(), "Loading", "Please wait...", false, false);
-                        JSONApi.getInstance(getContext()).dengvaxiaRegister(Constants.dengvaxiaUrl + "cmd=register", request);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
+//            case R.id.dengvaxiaBtn:
+//                String doseDate = txtDoseDate.getText().toString().trim();
+//                if (doseDate.isEmpty() && doseDate.length() != 10) {
+//                    Toast.makeText(getContext(), "Invalid date, please follow YYYY-MM-DD format", Toast.LENGTH_SHORT).show();
+//                }else{
+//                    try {
+//                        JSONObject request = new JSONObject();
+//                        request.accumulate("tsekap_id", familyProfile.id);
+//                        request.accumulate("facility_name", txtFacilityName.getText().toString());
+//                        request.accumulate("list_number", txtListNumber.getText().toString());
+//                        request.accumulate("fname", familyProfile.fname);
+//                        request.accumulate("mname", familyProfile.mname);
+//                        request.accumulate("lname", familyProfile.lname);
+//                        request.accumulate("muncity", familyProfile.muncityId);
+//                        request.accumulate("barangay", familyProfile.barangayId);
+//                        request.accumulate("dob", familyProfile.dob);
+//                        request.accumulate("sex", familyProfile.sex);
+//                        request.accumulate("dose_screened", txtDoseScreen.getText().toString());
+//                        request.accumulate("dose_date_given", doseDate);
+//
+//                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//                        Date date;
+//                        Calendar c = Calendar.getInstance();
+//
+//                        try {
+//                            date = sdf.parse(doseDate);
+//                            c.setTime(date);
+//                        } catch (ParseException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        String age = Constants.getAge(familyProfile.dob, c);
+//
+//                        request.accumulate("dose_age", age);
+//
+//                        if(!age.contains("/") && (Integer.parseInt(age) >= 9 &&
+//                                Integer.parseInt(age) <= 14)) request.accumulate("validation", "Yes");
+//                        else request.accumulate("validation", "No");
+//
+//                        request.accumulate("dose_lot_no", txtDoseLot.getText().toString());
+//                        request.accumulate("dose_batch_no", txtDoseBatch.getText().toString());
+//                        request.accumulate("dose_expiration", txtDoseExpiration.getText().toString());
+//                        request.accumulate("dose_AEFI", txtDoseAefi.getText().toString());
+//                        request.accumulate("remarks", txtRemarks.getText().toString());
+//
+//                        MainActivity.pd = ProgressDialog.show(getContext(), "Loading", "Please wait...", false, false);
+//                        JSONApi.getInstance(getContext()).dengvaxiaRegister(Constants.dengvaxiaUrl + "cmd=register", request);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//                break;
             case R.id.manageBtn:
                 View view = getActivity().getCurrentFocus();
                 if (view != null) {
@@ -542,9 +547,8 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         optionHolder = view.findViewById(R.id.option_holder);
         optionBtn = view.findViewById(R.id.optionBtn);
 
-        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1);
-        params.bottomMargin = 5;
-        params.topMargin = 5;
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
+        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
 
         String[] labels;
 
@@ -553,7 +557,9 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
         final RadioGroup radioGroup = new RadioGroup(getContext());
 
-        ViewGroup.LayoutParams rbParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams rbParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rbParam.bottomMargin = 5;
+        rbParam.topMargin = 5;
 
         for (int i = 0; i < labels.length; i++) {
             RadioButton radioButton = new RadioButton(getContext());
@@ -632,66 +638,66 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         });
     }
 
-    public void showDengvaxiaDialog() {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.dengvaxia_dialog, null);
+//    public void showDengvaxiaDialog() {
+//        View view = LayoutInflater.from(getContext()).inflate(R.layout.dengvaxia_dialog, null);
+//
+//        tvStatus = view.findViewById(R.id.dengvaxia_status);
+//        txtFacilityName = view.findViewById(R.id.dengvaxia_facility_name);
+//        txtListNumber = view.findViewById(R.id.dengvaxia_list_number);
+//        txtDoseScreen = view.findViewById(R.id.dengvaxia_dose_screen);
+//        txtDoseDate = view.findViewById(R.id.dengvaxia_dose_date);
+//        txtDoseLot = view.findViewById(R.id.dengvaxia_dose_lot);
+//        txtDoseBatch = view.findViewById(R.id.dengvaxia_dose_batch);
+//        txtDoseExpiration = view.findViewById(R.id.dengvaxia_dose_expiration);
+//        txtDoseAefi = view.findViewById(R.id.dengvaxia_dose_aefi);
+//        txtRemarks = view.findViewById(R.id.dengvaxia_remarks);
+//        dengvaxiaRegisterBtn = view.findViewById(R.id.dengvaxiaBtn);
+//        ivPatient = view.findViewById(R.id.dengvaxia_patient_image);
+//
+//        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//        builder.setView(view);
+//        builder.show();
+//
+//        txtDoseScreen.setOnClickListener(this);
+//        txtDoseDate.setOnClickListener(this);
+//        txtDoseExpiration.setOnClickListener(this);
+//        txtDoseAefi.setOnClickListener(this);
+//        dengvaxiaRegisterBtn.setOnClickListener(this);
+//        ivPatient.setOnClickListener(this);
+//
+//        Constants.setDateTextWatcher(getContext(), txtDoseDate);
+//        Constants.setDateTextWatcher(getContext(), txtDoseExpiration);
+//
+//        MainActivity.pd = ProgressDialog.show(getContext(), "Loading", "Please wait...", false, false);
+//        JSONApi.getInstance(getContext()).getDengvaxiaDetails(Constants.dengvaxiaUrl + "cmd=dose&id="+familyProfile.id);
+//    }
 
-        tvStatus = view.findViewById(R.id.dengvaxia_status);
-        txtFacilityName = view.findViewById(R.id.dengvaxia_facility_name);
-        txtListNumber = view.findViewById(R.id.dengvaxia_list_number);
-        txtDoseScreen = view.findViewById(R.id.dengvaxia_dose_screen);
-        txtDoseDate = view.findViewById(R.id.dengvaxia_dose_date);
-        txtDoseLot = view.findViewById(R.id.dengvaxia_dose_lot);
-        txtDoseBatch = view.findViewById(R.id.dengvaxia_dose_batch);
-        txtDoseExpiration = view.findViewById(R.id.dengvaxia_dose_expiration);
-        txtDoseAefi = view.findViewById(R.id.dengvaxia_dose_aefi);
-        txtRemarks = view.findViewById(R.id.dengvaxia_remarks);
-        dengvaxiaRegisterBtn = view.findViewById(R.id.dengvaxiaBtn);
-        ivPatient = view.findViewById(R.id.dengvaxia_patient_image);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        builder.setView(view);
-        builder.show();
-
-        txtDoseScreen.setOnClickListener(this);
-        txtDoseDate.setOnClickListener(this);
-        txtDoseExpiration.setOnClickListener(this);
-        txtDoseAefi.setOnClickListener(this);
-        dengvaxiaRegisterBtn.setOnClickListener(this);
-        ivPatient.setOnClickListener(this);
-
-        Constants.setDateTextWatcher(getContext(), txtDoseDate);
-        Constants.setDateTextWatcher(getContext(), txtDoseExpiration);
-
-        MainActivity.pd = ProgressDialog.show(getContext(), "Loading", "Please wait...", false, false);
-        JSONApi.getInstance(getContext()).getDengvaxiaDetails(Constants.dengvaxiaUrl + "cmd=dose&id="+familyProfile.id);
-    }
-
-    public void setDengvaxiaDetails(DengvaxiaDetails details){
-        tvStatus.setText("STATUS: " + details.getStatus().toUpperCase());
-        txtFacilityName.setText(details.getFacilityName());
-        txtListNumber.setText(details.getListNumber());
-        txtDoseScreen.setText(details.getDoseScreen());
-        txtDoseDate.setText(details.getDoseDate());
-        txtDoseLot.setText(details.getDoseLot());
-        txtDoseBatch.setText(details.getDoseBatch());
-        txtDoseExpiration.setText(details.getDoseExpiry());
-        txtDoseAefi.setText(details.getDoseAefi());
-        txtRemarks.setText(details.getRemarks());
-
-        txtFacilityName.setEnabled(false);
-        txtListNumber.setEnabled(false);
-        txtDoseScreen.setEnabled(false);
-        txtDoseDate.setEnabled(false);
-        txtDoseLot.setEnabled(false);
-        txtDoseBatch.setEnabled(false);
-        txtDoseExpiration.setEnabled(false);
-        txtDoseAefi.setEnabled(false);
-        txtRemarks.setEnabled(false);
-
-        dengvaxiaRegisterBtn.setVisibility(View.GONE);
-
-        MainActivity.pd.dismiss();
-    }
+//    public void setDengvaxiaDetails(DengvaxiaDetails details){
+//        tvStatus.setText("STATUS: " + details.getStatus().toUpperCase());
+//        txtFacilityName.setText(details.getFacilityName());
+//        txtListNumber.setText(details.getListNumber());
+//        txtDoseScreen.setText(details.getDoseScreen());
+//        txtDoseDate.setText(details.getDoseDate());
+//        txtDoseLot.setText(details.getDoseLot());
+//        txtDoseBatch.setText(details.getDoseBatch());
+//        txtDoseExpiration.setText(details.getDoseExpiry());
+//        txtDoseAefi.setText(details.getDoseAefi());
+//        txtRemarks.setText(details.getRemarks());
+//
+//        txtFacilityName.setEnabled(false);
+//        txtListNumber.setEnabled(false);
+//        txtDoseScreen.setEnabled(false);
+//        txtDoseDate.setEnabled(false);
+//        txtDoseLot.setEnabled(false);
+//        txtDoseBatch.setEnabled(false);
+//        txtDoseExpiration.setEnabled(false);
+//        txtDoseAefi.setEnabled(false);
+//        txtRemarks.setEnabled(false);
+//
+//        dengvaxiaRegisterBtn.setVisibility(View.GONE);
+//
+//        MainActivity.pd.dismiss();
+//    }
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {

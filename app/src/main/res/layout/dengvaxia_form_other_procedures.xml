@@ -64,17 +64,29 @@
                 android:layout_height="wrap_content"
                 android:text="PCR" />
 
-            <CheckBox
-                android:id="@+id/procedures_igg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="IgG Positive" />
+            <!--<CheckBox-->
+                <!--android:id="@+id/procedures_igg_pos"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="IgG Positive" />-->
 
-            <CheckBox
-                android:id="@+id/procedures_igm"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="IgM Positive" />
+            <!--<CheckBox-->
+                <!--android:id="@+id/procedures_igm_pos"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="IgM Positive" />-->
+
+            <!--<CheckBox-->
+                <!--android:id="@+id/procedures_igg_neg"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="IgM Negative" />-->
+
+            <!--<CheckBox-->
+                <!--android:id="@+id/procedures_igm_neg"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:text="IgM Negative" />-->
 
         </com.example.mvopo.tsekapp.Helper.CheckBoxGroup>
     </LinearLayout>

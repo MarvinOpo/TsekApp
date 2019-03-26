@@ -162,6 +162,11 @@
                 android:layout_height="wrap_content"
                 android:text="Fall" />
 
+            <CheckBox
+                android:id="@+id/injury_others"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Others" />
 
             <TextView
                 android:layout_width="wrap_content"

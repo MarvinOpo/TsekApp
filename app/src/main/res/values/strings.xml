@@ -114,11 +114,16 @@
 
     <string-array name="phic_type">
         <item>Lifetime</item>
-        <item>Sponsored by DOH</item>
-        <item>Sponsored by PLGU</item>
-        <item>Sponsored by MLGU</item>
-        <item>Sponsored by Private</item>
-        <item>Sponsored by Others</item>
+        <item>Sponsored</item>
+        <item>Employed</item>
+    </string-array>
+
+    <string-array name="phic_sponsored">
+        <item>DOH</item>
+        <item>PLGU</item>
+        <item>MLGU</item>
+        <item>Private</item>
+        <item>Others</item>
     </string-array>
 
     <string-array name="phic_employment">
@@ -141,6 +146,13 @@
         <item>Priv. MD</item>
     </string-array>
 
+    <string-array name="physical_status">
+        <item>Oriented to Time, Place, and Date</item>
+        <item>Concious</item>
+        <item>Ambulatory</item>
+        <item>Others</item>
+    </string-array>
+
     <string-array name="physical_skin">
         <item>Good Skin Turgor</item>
         <item>Pallor</item>
@@ -148,6 +160,22 @@
         <item>Rashes</item>
         <item>Lesions</item>
         <item>Others</item>
+    </string-array>
+
+    <string-array name="religion">
+        <item>RC</item>
+        <item>Christian</item>
+        <item>INC</item>
+        <item>Islam</item>
+        <item>Jehovah</item>
+        <item>Others</item>
+    </string-array>
+
+    <string-array name="procedure_diagnostic_result">
+        <item>IgG Positive</item>
+        <item>IgG Negative</item>
+        <item>IgM Positive</item>
+        <item>IgM Negative</item>
     </string-array>
 
 </resources>

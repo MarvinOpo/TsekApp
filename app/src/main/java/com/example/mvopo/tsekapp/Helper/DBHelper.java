@@ -29,6 +29,9 @@ public class DBHelper extends SQLiteOpenHelper {
     final static String SERVICESTATUS = "tbl_must_services";
     final static String PROFILES = "tbl_profile";
     final static String FEEDBACK = "tbl_feedback";
+    final static String CHPHS = "tbl_chphs";
+    final static String CLUSTER = "tbl_cluster";
+    final static String DISTRICT = "tbl_district";
 
     public DBHelper(Context context) {
         super(context, DBNAME, null, 5);
@@ -62,12 +65,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String sql = "Create table IF NOT EXISTS " + SERVICESTATUS + " (id integer primary key autoincrement, name varchar(100), group1 varchar(2), group2 varchar(2)," +
-                " group3 varchar(2), barangayId varchar(10))";
+//        String sql = "Create table IF NOT EXISTS " + SERVICESTATUS + " (id integer primary key autoincrement, name varchar(100), group1 varchar(2), group2 varchar(2)," +
+//                " group3 varchar(2), barangayId varchar(10))";
+//
+//        String sql1 = "Create table IF NOT EXISTS " + FEEDBACK + " (id integer primary key autoincrement, subject varchar(25), body varchar(255))";
 
-        String sql1 = "Create table IF NOT EXISTS " + FEEDBACK + " (id integer primary key autoincrement, subject varchar(25), body varchar(255))";
+//        String sql2 = "ALTER TABLE "+ USERS +" ADD image varchar(50)";
+        String sql = "Create table IF NOT EXISTS " + CHPHS + " (id integer primary key autoincrement, cluster varchar(5), district varchar(5), houseNo varchar(50)," +
+                " street varchar(100), sitio varchar(50), purok varchar(50), bloodType varchar(5), weight varchar(10), height varchar(10), contact varchar(50))";
 
-        String sql2 = "ALTER TABLE "+ USERS +" ADD image varchar(50)";
+        String sql1 = "Create table IF NOT EXISTS " + CLUSTER + " (id integer primary key autoincrement, description varchar(100))";
+
+        String sql2 = "Create table IF NOT EXISTS " + DISTRICT + " (id integer primary key autoincrement, description varchar(100))";
 
         db.execSQL(sql);
         db.execSQL(sql1);

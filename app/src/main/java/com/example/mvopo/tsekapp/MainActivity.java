@@ -404,7 +404,6 @@ public class MainActivity extends AppCompatActivity
                 builder.setPositiveButton("Ok", null);
             }
             builder.show();
-
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -427,7 +426,7 @@ public class MainActivity extends AppCompatActivity
     public void showTutorial() {
         queue.add(makeSpotlightView(fabMenu.getMenuIconView(),
                 "Whoops!\nRead Me!",
-                "Im a floating menu button, click me to show available actions for this Page",
+                "Im a floating menu 1button, click me to show available actions for this Page",
                 "FabMenu"));
         queue.add(makeSpotlightView(toolbar.getChildAt(1),
                 "Me! Me! Me!",
@@ -466,10 +465,10 @@ public class MainActivity extends AppCompatActivity
         startSequence();
     }
 
-    public void setDetailsToDengvaxia(DengvaxiaDetails details){
-        ManagePopulationFragment mpf = vpf.getMPF();
-        mpf.setDengvaxiaDetails(details);
-    }
+//    public void setDetailsToDengvaxia(DengvaxiaDetails details){
+//        ManagePopulationFragment mpf = vpf.getMPF();
+//        mpf.setDengvaxiaDetails(details);
+//    }
 
     public static SpotlightView.Builder makeSpotlightView(View view, String header, String body, String id) {
         return new SpotlightView.Builder(mainActivity)

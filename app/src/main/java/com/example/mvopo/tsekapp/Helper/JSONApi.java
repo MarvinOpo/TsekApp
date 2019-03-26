@@ -514,45 +514,44 @@ public class JSONApi {
         mRequestQueue.add(jsonArrayRequest);
     }
 
-    public void dengvaxiaRegister(String url, final JSONObject request) {
-        Log.e(TAG, url);
-        Log.e(TAG, request.toString());
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, request,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            Toast.makeText(context, response.getString("status"), Toast.LENGTH_SHORT).show();
-
-                            String facilityName = request.getString("facility_name");
-                            String listNumber = request.getString("list_number");
-                            String doseScreen = request.getString("dose_screened");
-                            String doseDate = request.getString("dose_date_given");
-                            String doseLot = request.getString("dose_lot_no");
-                            String doseBatch = request.getString("dose_batch_no");
-                            String doseExpiry = request.getString("dose_expiration");
-                            String doseAefi = request.getString("dose_AEFI");
-                            String remarks = request.getString("remarks");
-                            String status = "Pending";
-
-                            DengvaxiaDetails details = new DengvaxiaDetails(facilityName, listNumber, doseScreen,
-                                    doseDate, doseLot, doseBatch, doseExpiry, doseAefi, remarks, status);
-
-                            ((MainActivity) context).setDetailsToDengvaxia(details);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("DENGVAXIAREGISTRATION", error.getMessage());
-
-            }
-        });
-        mRequestQueue.add(jsonObjectRequest);
-    }
+//    public void dengvaxiaRegister(String url, final JSONObject request) {
+//        Log.e(TAG, url);
+//        Log.e(TAG, request.toString());
+//
+//        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, request,
+//                new Response.Listener<JSONObject>() {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        try {
+//                            Toast.makeText(context, response.getString("status"), Toast.LENGTH_SHORT).show();
+//
+//                            String facilityName = request.getString("facility_name");
+//                            String listNumber = request.getString("list_number");
+//                            String doseScreen = request.getString("dose_screened");
+//                            String doseDate = request.getString("dose_date_given");
+//                            String doseLot = request.getString("dose_lot_no");
+//                            String doseBatch = request.getString("dose_batch_no");
+//                            String doseExpiry = request.getString("dose_expiration");
+//                            String doseAefi = request.getString("dose_AEFI");
+//                            String remarks = request.getString("remarks");
+//                            String status = "Pending";
+//
+//                            DengvaxiaDetails details = new DengvaxiaDetails(facilityName, listNumber, doseScreen,
+//                                    doseDate, doseLot, doseBatch, doseExpiry, doseAefi, remarks, status);
+//
+//                            ((MainActivity) context).setDetailsToDengvaxia(details);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                VolleyLog.e("DENGVAXIAREGISTRATION", error.getMessage());
+//            }
+//        });
+//        mRequestQueue.add(jsonObjectRequest);
+//    }
 
     public void registerToDengvaxia(final String url, final JSONObject request) {
         Log.e(TAG, url);
@@ -588,45 +587,45 @@ public class JSONApi {
         mRequestQueue.add(jsonObjectRequest);
     }
 
-    public void getDengvaxiaDetails(final String url) {
-        Log.e(TAG, url);
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, "",
-                new Response.Listener<JSONArray>() {
-                    @Override
-                    public void onResponse(JSONArray response) {
-                        try {
-                            if(response.length() > 0) {
-                                JSONObject object = response.getJSONObject(0);
-
-                                String facilityName = object.getString("facility_name");
-                                String listNumber = object.getString("list_number");
-                                String doseScreen = object.getString("dose_screened");
-                                String doseDate = object.getString("dose_date_given");
-                                String doseLot = object.getString("dose_lot_no");
-                                String doseBatch = object.getString("dose_batch_no");
-                                String doseExpiry = object.getString("dose_expiration");
-                                String doseAefi = object.getString("dose_AEFI");
-                                String remarks = object.getString("remarks");
-                                String status = object.getString("status");
-
-                                DengvaxiaDetails details = new DengvaxiaDetails(facilityName, listNumber, doseScreen,
-                                        doseDate, doseLot, doseBatch, doseExpiry, doseAefi, remarks, status);
-
-                                ((MainActivity) context).setDetailsToDengvaxia(details);
-                            }else MainActivity.pd.dismiss();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.e("GETDENGVAXIAPENDING", error.getMessage());
-                getDengvaxiaDetails(url);
-            }
-        });
-        mRequestQueue.add(jsonArrayRequest);
-    }
+//    public void getDengvaxiaDetails(final String url) {
+//        Log.e(TAG, url);
+//        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, "",
+//                new Response.Listener<JSONArray>() {
+//                    @Override
+//                    public void onResponse(JSONArray response) {
+//                        try {
+//                            if(response.length() > 0) {
+//                                JSONObject object = response.getJSONObject(0);
+//
+//                                String facilityName = object.getString("facility_name");
+//                                String listNumber = object.getString("list_number");
+//                                String doseScreen = object.getString("dose_screened");
+//                                String doseDate = object.getString("dose_date_given");
+//                                String doseLot = object.getString("dose_lot_no");
+//                                String doseBatch = object.getString("dose_batch_no");
+//                                String doseExpiry = object.getString("dose_expiration");
+//                                String doseAefi = object.getString("dose_AEFI");
+//                                String remarks = object.getString("remarks");
+//                                String status = object.getString("status");
+//
+//                                DengvaxiaDetails details = new DengvaxiaDetails(facilityName, listNumber, doseScreen,
+//                                        doseDate, doseLot, doseBatch, doseExpiry, doseAefi, remarks, status);
+//
+//                                ((MainActivity) context).setDetailsToDengvaxia(details);
+//                            }else MainActivity.pd.dismiss();
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }, new Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                VolleyLog.e("GETDENGVAXIAPENDING", error.getMessage());
+//                getDengvaxiaDetails(url);
+//            }
+//        });
+//        mRequestQueue.add(jsonArrayRequest);
+//    }
 
     public void downloadAndInstallApk() {
         try {

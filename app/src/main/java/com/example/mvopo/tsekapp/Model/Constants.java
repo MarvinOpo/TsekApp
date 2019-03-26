@@ -30,7 +30,7 @@ public class Constants {
     public static String apkUrl = "http://203.177.67.124/tsekap/vii/resources/apk/PHA%20Check-App.apk";
 
     public static String dengvaxiaUrl = "http://203.177.67.124/dengvaxia/api?";
-    public static String dengvaxiaRegUrl = "http://192.168.100.145:8080/tsekap/vii/api/insertDengvaxia";
+    public static String dengvaxiaRegUrl = "http://192.168.101.59:8080/tsekap/vii/api/insertDengvaxia";
     public static String imageBaseUrl = "http://210.4.59.6/hrh/public/upload_picture/picture/";
 
 //    public static String url = "http://192.168.100.145:8080/tsekap/vii/api?";

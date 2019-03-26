@@ -2,13 +2,15 @@ package com.example.mvopo.tsekapp.Fragments;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +31,7 @@ import com.example.mvopo.tsekapp.MainActivity;
 import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.R;
+import com.wdullaer.materialdatetimepicker.Utils;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 
 import org.json.JSONArray;
@@ -48,7 +51,9 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
 
     ScrollView mainContainer;
     LinearLayout formParentLayout, phicLayout, phicMoreFormLayout, asthmaLayout,
-            hospitalLayout, surgicalLayout, vaccineLayout, physicalExamLayout;
+            hospitalLayout, surgicalLayout, vaccineLayout, physicalExamLayout,
+            genInfoLayout, vaccineFemaleOpt;
+
     CheckBoxGroup familyLayout, medicalLayout, tuberculosisLayout,
             disabilityLayout, personalLayout, mensGyneLayout, vaccineOptionLayout,
             reviewLayout, physicalExamOptionLayout, proceduresLayout;
@@ -59,9 +64,9 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
             asthmaToggle, tuberculosisToggle, disabilityToggle,
             hospitalToggle, surgicalToggle, personalToggle,
             mensGyneToggle, vaccineToggle, reviewToggle,
-            physicalExamToggle, proceduresToggle;
+            physicalExamToggle, proceduresToggle, genInfoToggle;
 
-    EditText edtxPhicStatus, edtxPhicType, edtxPhicEmployment, edtxPhicBenefit,
+    EditText edtxPhicStatus, edtxPhicType, edtxPhicTypeOpt, edtxPhicBenefit,
             edtxDisabilityWithAssistive, edtxDisabilityNeedAssistive, edtxDisabilityDescription,
             edtxDisabilityMedication, edtxHospitalReason, edtxHospitalDate, edtxHospitalPlace,
             edtxHospitalPhicUsed, edtxHospitalCostNotCovered, edtxSurgicalOperation, edtxSurgicalDate,
@@ -69,16 +74,17 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
             edtxPersonalFatIntake, edtxPersonalVege, edtxPersonalFruit, edtxPersonalActivity,
             edtxPersonalTriedAlcohol, edtxPersonalDrunk, edtxPersonalDrugs, edtxMensAge, edtxMensLastPeriod,
             edtxMensPads, edtxMensDuration, edtxMensInterval, edtxVaccineDose, edtxVaccineDate, edtxVaccinePlace,
-            edtxPhysicalBP, edtxPhysicalHR, edtxPhysicalRR, edtxPhysicalTemp, edtxPhysicalBlood, edtxPhysicalWeight,
-            edtxPhysicalHeight, edtxPhysicalBMI, edtxPhysicalWaist, edtxPhysicalHip, edtxPhysicalRatio, edtxPhysicalSkin,
-            edtxAsthmaDiagnosed, edtxAsthmaAttacks, edtxAsthmaMed;
+            edtxVaccineSulfate, edtxVaccineCapsule, edtxVaccineDeworm, edtxPhysicalStatus, edtxPhysicalBP, edtxPhysicalHR,
+            edtxPhysicalRR, edtxPhysicalTemp, edtxPhysicalBlood, edtxPhysicalWeight, edtxPhysicalHeight, edtxPhysicalBMI,
+            edtxPhysicalWaist, edtxPhysicalHip, edtxPhysicalRatio, edtxPhysicalSkin, edtxAsthmaDiagnosed, edtxAsthmaAttacks,
+            edtxAsthmaMed, edtxTuberculosisDiagnose, edtxGenInfoContact, edtxGenInfoReligion, edtxGenInfoBirthPlace, edtxGenInfoYrs;
 
     CheckBox cbFamAllergy, cbFamCancer, cbFamIDD, cbFamEpilepsy, cbFamHeart,
-            cbFamKidney, cbMedAllergy, cbMedEpilepsy, cbMedKidney, cbMedIDD, cbMedHepa,
+            cbFamKidney, cbFamOthers, cbMedAllergy, cbMedEpilepsy, cbMedKidney, cbMedIDD, cbMedHepa,
             cbMedHeart, cbMedPoisoning, cbMedSTI, cbMedThyroid, cbMedCancer, cbMedOthers,
             cbMedAsthma, cbMedTuberculosis, cbMensGynesOthers, cbPhysHeentOthers, cbPhysChestOthers,
             cbPhysHeartOthers, cbPhysAbdomenOthers, cbPhysExtemitiesOthers, cbTuberculosisPPD,
-            cbTuberculosisSputum, cbTuberculosisCXR, cbTuberculosisGenXpert;
+            cbTuberculosisSputum, cbTuberculosisCXR, cbTuberculosisGenXpert, cbProceduresDiagnostic, cbInjuryOthers, cbVaccineOthers;
 
     Button btnRegister, btnAddHospital, btnAddSurgical, dialogBtnAddHospital,
             dialogBtnAddSurgical, btnAddVaccine, dialogBtnAddVaccine;
@@ -107,8 +113,13 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
                 case R.id.phic_type:
                     resId = R.array.phic_type;
                     break;
-                case R.id.phic_employment:
-                    resId = R.array.phic_employment;
+                case R.id.phic_type_opt:
+                    String typeOpt = edtxPhicType.getText().toString();
+                    if (typeOpt.equalsIgnoreCase("Sponsored"))
+                        resId = R.array.phic_sponsored;
+                    else if (typeOpt.equalsIgnoreCase("Employed"))
+                        resId = R.array.phic_employment;
+
                     break;
                 case R.id.phic_benefit:
                 case R.id.disability_with_assistive:
@@ -123,7 +134,17 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
                 case R.id.personal_drugs:
                 case R.id.bronchial_diagnosed:
                 case R.id.bronchial_medication:
+                case R.id.tuberculosis_diagnose:
+                case R.id.vaccine_ferrous_sulfate:
+                case R.id.vaccine_oil_capsule:
+                case R.id.vaccine_deworm:
                     resId = R.array.yes_no;
+                    break;
+                case R.id.physical_gen_status:
+                    resId = R.array.physical_status;
+                    break;
+                case R.id.menstrual_date_last_mens:
+                    dpd.show(getActivity().getFragmentManager(), "LastPeriodDate");
                     break;
                 case R.id.personal_smoking:
                     resId = R.array.personal_smoking;
@@ -134,9 +155,12 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
                 case R.id.physical_skin:
                     resId = R.array.physical_skin;
                     break;
+                case R.id.gen_info_religion:
+                    resId = R.array.religion;
+                    break;
             }
 
-            showOptionDialog(resId, (EditText) view);
+            if (resId != -1) showOptionDialog(resId, (EditText) view);
         }
     };
 
@@ -165,22 +189,23 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         @Override
         public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
             if (isChecked) {
-//                switch (compoundButton.getId()) {
-//                    case R.id.family_allergy:
+                if (compoundButton.getId() == R.id.procedures_diagnostic_dengue) {
+                    showOptionDialog(R.array.procedure_diagnostic_result, compoundButton);
+                    return;
+                }
+
                 showSpecifyDialog(compoundButton);
-//                        break;
-//                }
             } else {
                 String text = compoundButton.getText().toString();
-                if (text.contains("-")) {
+                if (text.contains(" - ")) {
                     compoundButton.setText(text.split(" - ")[0]);
                 }
             }
         }
     };
 
-        @Nullable
-        @Override
+    @Nullable
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         familyProfile = getArguments().getParcelable("familyProfile");
 
@@ -219,6 +244,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         reviewToggle = view.findViewById(R.id.review_toggle);
         physicalExamToggle = view.findViewById(R.id.physical_exam_toggle);
         proceduresToggle = view.findViewById(R.id.procedures_toggle);
+        genInfoToggle = view.findViewById(R.id.gen_info_toggle);
 
         phicToggle.setOnClickListener(this);
         familyToggle.setOnClickListener(this);
@@ -234,6 +260,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         reviewToggle.setOnClickListener(this);
         physicalExamToggle.setOnClickListener(this);
         proceduresToggle.setOnClickListener(this);
+        genInfoToggle.setOnClickListener(this);
     }
 
     public void initLayouts() {
@@ -255,19 +282,23 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         physicalExamLayout = view.findViewById(R.id.physical_exam_container);
         physicalExamOptionLayout = view.findViewById(R.id.physical_exam_options);
         proceduresLayout = view.findViewById(R.id.procedures_container);
+        genInfoLayout = view.findViewById(R.id.gen_info_container);
+        vaccineFemaleOpt = view.findViewById(R.id.vaccine_female_opt_layout);
 
         cvMedAsthma = view.findViewById(R.id.medical_bronchial_section);
         cvMedTuberculosis = view.findViewById(R.id.medical_tuberculosis_section);
         cvMensGyne = view.findViewById(R.id.mens_gyne_section);
 
-        if (familyProfile.sex.equalsIgnoreCase("Male"))
-            cvMensGyne.setVisibility(View.GONE);
+        if (familyProfile.sex.equalsIgnoreCase("Female")) {
+            cvMensGyne.setVisibility(View.VISIBLE);
+            vaccineFemaleOpt.setVisibility(View.VISIBLE);
+        }
     }
 
     public void initFields() {
         edtxPhicStatus = view.findViewById(R.id.phic_status);
         edtxPhicType = view.findViewById(R.id.phic_type);
-        edtxPhicEmployment = view.findViewById(R.id.phic_employment);
+        edtxPhicTypeOpt = view.findViewById(R.id.phic_type_opt);
         edtxPhicBenefit = view.findViewById(R.id.phic_benefit);
 
         edtxDisabilityWithAssistive = view.findViewById(R.id.disability_with_assistive);
@@ -296,7 +327,11 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         Constants.setDateTextWatcher(getContext(), edtxMensLastPeriod);
 
         edtxVaccineDose = view.findViewById(R.id.vaccine_doses);
+        edtxVaccineSulfate = view.findViewById(R.id.vaccine_ferrous_sulfate);
+        edtxVaccineCapsule = view.findViewById(R.id.vaccine_oil_capsule);
+        edtxVaccineDeworm = view.findViewById(R.id.vaccine_deworm);
 
+        edtxPhysicalStatus = view.findViewById(R.id.physical_gen_status);
         edtxPhysicalBP = view.findViewById(R.id.physical_bp);
         edtxPhysicalHR = view.findViewById(R.id.physical_hr);
         edtxPhysicalRR = view.findViewById(R.id.physical_rr);
@@ -314,17 +349,26 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         edtxAsthmaAttacks = view.findViewById(R.id.bronchial_attacks);
         edtxAsthmaMed = view.findViewById(R.id.bronchial_medication);
 
+        edtxTuberculosisDiagnose = view.findViewById(R.id.tuberculosis_diagnose);
+
+        edtxGenInfoContact = view.findViewById(R.id.gen_info_contact);
+        edtxGenInfoReligion = view.findViewById(R.id.gen_info_religion);
+        edtxGenInfoBirthPlace = view.findViewById(R.id.gen_info_birthplace);
+        edtxGenInfoYrs = view.findViewById(R.id.gen_info_yrs_address);
+
         addFieldListener();
     }
 
     public void addFieldListener() {
         edtxPhicStatus.setOnClickListener(fieldListener);
         edtxPhicType.setOnClickListener(fieldListener);
-        edtxPhicEmployment.setOnClickListener(fieldListener);
+        edtxPhicTypeOpt.setOnClickListener(fieldListener);
         edtxPhicBenefit.setOnClickListener(fieldListener);
 
         edtxDisabilityWithAssistive.setOnClickListener(fieldListener);
         edtxDisabilityNeedAssistive.setOnClickListener(fieldListener);
+
+        edtxPhysicalStatus.setOnClickListener(fieldListener);
 
         edtxPersonalSmoking.setOnClickListener(fieldListener);
         edtxPersonalFatIntake.setOnClickListener(fieldListener);
@@ -335,17 +379,20 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         edtxPersonalDrunk.setOnClickListener(fieldListener);
         edtxPersonalDrugs.setOnClickListener(fieldListener);
 
-        edtxMensLastPeriod.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dpd.show(getActivity().getFragmentManager(), "LastPeriodDate");
-            }
-        });
+        edtxMensLastPeriod.setOnClickListener(fieldListener);
+
+        edtxVaccineSulfate.setOnClickListener(fieldListener);
+        edtxVaccineCapsule.setOnClickListener(fieldListener);
+        edtxVaccineDeworm.setOnClickListener(fieldListener);
 
         edtxPhysicalSkin.setOnClickListener(fieldListener);
 
         edtxAsthmaDiagnosed.setOnClickListener(fieldListener);
         edtxAsthmaMed.setOnClickListener(fieldListener);
+
+        edtxTuberculosisDiagnose.setOnClickListener(fieldListener);
+
+        edtxGenInfoReligion.setOnClickListener(fieldListener);
     }
 
     public void initCheckBox() {
@@ -355,6 +402,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         cbFamEpilepsy = view.findViewById(R.id.family_epilepsy_seizure);
         cbFamHeart = view.findViewById(R.id.family_heart);
         cbFamKidney = view.findViewById(R.id.family_kidney);
+        cbFamOthers = view.findViewById(R.id.family_others);
 
         cbMedAllergy = view.findViewById(R.id.medical_allergy);
         cbMedEpilepsy = view.findViewById(R.id.medical_epilepsy_seizure);
@@ -384,6 +432,12 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         cbTuberculosisCXR = view.findViewById(R.id.tuberculosis_cxr);
         cbTuberculosisGenXpert = view.findViewById(R.id.tuberculosis_genxpert);
 
+        cbProceduresDiagnostic = view.findViewById(R.id.procedures_diagnostic_dengue);
+
+        cbInjuryOthers = view.findViewById(R.id.injury_others);
+
+        cbVaccineOthers = view.findViewById(R.id.vaccine_others);
+
         addCheckBoxListener();
     }
 
@@ -394,6 +448,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         cbFamEpilepsy.setOnCheckedChangeListener(cbListener);
         cbFamHeart.setOnCheckedChangeListener(cbListener);
         cbFamKidney.setOnCheckedChangeListener(cbListener);
+        cbFamOthers.setOnCheckedChangeListener(cbListener);
 
         cbMedAllergy.setOnCheckedChangeListener(cbListener);
         cbMedEpilepsy.setOnCheckedChangeListener(cbListener);
@@ -439,6 +494,12 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         cbTuberculosisSputum.setOnCheckedChangeListener(cbListener);
         cbTuberculosisCXR.setOnCheckedChangeListener(cbListener);
         cbTuberculosisGenXpert.setOnCheckedChangeListener(cbListener);
+
+        cbProceduresDiagnostic.setOnCheckedChangeListener(cbListener);
+
+        cbInjuryOthers.setOnCheckedChangeListener(cbListener);
+
+        cbVaccineOthers.setOnCheckedChangeListener(cbListener);
     }
 
     public void initButtons() {
@@ -480,7 +541,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
                     request.accumulate("review_systems", reviewLayout.getSelectedAsJSONArray());
                     request.accumulate("physical_exam", getPhysicalExamData());
                     request.accumulate("bronchial_asthma", getBronchialAsthma());
-                    request.accumulate("tuberculosis", tuberculosisLayout.getSelectedAsJSONObjectWithTags());
+                    request.accumulate("tuberculosis", getTuberculosis());
                     request.accumulate("other_procedures", proceduresLayout.getSelectedAsJSONArray());
 
                     JSONApi.getInstance(getContext()).registerToDengvaxia(Constants.dengvaxiaRegUrl, request);
@@ -530,6 +591,8 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
             case R.id.procedures_toggle:
                 contentView = proceduresLayout;
                 break;
+            case R.id.gen_info_toggle:
+                contentView = genInfoLayout;
         }
 
         if (view.getId() != R.id.register_dengvaxia_button) {
@@ -563,6 +626,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         reviewLayout.setVisibility(View.GONE);
         physicalExamLayout.setVisibility(View.GONE);
         proceduresLayout.setVisibility(View.GONE);
+        genInfoLayout.setVisibility(View.GONE);
     }
 
     public JSONObject getGeneralInfo() {
@@ -590,14 +654,19 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
 
             String toilet = familyProfile.sanitaryToilet;
 
-            if(!toilet.isEmpty()) {
-                if(toilet.equals("1")) toilet = "non";
-                else if(toilet.equals("2")) toilet = "comm";
-                else if(toilet.equals("3")) toilet = "indi";
+            if (!toilet.isEmpty()) {
+                if (toilet.equals("1")) toilet = "non";
+                else if (toilet.equals("2")) toilet = "comm";
+                else if (toilet.equals("3")) toilet = "indi";
             }
 
-            jsonObject.accumulate("toilet",toilet);
+            jsonObject.accumulate("toilet", toilet);
             jsonObject.accumulate("education", familyProfile.educationalAttainment);
+
+            jsonObject.accumulate("contact", edtxGenInfoContact.getText().toString().trim());
+            jsonObject.accumulate("religion", edtxGenInfoReligion.getText().toString().trim());
+            jsonObject.accumulate("birth_place", edtxGenInfoBirthPlace.getText().toString().trim());
+            jsonObject.accumulate("yrs_address", edtxGenInfoYrs.getText().toString().trim());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -638,7 +707,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         try {
             jsonObject.accumulate("status", edtxPhicStatus.getText().toString().trim());
             jsonObject.accumulate("type", edtxPhicType.getText().toString().trim());
-            jsonObject.accumulate("employment", edtxPhicEmployment.getText().toString().trim());
+            jsonObject.accumulate("type_opt", edtxPhicTypeOpt.getText().toString().trim());
             jsonObject.accumulate("benefit", edtxPhicBenefit.getText().toString().trim());
         } catch (JSONException e) {
             e.printStackTrace();
@@ -684,6 +753,9 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         try {
             jsonObject.accumulate("vaccine_received", vaccineOptionLayout.getSelectedAsJSONArray());
             jsonObject.accumulate("no_dose", edtxVaccineDose.getText().toString().trim());
+            jsonObject.accumulate("given_sulfate", edtxVaccineSulfate.getText().toString().trim());
+            jsonObject.accumulate("given_oil_capsule", edtxVaccineCapsule.getText().toString().trim());
+            jsonObject.accumulate("dewormed", edtxVaccineDeworm.getText().toString().trim());
             jsonObject.accumulate("dengvaxia_history", vaccineHistory);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -695,6 +767,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
     public JSONObject getPhysicalExamData() {
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.accumulate("status", edtxPhysicalStatus.getText().toString().trim());
             jsonObject.accumulate("bp", edtxPhysicalBP.getText().toString().trim());
             jsonObject.accumulate("hr", edtxPhysicalHR.getText().toString().trim());
             jsonObject.accumulate("rr", edtxPhysicalRR.getText().toString().trim());
@@ -727,20 +800,33 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         return jsonObject;
     }
 
-    public void showOptionDialog(final int id, final EditText edtxView) {
+    public JSONObject getTuberculosis() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.accumulate("diagnosed", edtxTuberculosisDiagnose.getText().toString().trim());
+            jsonObject.accumulate("selected_options", tuberculosisLayout.getSelectedAsJSONObjectWithTags());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
+    }
+
+    public void showOptionDialog(final int id, final View editableView) {
         View view = LayoutInflater.from(getContext()).inflate(R.layout.options_dialog, null);
         ScrollView optionHolder = view.findViewById(R.id.option_holder);
         Button optionBtn = view.findViewById(R.id.optionBtn);
 
-        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1);
-        params.bottomMargin = 5;
-        params.topMargin = 5;
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
+        RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
 
         String[] labels = getResources().getStringArray(id);
 
         final RadioGroup radioGroup = new RadioGroup(getContext());
 
-        ViewGroup.LayoutParams rbParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams rbParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        rbParam.bottomMargin = 5;
+        rbParam.topMargin = 5;
 
         for (int i = 0; i < labels.length; i++) {
             RadioButton radioButton = new RadioButton(getContext());
@@ -767,28 +853,85 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 RadioButton radioButton = radioGroup.findViewById(radioGroup.getCheckedRadioButtonId());
-                if (radioButton != null) {
-                    String text = radioButton.getText().toString().trim();
-                    edtxView.setText(text);
 
-                    switch (edtxView.getId()) {
-                        case R.id.phic_status:
-                            changeContentVisibility(edtxView);
-                            break;
-                        case R.id.phic_type:
-                        case R.id.physical_skin:
-                            if (text.contains("Others") || text.contains("Lesions")) showSpecifyDialog(edtxView);
-                            break;
-                        case R.id.phic_benefit:
-                        case R.id.disability_with_assistive:
-                        case R.id.disability_need_assistive:
-                        case R.id.personal_drugs:
-                        case R.id.bronchial_medication:
-                            if (text.equalsIgnoreCase("Yes")) showSpecifyDialog(edtxView);
-                            break;
-                        case R.id.personal_tried_alcohol:
-                            if (text.equalsIgnoreCase("No")) edtxPersonalDrunk.setText(text);
-                            break;
+
+                if (editableView instanceof EditText) {
+                    EditText edtxView = (EditText) editableView;
+
+                    if (radioButton != null) {
+                        String text = radioButton.getText().toString().trim();
+                        Boolean shouldSetText = true;
+
+
+                        if (text.contains("Others")) {
+                            showSpecifyDialog(edtxView);
+                            optionDialog.dismiss();
+                            return;
+                        }
+
+                        switch (edtxView.getId()) {
+                            case R.id.phic_status:
+                                changeContentVisibility(edtxView);
+                                break;
+                            case R.id.phic_type:
+                                edtxPhicTypeOpt.setText("");
+                                TextInputLayout optContainer = (TextInputLayout) edtxPhicTypeOpt.getParentForAccessibility();
+                                if (!text.equalsIgnoreCase("Lifetime")) {
+                                    optContainer.setHint(edtxView.getText().toString() + " by");
+                                    optContainer.setVisibility(View.VISIBLE);
+                                } else {
+                                    optContainer.setVisibility(View.GONE);
+                                }
+
+                                break;
+                            case R.id.physical_skin:
+                                if (text.contains("Lesions"))
+                                    showSpecifyDialog(edtxView);
+                                break;
+                            case R.id.phic_benefit:
+                            case R.id.disability_with_assistive:
+                            case R.id.disability_need_assistive:
+                            case R.id.personal_drugs:
+                            case R.id.bronchial_medication:
+                            case R.id.tuberculosis_diagnose:
+                                if (text.equalsIgnoreCase("Yes")) showSpecifyDialog(edtxView);
+                                break;
+                            case R.id.personal_tried_alcohol:
+                                if (text.equalsIgnoreCase("No"))
+                                    edtxPersonalDrunk.setText(text);
+                                break;
+                            case R.id.vaccine_ferrous_sulfate:
+                                if (text.equalsIgnoreCase("Yes")) {
+                                    shouldSetText = false;
+                                    dpd.show(getActivity().getFragmentManager(), "VaccineSulfate");
+                                }
+                                break;
+                            case R.id.vaccine_oil_capsule:
+                                if (text.equalsIgnoreCase("Yes")) {
+                                    shouldSetText = false;
+                                    dpd.show(getActivity().getFragmentManager(), "VaccineCapsule");
+                                }
+                                break;
+                            case R.id.vaccine_deworm:
+                                if (text.equalsIgnoreCase("Yes")) {
+                                    shouldSetText = false;
+                                    dpd.show(getActivity().getFragmentManager(), "VaccineDeworm");
+                                }
+                                break;
+                        }
+
+                        if (shouldSetText) edtxView.setText(text);
+                    }else{
+                        edtxView.setText("");
+                    }
+                } else if (editableView instanceof CompoundButton) {
+                    CompoundButton compoundButton = (CompoundButton) editableView;
+
+                    if (radioButton != null) {
+                        String text = radioButton.getText().toString().trim();
+                        compoundButton.append(" - " + text);
+                    }else{
+                        compoundButton.setChecked(false);
                     }
                 }
 
@@ -812,15 +955,35 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         btnSpecify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (editableView instanceof EditText) {
+                String specifiedText = edtxSpecify.getText().toString().trim();
+                if (editableView instanceof EditText && !specifiedText.isEmpty()) {
                     EditText edtxView = (EditText) editableView;
-                    edtxView.append(" - " + edtxSpecify.getText().toString().trim());
+                    edtxView.setText("Others - " + specifiedText);
                 } else if (editableView instanceof CompoundButton) {
                     CompoundButton compoundButton = (CompoundButton) editableView;
+
+                    if (specifiedText.isEmpty()) {
+                        compoundButton.setChecked(false);
+                        dialog.dismiss();
+                        return;
+                    }
+
                     compoundButton.append(" - " + edtxSpecify.getText().toString().trim());
                 }
 
                 dialog.dismiss();
+            }
+        });
+
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                if (editableView instanceof CompoundButton) {
+                    CompoundButton compoundButton = (CompoundButton) editableView;
+                    if (!compoundButton.getText().toString().contains("-")) {
+                        compoundButton.setChecked(false);
+                    }
+                }
             }
         });
     }
@@ -867,7 +1030,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
                         } else if (date.length() < 10) {
                             edtxHospitalDate.setError("Invalid Date Format.");
                             edtxHospitalDate.requestFocus();
-                        }  else {
+                        } else {
                             try {
                                 JSONObject history = new JSONObject();
                                 history.accumulate("reason", reason);
@@ -976,7 +1139,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
 
                                 Toast.makeText(getContext(), "Successfully Added.", Toast.LENGTH_SHORT).show();
 
-                                String text = "Dengvaxia History: "+ vaccineHistory.length() +"\nVaccine Received: " + place + "\nDate:" + date;
+                                String text = "Dengvaxia History: " + vaccineHistory.length() + "\nVaccine Received: " + place + "\nDate:" + date;
                                 addHistoryInfoCardView(text, vaccineLayout);
 
                                 dialog.dismiss();
@@ -996,10 +1159,10 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
         TextView infoView = infoCard.findViewById(R.id.info_text);
         infoView.setText(text);
 
-        if(parentView instanceof LinearLayout) {
+        if (parentView instanceof LinearLayout) {
             LinearLayout viewContainer = (LinearLayout) parentView;
             viewContainer.addView(infoCard, viewContainer.getChildCount() - 1);
-        }else if(parentView instanceof CheckBoxGroup){
+        } else if (parentView instanceof CheckBoxGroup) {
             CheckBoxGroup viewContainer = (CheckBoxGroup) parentView;
             viewContainer.addView(infoCard, viewContainer.getChildCount() - 1);
         }
@@ -1019,6 +1182,7 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         EditText dateView = null;
+        String date = year + "-" + String.format("%02d", monthOfYear) + "-" + String.format("%02d", dayOfMonth);
 
         switch (view.getTag()) {
             case "HospitalDate":
@@ -1033,9 +1197,17 @@ public class DengvaxiaFormFragment extends Fragment implements View.OnClickListe
             case "VaccineDate":
                 dateView = edtxVaccineDate;
                 break;
+            case "VaccineSulfate":
+                edtxVaccineSulfate.setText("Yes - " + date);
+                return;
+            case "VaccineCapsule":
+                edtxVaccineCapsule.setText("Yes - " + date);
+                return;
+            case "VaccineDeworm":
+                edtxVaccineCapsule.setText("Yes - " + date);
+                return;
         }
 
-        String date = year + "-" + String.format("%02d", monthOfYear) + "-" + String.format("%02d", dayOfMonth);
         dateView.setText(date);
     }
 }

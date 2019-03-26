@@ -73,12 +73,17 @@
                     android:layout_height="wrap_content"
                     android:text="Tetanus Toxiod" />
 
+                <CheckBox
+                    android:id="@+id/vaccine_others"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Others" />
+
             </com.example.mvopo.tsekapp.Helper.CheckBoxGroup>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/rounded_edittext"
                 android:padding="5dp">
@@ -92,7 +97,70 @@
                     android:inputType="number"
                     android:padding="5dp" />
 
-            </android.support.design.widget.TextInputLayout>j
+            </android.support.design.widget.TextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/vaccine_female_opt_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/rounded_edittext"
+                    android:padding="5dp">
+
+                    <EditText
+                        android:id="@+id/vaccine_ferrous_sulfate"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:focusable="false"
+                        android:hint="Given ferrous sulfate?"
+                        android:padding="5dp" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/rounded_edittext"
+                    android:padding="5dp">
+
+                    <EditText
+                        android:id="@+id/vaccine_oil_capsule"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:focusable="false"
+                        android:hint="Given iodized oil capsule?"
+                        android:padding="5dp" />
+
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/rounded_edittext"
+                android:padding="5dp">
+
+                <EditText
+                    android:id="@+id/vaccine_deworm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="Dewormed?"
+                    android:focusable="false"
+                    android:padding="5dp" />
+
+            </android.support.design.widget.TextInputLayout>
+
             <Button
                 android:id="@+id/vaccine_dengvaxia_btn"
                 android:layout_width="match_parent"

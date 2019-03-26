@@ -57,7 +57,10 @@ public class CheckBoxGroup extends GridLayout {
     }
 
     public JSONObject getSelectedAsJSONObjectWithTags(){
-        CheckBox cb = null;
+        CheckBox cb;
+        TextView tvTag = null;
+        String tag = "";
+
         JSONObject jsonObject = new JSONObject();
         JSONArray jsonArray = new JSONArray();
         for(int i = 0; i < getChildCount(); i++){
@@ -69,12 +72,18 @@ public class CheckBoxGroup extends GridLayout {
                     jsonArray.put(cb.getText().toString());
                 }
             }else if(view instanceof TextView){
-                TextView tvTag = (TextView) view;
-                String tag = tvTag.getText().toString();
+                if(tvTag == null){
+                    tvTag = (TextView) view;
+                    tag = tvTag.getText().toString();
+                    continue;
+                }
 
                 try {
                     jsonObject.accumulate(tag, jsonArray);
                     jsonArray = new JSONArray();
+
+                    tvTag = (TextView) view;
+                    tag = tvTag.getText().toString();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
