@@ -91,10 +91,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED &&
                         ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
 
-                    db.deleteUser();
-                    db.deleteProfiles();
-                    db.deleteServiceStatus();
-
                     loginId = txtId.getText().toString().trim();
                     loginPass = txtPass.getText().toString().trim();
 
@@ -106,6 +102,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         txtPass.requestFocus();
                     } else {
 //                        showPinDialog(false);
+                        db.deleteUser();
+                        db.deleteProfiles();
+                        db.deleteServiceStatus();
+                        db.deleteCluster();
+                        db.deleteDistricts();
+
                         pd = ProgressDialog.show(LoginActivity.this, "Loading", "Please wait...", false, false);
                         String url = Constants.url + "r=login" + "&user=" + loginId + "&pass=" + loginPass;
                         JSONApi.getInstance(LoginActivity.this).login(url);

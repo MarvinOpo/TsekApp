@@ -69,6 +69,8 @@ public class JSONApi {
     private ImageLoader imageLoader;
     String TAG = "JSONApi";
 
+    User user = null;
+
     public JSONApi(Context context) {
         this.context = context;
         this.mRequestQueue = getRequestQueue();
@@ -135,7 +137,7 @@ public class JSONApi {
                                 String userBrgy = response.getJSONArray("userBrgy").toString();
                                 String target = response.getString("target");
 
-                                User user = new User(id, fname, mname, lname, muncity, contact, userBrgy, target, image);
+                                user = new User(id, fname, mname, lname, muncity, contact, userBrgy, target, image);
 
                                 db.addUser(user);
 //                                Intent intent = new Intent(context, MainActivity.class);
@@ -143,12 +145,15 @@ public class JSONApi {
 //                                context.startActivity(intent);
 //                                ((Activity) context).finish();
 
-                                ((LoginActivity) context).showPinDialog(false, user);
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        getCluster(Constants.url + "r=cluster");
+                                    }
+                                }).start();
                             } else {
                                 Toast.makeText(context, "Invalid credentials.", Toast.LENGTH_SHORT).show();
                             }
-
-                            LoginActivity.pd.dismiss();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -163,6 +168,71 @@ public class JSONApi {
             }
         });
         mRequestQueue.add(jsonObjectRequest);
+    }
+
+    public void getCluster(String url){
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, "",
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject object = response.getJSONObject(i);
+
+                                String id = object.getString("cluster_no");
+                                String desc = object.getString("description");
+
+                                db.addCluster(id, desc);
+
+                                if(i == response.length() - 1){
+                                    getDistricts(Constants.url + "r=district");
+                                }
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("GETCLUSTER", error.getMessage());
+            }
+        });
+        mRequestQueue.add(jsonArrayRequest);
+    }
+
+    public void getDistricts(String url){
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(Request.Method.GET, url, "",
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+                                JSONObject object = response.getJSONObject(i);
+
+                                String id = object.getString("district_no");
+                                String desc = object.getString("description");
+
+                                db.addDistrict(id, desc);
+
+                                if(i == response.length() - 1){
+                                    ((LoginActivity) context).showPinDialog(false, user);
+                                    LoginActivity.pd.dismiss();
+                                }
+                            }
+
+                            if(response.length() == 0) LoginActivity.pd.dismiss();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.e("GETDISTRICTS", error.getMessage());
+            }
+        });
+        mRequestQueue.add(jsonArrayRequest);
     }
 
     public void getCount(String url, final String brgyId, final int brgyCount) {
@@ -320,6 +390,7 @@ public class JSONApi {
                                         String water = response.getString("water");
                                         String toilet = response.getString("toilet");
                                         String education = response.getString("education");
+
 
                                         db.addProfile(new FamilyProfile(id, unique_id, familyID, phicID, nhtsID, head, relation, fname,
                                                 lname, mname, suffix, dob, sex, barangay_id, muncity_id, province_id, income, unmet,

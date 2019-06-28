@@ -26,6 +26,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,6 +43,7 @@ import com.example.mvopo.tsekapp.Helper.JSONApi;
 import com.example.mvopo.tsekapp.Helper.ListAdapter;
 import com.example.mvopo.tsekapp.LoginActivity;
 import com.example.mvopo.tsekapp.MainActivity;
+import com.example.mvopo.tsekapp.Model.Chphs;
 import com.example.mvopo.tsekapp.Model.Constants;
 import com.example.mvopo.tsekapp.Model.DengvaxiaDetails;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
@@ -76,7 +78,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             txtFacilityName, txtListNumber, txtDoseScreen, txtDoseDate, txtDoseLot, txtDoseBatch, txtDoseExpiration,
             txtDoseAefi, txtRemarks;
     TextView  tvStatus;
-    Button manageBtn, optionBtn, manageDengvaxia, dengvaxiaRegisterBtn;
+    Button manageBtn, optionBtn, manageDengvaxia, dengvaxiaRegisterBtn, manageChphs;
     TextInputLayout unmetFrame;
     View view;
     ImageView ivPatient;
@@ -102,6 +104,8 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             now.get(Calendar.MONTH),
             now.get(Calendar.DAY_OF_MONTH)
     );
+
+    Chphs chphs = null;
 
     @Nullable
     @Override
@@ -150,6 +154,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         updateFields = view.findViewById(R.id.updateFields_holder);
         unmetFrame = view.findViewById(R.id.unmet_frame);
         manageBtn = view.findViewById(R.id.manageBtn);
+        manageChphs = view.findViewById(R.id.manageChphs);
         manageDengvaxia = view.findViewById(R.id.manageDengvaxia);
 
         txtFamilyId.setText(familyProfile.familyId);
@@ -162,14 +167,21 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
             }
 
             manageBtn.setText("Add");
+            showProfileCheckerDialog();
         } else {
-            try{
-                if(Integer.parseInt(Constants.getAge(familyProfile.dob, Calendar.getInstance())) > 8){
-                    manageDengvaxia.setVisibility(View.VISIBLE);
-                }
-            }catch (Exception e){}
+//            try{
+//                if(Integer.parseInt(Constants.getAge(familyProfile.dob, Calendar.getInstance())) > 8){
+//                    manageDengvaxia.setVisibility(View.VISIBLE);
+//                }
+//            }catch (Exception e){}
 
             setFieldTexts();
+
+            chphs = MainActivity.db.getChphsByProfile(familyProfile.id);
+
+            if(chphs != null) manageChphs.setText("View CHPHS Info");
+
+            manageChphs.setVisibility(View.VISIBLE);
         }
 
         txtBrgy.setOnClickListener(this);
@@ -186,6 +198,7 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         txtSupply.setOnClickListener(this);
         txtToilet.setOnClickListener(this);
 
+        manageChphs.setOnClickListener(this);
         manageBtn.setOnClickListener(this);
         manageDengvaxia.setOnClickListener(this);
 
@@ -209,7 +222,6 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
         Constants.setDateTextWatcher(getContext(), txtBday);
 
-        if (!toUpdate) showProfileCheckerDialog();
         return view;
     }
 
@@ -262,6 +274,9 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
                 MainActivity.ft = MainActivity.fm.beginTransaction();
                 MainActivity.ft.replace(R.id.fragment_container, dff).addToBackStack(null).commit();
+                break;
+            case R.id.manageChphs:
+                showChphsDialog();
                 break;
             case R.id.dengvaxia_dose_screen:
                 showOptionDialog(R.array.yes_no, txtDoseScreen);
@@ -398,9 +413,9 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
                 } else if (bday.isEmpty() && bday.length() != 10) {
                     Toast.makeText(getContext(), "Invalid date, please follow YYYY-MM-DD format", Toast.LENGTH_SHORT).show();
                 } else if (sex.isEmpty()) {
-                    Toast.makeText(getContext(), "Gender required", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Gender is required", Toast.LENGTH_SHORT).show();
                 } else if (brgy.isEmpty()) {
-                    Toast.makeText(getContext(), "Barangay required", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Barangay is required", Toast.LENGTH_SHORT).show();
                 } else {
                     if (brgyFieldClicked) brgy = txtBrgy.getTag().toString();
                     else brgy = familyProfile.barangayId;
@@ -552,8 +567,14 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
 
         String[] labels;
 
-        if (id != 0) labels = getResources().getStringArray(id);
-        else labels = brgys;
+        if( id == -1){
+            labels = MainActivity.db.getClusters();
+        }else if( id == -2){
+            labels = MainActivity.db.getDistricts();
+        }else {
+            if (id != 0) labels = getResources().getStringArray(id);
+            else labels = brgys;
+        }
 
         final RadioGroup radioGroup = new RadioGroup(getContext());
 
@@ -638,6 +659,109 @@ public class ManagePopulationFragment extends Fragment implements View.OnClickLi
         });
     }
 
+    public void showChphsDialog(){
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.chphs_dialog, null);
+
+        final EditText txtCluster, txtDistrict;
+        final EditText txtHouseNo, txtStreet, txtSitio,
+                txtPurok, txtBlood, txtWeight, txtHeight, txtContact;
+
+        final Button btnChphs;
+
+        txtCluster = view.findViewById(R.id.dialog_chphs_cluster);
+        txtDistrict = view.findViewById(R.id.dialog_chphs_district);
+        txtHouseNo = view.findViewById(R.id.dialog_chphs_house_no);
+        txtStreet = view.findViewById(R.id.dialog_chphs_street);
+        txtSitio = view.findViewById(R.id.dialog_chphs_sitio);
+        txtPurok = view.findViewById(R.id.dialog_chphs_purok);
+        txtBlood = view.findViewById(R.id.dialog_chphs_blood);
+        txtWeight = view.findViewById(R.id.dialog_chphs_weight);
+        txtHeight = view.findViewById(R.id.dialog_chphs_height);
+        txtContact = view.findViewById(R.id.dialog_chphs_contact);
+
+        btnChphs = view.findViewById(R.id.dialog_chphs_btn);
+
+        if(chphs != null){
+            btnChphs.setText("Update");
+
+            txtCluster.setText(MainActivity.db.getClusterDesc(chphs.getCluster()));
+            txtDistrict.setText(MainActivity.db.getDistrictDesc(chphs.getDistrict()));
+            txtHouseNo.setText(chphs.getHouseNo());
+            txtStreet.setText(chphs.getStreet());
+            txtSitio.setText(chphs.getSitio());
+            txtPurok.setText(chphs.getPurok());
+            txtBlood.setText(chphs.getBloodType());
+            txtWeight.setText(chphs.getWeight());
+            txtHeight.setText(chphs.getHeight());
+            txtContact.setText(chphs.getContact());
+        }
+
+        txtCluster.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showOptionDialog(-1, txtCluster);
+            }
+        });
+
+        txtDistrict.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showOptionDialog(-2, txtDistrict);
+            }
+        });
+
+        txtBlood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showOptionDialog(R.array.blood_types, txtBlood);
+            }
+        });
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(view);
+
+        final AlertDialog dialog = builder.show();
+        dialog.getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+
+        btnChphs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(txtCluster.getText().toString().trim().isEmpty()){
+                    Toast.makeText(getContext(), "Cluster is required", Toast.LENGTH_SHORT).show();
+                }else if(txtDistrict.getText().toString().trim().isEmpty()){
+                    Toast.makeText(getContext(), "District is required", Toast.LENGTH_SHORT).show();
+                }else{
+                    String cluster = MainActivity.db.getClusterId(txtCluster.getText().toString().trim());
+                    String district = MainActivity.db.getDistrictId(txtDistrict.getText().toString().trim());
+                    String houseNo = txtHouseNo.getText().toString().trim();
+                    String street = txtStreet.getText().toString().trim();
+                    String sitio = txtSitio.getText().toString().trim();
+                    String purok = txtPurok.getText().toString().trim();
+                    String blood = txtBlood.getText().toString().trim();
+                    String weight = txtWeight.getText().toString().trim();
+                    String height = txtHeight.getText().toString().trim();
+                    String contact = txtContact.getText().toString().trim();
+
+                    Chphs newChphs = new Chphs("", familyProfile.id, cluster, district, houseNo, street, sitio, purok, blood, weight, height, contact);
+
+                    if(btnChphs.getText().toString().equalsIgnoreCase("ADD")){
+                        MainActivity.db.addChphs(newChphs);
+                        Toast.makeText(getContext(), "CHPHS Successfully Added", Toast.LENGTH_SHORT).show();
+                        manageChphs.setText("View CHPHS Info");
+                    }else{
+                        newChphs.setId(chphs.getId());
+                        MainActivity.db.updateChphs(newChphs);
+                        Toast.makeText(getContext(), "CHPHS Successfully Updated", Toast.LENGTH_SHORT).show();
+                    }
+
+                    chphs = newChphs;
+                    dialog.dismiss();
+                    MainActivity.db.updateProfileStatus(familyProfile.uniqueId, "1");
+                }
+            }
+        });
+    }
 //    public void showDengvaxiaDialog() {
 //        View view = LayoutInflater.from(getContext()).inflate(R.layout.dengvaxia_dialog, null);
 //

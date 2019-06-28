@@ -90,7 +90,6 @@ public class ViewChatThreadFragment extends Fragment {
                 intent.putExtra("user", MainActivity.user);
                 startActivity(intent);
 
-
             }
         });
 

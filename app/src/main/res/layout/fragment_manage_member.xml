@@ -338,23 +338,32 @@
         </android.support.design.widget.TextInputLayout>
 
         <Button
-            android:id="@+id/manageBtn"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorAccent"
-            android:text="Update"
-            android:textColor="#fff" />
-
-        <Button
             android:id="@+id/manageDengvaxia"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:background="#1565c0"
             android:text="Register for Dengvaxia"
             android:textColor="#fff"
             android:visibility="gone" />
 
+        <Button
+            android:id="@+id/manageChphs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="#1565c0"
+            android:text="Add CHPHS Info"
+            android:textColor="#fff"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/manageBtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@color/colorAccent"
+            android:text="Update"
+            android:textColor="#fff" />
     </LinearLayout>
 </ScrollView>

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.mvopo.tsekapp.MainActivity;
+import com.example.mvopo.tsekapp.Model.Chphs;
 import com.example.mvopo.tsekapp.Model.FamilyProfile;
 import com.example.mvopo.tsekapp.Model.FeedBack;
 import com.example.mvopo.tsekapp.Model.ServicesStatus;
@@ -34,7 +35,7 @@ public class DBHelper extends SQLiteOpenHelper {
     final static String DISTRICT = "tbl_district";
 
     public DBHelper(Context context) {
-        super(context, DBNAME, null, 5);
+        super(context, DBNAME, null, 6);
         this.context = context;
     }
 
@@ -71,12 +72,12 @@ public class DBHelper extends SQLiteOpenHelper {
 //        String sql1 = "Create table IF NOT EXISTS " + FEEDBACK + " (id integer primary key autoincrement, subject varchar(25), body varchar(255))";
 
 //        String sql2 = "ALTER TABLE "+ USERS +" ADD image varchar(50)";
-        String sql = "Create table IF NOT EXISTS " + CHPHS + " (id integer primary key autoincrement, cluster varchar(5), district varchar(5), houseNo varchar(50)," +
+        String sql = "Create table IF NOT EXISTS " + CHPHS + " (id integer primary key autoincrement, profileId varchar(5), cluster varchar(5), district varchar(5), houseNo varchar(50)," +
                 " street varchar(100), sitio varchar(50), purok varchar(50), bloodType varchar(5), weight varchar(10), height varchar(10), contact varchar(50))";
 
-        String sql1 = "Create table IF NOT EXISTS " + CLUSTER + " (id integer primary key autoincrement, description varchar(100))";
+        String sql1 = "Create table IF NOT EXISTS " + CLUSTER + " (id integer, description varchar(100))";
 
-        String sql2 = "Create table IF NOT EXISTS " + DISTRICT + " (id integer primary key autoincrement, description varchar(100))";
+        String sql2 = "Create table IF NOT EXISTS " + DISTRICT + " (id integer, description varchar(100))";
 
         db.execSQL(sql);
         db.execSQL(sql1);
@@ -184,6 +185,14 @@ public class DBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void updateProfileStatus(String uniqueId, String status) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("status", status);
+        db.update(PROFILES, cv, "uniqueId=?", new String[]{uniqueId});
+        db.close();
+    }
+
     public ArrayList<FamilyProfile> getFamilyProfiles(String name) {
         name += "%";
         ArrayList<FamilyProfile> profiles = new ArrayList<>();
@@ -219,7 +228,8 @@ public class DBHelper extends SQLiteOpenHelper {
                         lname, mname, suffix, dob, sex, barangayId, muncityId, provinceId, income, unmetNeed, waterSupply,
                         sanitaryToilet, educationalAttainment, status);
 
-                if(familyId.equals(name.substring(0, name.length()-1)) && relation.equalsIgnoreCase("Head")) profiles.add(0, profile);
+                if (familyId.equals(name.substring(0, name.length() - 1)) && relation.equalsIgnoreCase("Head"))
+                    profiles.add(0, profile);
                 else profiles.add(profile);
 
                 c.moveToNext();
@@ -303,7 +313,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         lname, mname, suffix, dob, sex, barangayId, muncityId, provinceId, income, unmetNeed, waterSupply,
                         sanitaryToilet, educationalAttainment, status);
 
-                if(relation.equalsIgnoreCase("Head")) profiles.add(0, profile);
+                if (relation.equalsIgnoreCase("Head")) profiles.add(0, profile);
                 else profiles.add(profile);
 
                 c.moveToNext();
@@ -331,7 +341,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String countQuery = "SELECT  * FROM " + PROFILES;
 
-        if(!brgyId.equals("")) countQuery += " where barangayId = '"+ brgyId +"'";
+        if (!brgyId.equals("")) countQuery += " where barangayId = '" + brgyId + "'";
 
         Cursor cursor = db.rawQuery(countQuery, null);
         int count = cursor.getCount();
@@ -392,7 +402,7 @@ public class DBHelper extends SQLiteOpenHelper {
         Cursor c = db.query(SERVICES, null, null, null, null, null, null, null);
 
         if (c.moveToFirst()) {
-            JSONObject request=null;
+            JSONObject request = null;
             String id = c.getString(c.getColumnIndex("id"));
             try {
                 request = new JSONObject(c.getString(c.getColumnIndex("request")));
@@ -429,7 +439,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         String countQuery = "SELECT * FROM " + SERVICESTATUS;
 
-        if(!brgyId.equals("")) countQuery += " where barangayId = '"+ brgyId +"'";
+        if (!brgyId.equals("")) countQuery += " where barangayId = '" + brgyId + "'";
 
         Cursor cursor = db.rawQuery(countQuery, null);
         int count = cursor.getCount();
@@ -479,7 +489,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public void deleteFeedback(String id) {
         SQLiteDatabase db = getWritableDatabase();
-        if(id.isEmpty()) db.delete(FEEDBACK, null, null);
+        if (id.isEmpty()) db.delete(FEEDBACK, null, null);
         else db.delete(FEEDBACK, "id=?", new String[]{id});
     }
 
@@ -494,7 +504,7 @@ public class DBHelper extends SQLiteOpenHelper {
                 String subject = c.getString(c.getColumnIndex("subject"));
                 String body = c.getString(c.getColumnIndex("body"));
 
-                feedback +=  (c.getPosition() + 1) + ". " + subject + " - " + body + "\n\n";
+                feedback += (c.getPosition() + 1) + ". " + subject + " - " + body + "\n\n";
                 c.moveToNext();
             }
             c.close();
@@ -533,5 +543,207 @@ public class DBHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return count;
+    }
+
+    public void addChphs(Chphs chphs) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("profileId", chphs.getProfileId());
+        cv.put("cluster", chphs.getCluster());
+        cv.put("district", chphs.getDistrict());
+        cv.put("houseNo", chphs.getHouseNo());
+        cv.put("street", chphs.getStreet());
+        cv.put("sitio", chphs.getSitio());
+        cv.put("purok", chphs.getPurok());
+        cv.put("bloodType", chphs.getBloodType());
+        cv.put("weight", chphs.getWeight());
+        cv.put("height", chphs.getHeight());
+        cv.put("contact", chphs.getContact());
+
+        db.insert(CHPHS, null, cv);
+        db.close();
+    }
+
+    public void updateChphs(Chphs chphs) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("profileId", chphs.getProfileId());
+        cv.put("cluster", chphs.getCluster());
+        cv.put("district", chphs.getDistrict());
+        cv.put("houseNo", chphs.getHouseNo());
+        cv.put("street", chphs.getStreet());
+        cv.put("sitio", chphs.getSitio());
+        cv.put("purok", chphs.getPurok());
+        cv.put("bloodType", chphs.getBloodType());
+        cv.put("weight", chphs.getWeight());
+        cv.put("height", chphs.getHeight());
+        cv.put("contact", chphs.getContact());
+
+        db.update(CHPHS, cv, "id = ?", new String[]{chphs.getId()});
+        db.close();
+    }
+
+    public Chphs getChphsByProfile(String profileId) {
+        Chphs chphs = null;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(CHPHS, null, "profileId = ?", new String[]{profileId}, null, null, null);
+
+        if (c.moveToFirst()) {
+            int id = c.getInt(c.getColumnIndex("id"));
+            String cluster = c.getString(c.getColumnIndex("cluster"));
+            String district = c.getString(c.getColumnIndex("district"));
+            String houseNo = c.getString(c.getColumnIndex("houseNo"));
+            String street = c.getString(c.getColumnIndex("street"));
+            String sitio = c.getString(c.getColumnIndex("sitio"));
+            String purok = c.getString(c.getColumnIndex("purok"));
+            String bloodType = c.getString(c.getColumnIndex("bloodType"));
+            String weight = c.getString(c.getColumnIndex("weight"));
+            String height = c.getString(c.getColumnIndex("height"));
+            String contact = c.getString(c.getColumnIndex("contact"));
+
+            chphs = new Chphs(id + "", profileId, cluster, district, houseNo, street, sitio, purok, bloodType, weight, height, contact);
+        }
+        c.close();
+        db.close();
+
+        return chphs;
+    }
+
+    public void addCluster(String id, String desc) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("id", id);
+        cv.put("description", desc);
+
+        db.insert(CLUSTER, null, cv);
+        db.close();
+    }
+
+    public String[] getClusters() {
+        int ctr = 0;
+        String[] cluster;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(CLUSTER, null, null, null, null, null, "description");
+
+        cluster = new String[c.getCount()];
+
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                String desc = c.getString(c.getColumnIndex("description"));
+                cluster[ctr++] = String.valueOf(desc);
+
+                c.moveToNext();
+            }
+        }
+
+        c.close();
+        db.close();
+
+        return cluster;
+    }
+
+    public String getClusterId(String desc) {
+        String clusterId = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(CLUSTER, null, "description = ?", new String[]{desc}, null, null, null);
+
+        if (c.moveToFirst()) {
+            int id = c.getInt(c.getColumnIndex("id"));
+            clusterId = String.valueOf(id);
+        }
+
+        c.close();
+        db.close();
+
+        return clusterId;
+    }
+
+    public String getClusterDesc(String id) {
+        String clusterDesc = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(CLUSTER, null, "id = ?", new String[]{id}, null, null, null);
+
+        if (c.moveToFirst()) {
+            clusterDesc = c.getString(c.getColumnIndex("description"));
+        }
+
+        c.close();
+        db.close();
+
+        return clusterDesc;
+    }
+
+    public void deleteCluster() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(CLUSTER, null, null);
+    }
+
+    public void addDistrict(String id, String desc) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("id", id);
+        cv.put("description", desc);
+
+        db.insert(DISTRICT, null, cv);
+        db.close();
+    }
+
+    public String[] getDistricts() {
+        int ctr = 0;
+        String[] districts;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(DISTRICT, null, null, null, null, null, "description");
+
+        districts = new String[c.getCount()];
+
+        if (c.moveToFirst()) {
+            while (!c.isAfterLast()) {
+                String desc = c.getString(c.getColumnIndex("description"));
+                districts[ctr++] = String.valueOf(desc);
+
+                c.moveToNext();
+            }
+        }
+
+        c.close();
+        db.close();
+
+        return districts;
+    }
+
+    public String getDistrictId(String desc) {
+        String districtId = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(DISTRICT, null, "description = ?", new String[]{desc}, null, null, "null");
+
+        if (c.moveToFirst()) {
+            int id = c.getInt(c.getColumnIndex("id"));
+            districtId = String.valueOf(id);
+        }
+
+        c.close();
+        db.close();
+
+        return districtId;
+    }
+
+    public String getDistrictDesc(String id) {
+        String districtDesc = "";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.query(DISTRICT, null, "id = ?", new String[]{id}, null, null, null);
+
+        if (c.moveToFirst()) {
+            districtDesc = c.getString(c.getColumnIndex("description"));
+        }
+
+        c.close();
+        db.close();
+
+        return districtDesc;
+    }
+
+    public void deleteDistricts() {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(DISTRICT, null, null);
     }
 }
